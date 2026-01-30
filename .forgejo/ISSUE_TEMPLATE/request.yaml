@@ -1,6 +1,6 @@
-name: Feature Request
-description: Suggest a new feature for Kenko
-title: "[FEATURE]: "
+name: Minor Request
+description: Request something for Kenko
+title: "[REQUEST]: "
 labels: ["enhancement"]
 assignees: []
 body:
