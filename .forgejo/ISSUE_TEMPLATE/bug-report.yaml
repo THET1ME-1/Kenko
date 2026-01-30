@@ -9,7 +9,7 @@ body:
       value: |
         Thanks for taking the time to fill out this bug report!
 
-  - type: dropdown
+  - type: input
     id: app_version
     attributes:
       label: Kenko Version
