@@ -13,8 +13,10 @@
  */
 
 import com.android.utils.text.dropPrefix
+import java.io.FileInputStream
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.*
 
 plugins {
     alias(libs.plugins.android.app)
@@ -48,11 +50,28 @@ android {
         includeInApk = false
     }
 
+    signingConfigs {
+        create("release") {
+            val propertiesFile = rootProject.file("local.properties")
+            val localProperties = Properties()
+            localProperties.load(FileInputStream(propertiesFile))
+
+            val keystore = requireNotNull(localProperties.getProperty("keystore.path")) {
+                "No keystore file provided"
+            }
+            storeFile = file(keystore)
+            storePassword = localProperties.getProperty("keystore.pass")
+            keyAlias = localProperties.getProperty("keystore.alias")
+            keyPassword = localProperties.getProperty("key.pass")
+        }
+    }
+
     buildTypes {
         debug { applicationIdSuffix = ".debug" }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs["release"]
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
