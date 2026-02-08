@@ -15,12 +15,9 @@
 import com.android.utils.text.dropPrefix
 import java.time.LocalDate
 import java.time.ZoneId
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     alias(libs.plugins.android.app)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
@@ -30,7 +27,7 @@ plugins {
 
 android {
     namespace = "com.looker.kenko"
-    compileSdk = 36
+    compileSdk { version = release(36) }
 
     defaultConfig {
         applicationId = "com.looker.kenko"
@@ -70,14 +67,12 @@ android {
 
     kotlin {
         compilerOptions {
-            jvmTarget = JvmTarget.JVM_17
-            languageVersion = KotlinVersion.KOTLIN_2_2
-            apiVersion = KotlinVersion.KOTLIN_2_2
-
             freeCompilerArgs.add("-Xcontext-parameters")
 
-            optIn.add("kotlin.RequiresOptIn")
-            optIn.add("kotlin.time.ExperimentalTime")
+            optIn.addAll(
+                "kotlin.RequiresOptIn",
+                "kotlin.time.ExperimentalTime"
+            )
         }
     }
 
@@ -86,8 +81,8 @@ android {
         buildConfig = true
     }
 
-    sourceSets {
-        getByName("androidTest").assets.srcDir("$projectDir/schemas")
+    sourceSets.named("androidTest") {
+        assets.directories += "$projectDir/schemas"
     }
 
     lint {
@@ -171,6 +166,7 @@ fun versionCodeFor(version: String?): Int? {
 
     return (major * 100_000u + minor * 1_000u + patch * 10u).toInt()
 }
+
 val changelogMD by tasks.register("changelogMD") {
     group = "build"
     description = "Prepare CHANGELOG.md for release"
