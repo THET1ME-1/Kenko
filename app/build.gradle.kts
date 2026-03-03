@@ -104,10 +104,6 @@ android {
         assets.directories += "$projectDir/schemas"
     }
 
-    lint {
-        disable += "MissingTranslation"
-    }
-
     composeCompiler {
         metricsDestination = file("$projectDir/reports/metrics")
         reportsDestination = file("$projectDir/reports")
@@ -120,11 +116,8 @@ android {
         }
     }
 
-    testOptions {
-        unitTests.all {
-            it.useJUnitPlatform()
-        }
-    }
+    testOptions.unitTests.all(Test::useJUnitPlatform)
+    lint.disable += "MissingTranslation"
 }
 
 dependencies {
