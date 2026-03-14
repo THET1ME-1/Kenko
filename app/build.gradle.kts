@@ -53,6 +53,7 @@ android {
     signingConfigs {
         create("release") {
             val propertiesFile = rootProject.file("local.properties")
+            if (!propertiesFile.exists()) return@create
             val localProperties = Properties()
             localProperties.load(FileInputStream(propertiesFile))
 
