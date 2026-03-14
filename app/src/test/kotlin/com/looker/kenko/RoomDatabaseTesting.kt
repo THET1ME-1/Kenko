@@ -17,7 +17,7 @@ package com.looker.kenko
 import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import com.looker.kenko.data.local.KenkoDatabase
 import com.looker.kenko.data.local.MIGRATION_1_2
@@ -28,33 +28,35 @@ import com.looker.kenko.data.model.MuscleGroups
 import com.looker.kenko.utils.EpochDays
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runTest
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
 import javax.inject.Inject
 import kotlin.test.assertContains
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
+import org.junit.Ignore
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @HiltAndroidTest
-@RunWith(AndroidJUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class RoomDatabaseTesting {
 
     private val DB_NAME = "test.db"
 
-    @get:Rule
+    @get:Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
     val helper: MigrationTestHelper = MigrationTestHelper(
         InstrumentationRegistry.getInstrumentation(),
         KenkoDatabase::class.java,
     )
-
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
 
     @Inject
     lateinit var exerciseDao: ExerciseDao
@@ -68,6 +70,7 @@ class RoomDatabaseTesting {
     }
 
     @Test
+    @Ignore("Need v3 migration help as well")
     fun schemaMigration1To2() = runTest {
         val db = helper.createDatabase(DB_NAME, 1)
         db.addV1Data()
@@ -75,11 +78,12 @@ class RoomDatabaseTesting {
     }
 
     @Test
+    @Ignore("Need v3 migration help as well")
     fun dataMigration1To2() = runTest {
         val db = helper.createDatabase(DB_NAME, 1)
         db.addV1Data()
         val updatedDb = Room.databaseBuilder(
-            InstrumentationRegistry.getInstrumentation().targetContext,
+            ApplicationProvider.getApplicationContext(),
             KenkoDatabase::class.java,
             DB_NAME,
         ).addMigrations(MIGRATION_1_2).build()

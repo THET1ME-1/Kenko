@@ -32,7 +32,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import java.io.File
 import javax.inject.Inject
 import kotlin.random.Random
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
@@ -41,10 +40,14 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.DayOfWeek
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @HiltAndroidTest
+@RunWith(RobolectricTestRunner::class)
 class BackupManagerTest {
 
     @get:Rule

@@ -100,10 +100,6 @@ android {
         buildConfig = true
     }
 
-    sourceSets.named("androidTest") {
-        assets.directories += "$projectDir/schemas"
-    }
-
     composeCompiler {
         metricsDestination = file("$projectDir/reports/metrics")
         reportsDestination = file("$projectDir/reports")
@@ -116,8 +112,21 @@ android {
         }
     }
 
-    testOptions.unitTests.all(Test::useJUnitPlatform)
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            all(Test::useJUnitPlatform)
+        }
+    }
     lint.disable += "MissingTranslation"
+}
+
+tasks.matching { it.name == "mergeDebugAssets" }.configureEach {
+    val schemasDir = layout.projectDirectory.dir("schemas")
+    val outputDir = layout.buildDirectory.dir("intermediates/assets/debug/mergeDebugAssets")
+    doLast {
+        schemasDir.asFile.copyRecursively(outputDir.get().asFile, overwrite = true)
+    }
 }
 
 dependencies {
@@ -151,15 +160,14 @@ dependencies {
     ksp(libs.room.compiler)
 
     testImplementation(kotlin("test-junit5"))
+    testImplementation(libs.robolectric)
+    testRuntimeOnly(libs.junit.vintage.engine)
+    testImplementation(libs.bundles.instrumented.test)
+    testImplementation(libs.room.test)
+    testImplementation(libs.hilt.test)
+    testImplementation(libs.work.testing)
 
-    androidTestImplementation(kotlin("test-junit5"))
-    androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.bundles.instrumented.test)
-    androidTestImplementation(libs.room.test)
-    androidTestImplementation(libs.hilt.test)
-    androidTestImplementation(libs.work.testing)
-
-    kspAndroidTest(libs.hilt.test)
+    kspTest(libs.hilt.test)
 }
 
 fun DependencyHandlerScope.kotlin(name: String): Any = kotlin(name, libs.versions.kotlin.get())

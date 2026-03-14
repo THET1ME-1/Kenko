@@ -14,7 +14,6 @@
 
 package com.looker.kenko
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.RepsInReserve
@@ -37,9 +36,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @HiltAndroidTest
-@RunWith(AndroidJUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class RepositoryTest {
 
     @get:Rule
