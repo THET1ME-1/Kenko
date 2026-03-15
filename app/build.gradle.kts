@@ -57,9 +57,7 @@ android {
             val localProperties = Properties()
             localProperties.load(FileInputStream(propertiesFile))
 
-            val keystore = requireNotNull(localProperties.getProperty("keystore.path")) {
-                "No keystore file provided"
-            }
+            val keystore = localProperties.getProperty("keystore.path") ?: return@create
             storeFile = file(keystore)
             storePassword = localProperties.getProperty("keystore.pass")
             keyAlias = localProperties.getProperty("keystore.alias")
