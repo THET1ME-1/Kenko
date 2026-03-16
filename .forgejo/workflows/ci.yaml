@@ -11,14 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JetBrains JDK 17
-        run: |
-          curl -fL "https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.14-linux-x64-b1367.22.tar.gz" -o jbr.tar.gz
-          mkdir -p $HOME/jbr
-          tar -xzf jbr.tar.gz -C $HOME/jbr --strip-components=1
-          echo "JAVA_HOME=$HOME/jbr" >> $GITHUB_ENV
-          echo "$HOME/jbr/bin" >> $GITHUB_PATH
-          rm jbr.tar.gz
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Setup Android SDK
         uses: https://github.com/android-actions/setup-android@v3
