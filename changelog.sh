@@ -13,6 +13,7 @@
 #
 
 VERSION=$1
+
 # Extract changelog content for this version (Keep a Changelog format: ## [Version])
 # Match from ## [VERSION] to the next ## [ version section
 awk -v version="$VERSION" '
