@@ -13,7 +13,7 @@ jobs:
 
       - name: Set up JetBrains JDK 17
         run: |
-          curl -fL "https://github.com/JetBrains/JetBrains-Runtime/releases/download/jbr-release-17.0.12b1207.14/jbr_jcef-17.0.12-linux-x64-b1207.14.tar.gz" -o jbr.tar.gz
+          curl -fL "https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.14-linux-x64-b1367.22.tar.gz" -o jbr.tar.gz
           mkdir -p $HOME/jbr
           tar -xzf jbr.tar.gz -C $HOME/jbr --strip-components=1
           echo "JAVA_HOME=$HOME/jbr" >> $GITHUB_ENV
