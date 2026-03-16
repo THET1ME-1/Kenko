@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright (C) 2025 LooKeR & Contributors
   ~ This program is free software: you can redistribute it and/or modify
@@ -10,14 +11,11 @@
   ~ GNU General Public License for more details.
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<resources>
+  --><resources>
     <!--Başlangıç Ekranı-->
     <string name="label_kenko_meaning">○ sağlıklı</string>
     <string name="label_kenko_meaning_ALT">○ güçlü</string>
     <string name="label_lets_go">Başla</string>
-
     <!--Ana Sayfa-->
     <string name="label_continue_session">Devam Et</string>
     <string name="label_start_session">Başlat</string>
@@ -25,26 +23,21 @@
     <string name="label_explore_exercises">Egzersizleri\nKeşfet</string>
     <string name="label_add_new_exercises_home">Egzersiz\nEkle</string>
     <string name="label_current_plan_home">Mevcut\nPlan</string>
-
     <!--Sessions-->
     <string name="label_sessions_title">Seans</string>
-
     <!--Seans Detayları-->
     <string name="label_nothing_today">Bugün bir şey yok</string>
     <string name="label_missed_day">Günü kaçırdın mı?</string>
-
     <!--Planlar-->
     <string name="label_plans_title">Planlar</string>
     <string name="label_edit_plan">Planı Düzenle</string>
     <string name="no_exercises_yet">Henüz egzersiz yok</string>
-
     <string name="heading_select_plan_name">Bir plan adı seç</string>
     <string name="heading_select_plan_items">Egzersizleri seç</string>
     <string name="desc_select_plan_name">
         Plan adı kolay hatırlanabilir ve çok uzun olmamalıdır. İdeal olarak benzersiz olmalı ve özel semboller içermemelidir.\n
         örneğin: Push Pull Leg, Güç Döngüsü, vb.
     </string>
-
     <!--Profil-->
     <string name="label_profile_greeting">Merhaba</string>
     <string name="label_select_plan">Plan Seç</string>
@@ -56,12 +49,10 @@
         <ul>%2$s gün</ul>\n
         <ul>%3$s dinlenme günü</ul>
     </string>
-
     <!--Egzersizler-->
     <string name="label_browse_exercises">Egzersizlere Göz At</string>
     <string name="label_all_muscle_groups">Tümü</string>
     <string name="label_create_exercise">Oluştur</string>
-
     <!--Egzersiz Ekle-->
     <string name="label_new_exercise">Egzersiz Ekle</string>
     <string name="label_edit_exercise">Düzenle</string>
@@ -71,24 +62,19 @@
     <string name="label_is_isometric_DESC">Egzersiz statik tutuş gerektirir</string>
     <string name="label_reference_optional">isteğe bağlı*</string>
     <string name="label_exercise_exists">Egzersiz Zaten Var</string>
-
     <!--Egzersiz Seç-->
     <string name="label_add_exercise_header">Egzersiz Ekle</string>
     <string name="label_search_exercise">Egzersiz Ara</string>
     <string name="label_no_exercise_today">Bugün planlanmış egzersiz yok</string>
-
     <!--Set Ekle-->
     <string name="label_add_set_for">Şunun için Set Ekle</string>
     <string name="label_plus_int">+%s</string>
     <string name="label_minus_int">-%s</string>
-
     <string name="label_settings">Ayarlar</string>
-
     <!--Genel-->
     <string name="label_name">Ad</string>
     <string name="label_add">Ekle</string>
     <string name="label_save">Kaydet</string>
-
     <!--Projeye Özel-->
     <string name="label_session">Seans</string>
     <string name="label_exercise">Egzersiz</string>
@@ -96,12 +82,10 @@
     <string name="label_duration">.süre</string>
     <string name="label_weight">.ağırlık</string>
     <string name="label_coming_soon">Yakında Geliyor</string>
-
     <!--Navigasyon-->
     <string name="label_home">Ana Sayfa</string>
     <string name="label_performance">Performans</string>
     <string name="label_profile">Sen</string>
-
     <!--Hata-->
     <string name="error_invalid_reference">Geçersiz Referans</string>
     <string name="error_invalid_reference_format">Geçersiz referans formatı</string>
@@ -114,13 +98,11 @@
     <string name="error_plan_empty_prompt">Planı İptal Et?. Geri dönmek için tekrar geri tuşuna bas.</string>
     <string name="error_cant_find_session">Seans Bulunamadı</string>
     <string name="error_cant_find_exercise">Egzersiz Bulunamadı</string>
-
     <!--Temalar-->
     <string name="label_theme">Tema</string>
     <string name="label_theme_system">Sistem</string>
     <string name="label_theme_light">Açık</string>
     <string name="label_theme_dark">Koyu</string>
-
     <!--Renk Şemaları-->
     <string name="label_color_palettes">Renk Paletleri</string>
     <string name="label_color_scheme_default">Varsayılan</string>
@@ -128,7 +110,6 @@
     <string name="label_color_scheme_serene">Huzurlu</string>
     <string name="label_color_scheme_zestful">Canlı</string>
     <string name="label_color_scheme_twilight">Alacakaranlık</string>
-
     <!--Kas Grupları-->
     <string name="label_muscle_biceps">Biseps</string>
     <string name="label_muscle_triceps">Triseps</string>
@@ -142,7 +123,6 @@
     <string name="label_muscle_hamstrings">Arka Bacak</string>
     <string name="label_muscle_quads">Ön Bacak</string>
     <string name="label_muscle_shoulders">Omuz</string>
-
     <!--Haftanın Günleri-->
     <string name="label_today">.bugün</string>
     <string name="label_plan">Plan</string>
@@ -160,7 +140,6 @@
         <item>Plan Yönetimi</item>
         <item>Hızlı Geri Bildirim</item>
     </string-array>
-
     <string-array name="label_health_quotes">
         <item>yapabilirsin</item>
         <item>sağlık senin elinde</item>
@@ -168,7 +147,6 @@
         <item>antrenman benim de terapi</item>
         <item>antrenman benim de terapi</item>
     </string-array>
-
     <string-array name="label_lifting_quotes">
         <item>evet dostum… hafif ağırlık</item>
         <item>hafif ağırlık</item>
@@ -176,7 +154,6 @@
         <item>mesele hafif olmak değil</item>
         <item>harika değil mi?</item>
     </string-array>
-
     <string-array name="kenko_day_of_week">
         <item>.pzt</item>
         <item>.sal</item>
@@ -186,4 +163,5 @@
         <item>.cmt</item>
         <item>.paz</item>
     </string-array>
+    <string name="label_session_history_home">Seansları\nHistory</string>
 </resources>
