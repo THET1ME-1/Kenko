@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -46,9 +46,7 @@ android {
         schemaDirectory("$projectDir/schemas")
     }
 
-    dependenciesInfo {
-        includeInApk = false
-    }
+    dependenciesInfo.includeInApk = false
 
     signingConfigs {
         create("release") {
@@ -92,7 +90,7 @@ android {
 
             optIn.addAll(
                 "kotlin.RequiresOptIn",
-                "kotlin.time.ExperimentalTime"
+                "kotlin.time.ExperimentalTime",
             )
         }
     }
