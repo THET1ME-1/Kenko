@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,9 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.rememberNavController
-import com.looker.kenko.ui.getStarted.navigation.GetStartedRoute
+import androidx.navigation3.runtime.rememberNavBackStack
 import com.looker.kenko.ui.navigation.KenkoNavHost
+import com.looker.kenko.ui.navigation.Routes
 import com.looker.kenko.ui.theme.KenkoTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,11 +49,9 @@ class MainActivity : ComponentActivity() {
                 theme = theme,
                 colorSchemes = colorScheme,
             ) {
+                val backStack = rememberNavBackStack(Routes.GetStarted(viewModel.isOnboardingDone))
                 Kenko {
-                    KenkoNavHost(
-                        navController = rememberNavController(),
-                        startDestination = GetStartedRoute(viewModel.isOnboardingDone),
-                    )
+                    KenkoNavHost(backStack = backStack)
                 }
             }
         }

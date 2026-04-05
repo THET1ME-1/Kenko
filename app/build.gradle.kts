@@ -136,13 +136,13 @@ dependencies {
 
     implementation(libs.bundles.lifecycle)
     implementation(libs.activity.compose)
-    implementation(libs.navigation.compose)
 
     implementation(libs.savedstate)
 
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.bundles.coroutines)
+    implementation(libs.bundles.navigation3)
 
     implementation(libs.bundles.compose)
     debugImplementation(libs.bundles.compose.debug)

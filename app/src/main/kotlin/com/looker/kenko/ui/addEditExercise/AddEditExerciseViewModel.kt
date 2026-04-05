@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,20 +20,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.looker.kenko.R
 import com.looker.kenko.data.StringHandler
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.MuscleGroups
 import com.looker.kenko.data.repository.ExerciseRepo
-import com.looker.kenko.ui.addEditExercise.navigation.AddEditExerciseRoute
+import com.looker.kenko.ui.navigation.Routes
 import com.looker.kenko.utils.asStateFlow
 import com.looker.kenko.utils.isValidUrl
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -44,15 +44,18 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 
-@HiltViewModel
+@HiltViewModel(assistedFactory = AddEditExerciseViewModel.Factory::class)
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-class AddEditExerciseViewModel @Inject constructor(
+class AddEditExerciseViewModel @AssistedInject constructor(
     private val repo: ExerciseRepo,
     private val stringHandler: StringHandler,
-    savedStateHandle: SavedStateHandle,
+    @Assisted private val routeData: Routes.AddEditExercise,
 ) : ViewModel() {
 
-    private val routeData: AddEditExerciseRoute = savedStateHandle.toRoute()
+    @AssistedFactory
+    interface Factory {
+        fun create(routeData: Routes.AddEditExercise): AddEditExerciseViewModel
+    }
 
     private val exerciseId: Int? = routeData.id
 

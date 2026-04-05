@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,10 +18,8 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.looker.kenko.R
 import com.looker.kenko.data.StringHandler
 import com.looker.kenko.data.local.model.SetType
@@ -30,11 +28,13 @@ import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.PlanRepo
-import com.looker.kenko.ui.planEdit.navigation.PlanEditRoute
+import com.looker.kenko.ui.navigation.Routes
 import com.looker.kenko.utils.asStateFlow
 import com.looker.kenko.utils.nextLocalDateTime
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlin.concurrent.atomics.AtomicInt
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
@@ -53,15 +53,18 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 
-@HiltViewModel
-class PlanEditViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = PlanEditViewModel.Factory::class)
+class PlanEditViewModel @AssistedInject constructor(
     private val repo: PlanRepo,
     private val stringHandler: StringHandler,
     private val sessionRepo: com.looker.kenko.data.repository.SessionRepo,
-    savedStateHandle: SavedStateHandle,
+    @Assisted private val routeData: Routes.PlanEdit,
 ) : ViewModel() {
 
-    private val routeData: PlanEditRoute = savedStateHandle.toRoute()
+    @AssistedFactory
+    interface Factory {
+        fun create(routeData: Routes.PlanEdit): PlanEditViewModel
+    }
 
     private val _planId: Int = routeData.id
 

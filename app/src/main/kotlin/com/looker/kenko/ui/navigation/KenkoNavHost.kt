@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,163 +14,186 @@
 
 package com.looker.kenko.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.Lifecycle
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.navOptions
-import com.looker.kenko.ui.addEditExercise.navigation.addEditExercise
-import com.looker.kenko.ui.addEditExercise.navigation.navigateToAddEditExercise
-import com.looker.kenko.ui.exercises.navigation.exercises
-import com.looker.kenko.ui.exercises.navigation.navigateToExercises
-import com.looker.kenko.ui.getStarted.navigation.GetStartedRoute
-import com.looker.kenko.ui.getStarted.navigation.getStarted
-import com.looker.kenko.ui.home.navigation.home
-import com.looker.kenko.ui.home.navigation.navigateToHome
-import com.looker.kenko.ui.performance.navigation.performance
-import com.looker.kenko.ui.planEdit.navigation.navigateToPlanEdit
-import com.looker.kenko.ui.planEdit.navigation.planEdit
-import com.looker.kenko.ui.plans.navigation.navigateToPlans
-import com.looker.kenko.ui.plans.navigation.plans
-import com.looker.kenko.ui.profile.navigation.navigateToProfile
-import com.looker.kenko.ui.profile.navigation.profile
-import com.looker.kenko.ui.sessionDetail.navigation.navigateToSessionDetail
-import com.looker.kenko.ui.sessionDetail.navigation.sessionDetail
-import com.looker.kenko.ui.sessions.navigation.navigateToSessions
-import com.looker.kenko.ui.sessions.navigation.sessions
-import com.looker.kenko.ui.settings.navigation.navigateToSettings
-import com.looker.kenko.ui.settings.navigation.settings
-
-private val singleTopNavOptions = navOptions {
-    launchSingleTop = true
-}
-
-private val splashNavOptions = navOptions {
-    launchSingleTop = true
-    popUpTo<GetStartedRoute> {
-        inclusive = true
-    }
-}
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavEntryDecorator
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import androidx.navigation3.ui.NavDisplay
+import androidx.navigationevent.NavigationEvent
+import com.looker.kenko.ui.addEditExercise.AddEditExercise
+import com.looker.kenko.ui.addEditExercise.AddEditExerciseViewModel
+import com.looker.kenko.ui.exercises.Exercises
+import com.looker.kenko.ui.getStarted.GetStartedOld
+import com.looker.kenko.ui.home.Home
+import com.looker.kenko.ui.planEdit.PlanEdit
+import com.looker.kenko.ui.planEdit.PlanEditViewModel
+import com.looker.kenko.ui.plans.Plan
+import com.looker.kenko.ui.profile.Profile
+import com.looker.kenko.ui.sessionDetail.SessionDetailViewModel
+import com.looker.kenko.ui.sessionDetail.SessionDetails
+import com.looker.kenko.ui.sessions.Sessions
+import com.looker.kenko.ui.settings.Settings
 
 @Composable
 fun KenkoNavHost(
-    navController: NavController,
+    backStack: NavBackStack<NavKey>,
     modifier: Modifier = Modifier,
-    startDestination: Any = GetStartedRoute,
 ) {
-    NavHost(
+    NavDisplay(
+        backStack = backStack,
         modifier = modifier,
-        navController = navController as NavHostController,
-        startDestination = startDestination,
-    ) {
-        getStarted {
-            navController.navigateToHome(splashNavOptions)
-        }
+        entryDecorators = listOf(
+            rememberRoundedCornerNavEntryDecorator(),
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator(),
+        ),
+        onBack = { backStack.removeAt(backStack.lastIndex) },
+        predictivePopTransitionSpec = { swipeEdge ->
+            val slideDirection = if (swipeEdge == NavigationEvent.EDGE_RIGHT) {
+                SlideDirection.Start
+            } else {
+                SlideDirection.End
+            }
+            fadeIn() togetherWith
+                scaleOut(targetScale = 0.9f) +
+                slideOutOfContainer(towards = slideDirection, targetOffset = { it / 10 }) +
+                fadeOut()
+        },
+        entryProvider = { key ->
+            NavEntry(key) {
+                when (key) {
+                    is Routes.GetStarted -> GetStartedOld(
+                        isOnboardingDone = key.isOnboardingDone,
+                        onNext = {
+                            backStack.removeAll { it is Routes.GetStarted }
+                            backStack.add(Routes.Home)
+                        },
+                    )
 
-        home(
-            onProfileClick = {
-                navController.navigateToProfile(navOptions = singleTopNavOptions)
-            },
-            onSelectPlanClick = {
-                navController.navigateToPlans(navOptions = singleTopNavOptions)
-            },
-            onAddExerciseClick = {
-                navController.navigateToAddEditExercise(navOptions = singleTopNavOptions)
-            },
-            onExploreSessionsClick = {
-                navController.navigateToSessions(navOptions = singleTopNavOptions)
-            },
-            onExploreExercisesClick = {
-                navController.navigateToExercises(navOptions = singleTopNavOptions)
-            },
-            onStartSessionClick = {
-                navController.navigateToSessionDetail(date = null, navOptions = singleTopNavOptions)
-            },
-            onCurrentPlanClick = {
-                navController.navigateToPlanEdit(id = it, navOptions = singleTopNavOptions)
-            },
-        )
+                    is Routes.Home -> Home(
+                        onProfileClick = { backStack.add(Routes.Profile) },
+                        onSelectPlanClick = { backStack.add(Routes.Plan) },
+                        onAddExerciseClick = { backStack.add(Routes.AddEditExercise()) },
+                        onExploreSessionsClick = { backStack.add(Routes.Session) },
+                        onExploreExercisesClick = { backStack.add(Routes.Exercises) },
+                        onStartSessionClick = { backStack.add(Routes.SessionDetail(-1)) },
+                        onCurrentPlanClick = { id -> backStack.add(Routes.PlanEdit(id)) },
+                        viewModel = hiltViewModel(),
+                    )
 
-        sessions(
-            onSessionClick = { date ->
-                navController.navigateToSessionDetail(
-                    date = date,
-                    navOptions = singleTopNavOptions
-                )
-            },
-            onBackPress = navController::popBackStackOnResume
-        )
+                    is Routes.Session -> Sessions(
+                        onSessionClick = { date ->
+                            backStack.add(Routes.SessionDetail(date?.toEpochDays()?.toInt() ?: -1))
+                        },
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        viewModel = hiltViewModel(),
+                    )
 
-        plans(
-            onPlanClick = {
-                navController.navigateToPlanEdit(
-                    id = it,
-                    navOptions = singleTopNavOptions
-                )
-            },
-            onBackPress = navController::popBackStackOnResume
-        )
+                    is Routes.Plan -> Plan(
+                        onPlanClick = { id -> backStack.add(Routes.PlanEdit(id)) },
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        viewModel = hiltViewModel(),
+                    )
 
-        settings(navController::popBackStackOnResume)
+                    is Routes.Settings -> Settings(
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        viewModel = hiltViewModel(),
+                    )
 
-        profile(
-            onAddExerciseClick = {
-                navController.navigateToAddEditExercise(navOptions = singleTopNavOptions)
-            },
-            onExercisesClick = {
-                navController.navigateToExercises(navOptions = singleTopNavOptions)
-            },
-            onPlanClick = {
-                navController.navigateToPlans(navOptions = singleTopNavOptions)
-            },
-            onSettingsClick = {
-                navController.navigateToSettings(navOptions = singleTopNavOptions)
-            },
-            onBackPress = navController::popBackStackOnResume,
-        )
+                    is Routes.Profile -> Profile(
+                        onAddExerciseClick = { backStack.add(Routes.AddEditExercise()) },
+                        onExercisesClick = { backStack.add(Routes.Exercises) },
+                        onPlanClick = { backStack.add(Routes.Plan) },
+                        onSettingsClick = { backStack.add(Routes.Settings) },
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        viewModel = hiltViewModel(),
+                    )
 
-        exercises(
-            onExerciseClick = { id ->
-                navController.navigateToAddEditExercise(
-                    id = id,
-                    navOptions = singleTopNavOptions
-                )
-            },
-            onCreateClick = { target ->
-                navController.navigateToAddEditExercise(
-                    target = target,
-                    navOptions = singleTopNavOptions
-                )
-            },
-            onBackPress = navController::popBackStackOnResume
-        )
+                    is Routes.Exercises -> Exercises(
+                        onExerciseClick = { id -> backStack.add(Routes.AddEditExercise(id = id)) },
+                        onCreateClick = { target ->
+                            backStack.add(Routes.AddEditExercise(target = target?.name))
+                        },
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        viewModel = hiltViewModel(),
+                    )
 
-        planEdit(navController::popBackStackOnResume) { name, target ->
-            navController.navigateToAddEditExercise(
-                name = name,
-                target = target,
-                navOptions = singleTopNavOptions,
-            )
-        }
+                    is Routes.PlanEdit -> PlanEdit(
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        onAddNewExerciseClick = { name, target ->
+                            backStack.add(
+                                Routes.AddEditExercise(
+                                    name = name,
+                                    target = target?.name,
+                                ),
+                            )
+                        },
+                        viewModel = hiltViewModel<PlanEditViewModel, PlanEditViewModel.Factory> {
+                            it.create(key)
+                        },
+                    )
 
-        sessionDetail(
-            onBackPress = navController::popBackStackOnResume,
-            onHistoryClick = navController::navigateToSessionDetail,
-        )
+                    is Routes.SessionDetail -> SessionDetails(
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        onHistoryClick = { date ->
+                            backStack.add(Routes.SessionDetail(date.toEpochDays().toInt()))
+                        },
+                        viewModel = hiltViewModel<SessionDetailViewModel, SessionDetailViewModel.Factory> {
+                            it.create(key)
+                        },
+                    )
 
-        addEditExercise(navController::popBackStackOnResume)
-
-        performance()
-    }
+                    is Routes.AddEditExercise -> AddEditExercise(
+                        onDone = { backStack.removeAt(backStack.lastIndex) },
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        viewModel = hiltViewModel<AddEditExerciseViewModel, AddEditExerciseViewModel.Factory> {
+                            it.create(key)
+                        },
+                    )
+                }
+            }
+        },
+    )
 }
 
-private fun NavHostController.popBackStackOnResume() {
-    if (lifecycleState?.isAtLeast(Lifecycle.State.RESUMED) == true) {
-        popBackStack()
+@Composable
+private fun rememberRoundedCornerNavEntryDecorator(): NavEntryDecorator<NavKey> =
+    remember {
+        NavEntryDecorator { entry ->
+            val scope = LocalNavAnimatedContentScope.current
+            val cornerRadius = scope.transition.animateDp(
+                transitionSpec = { spring(dampingRatio = 1.0f, stiffness = 1600f) },
+                label = "cornerRadius",
+            ) { state ->
+                if (state == EnterExitState.PostExit) 28.dp else 0.dp
+            }
+            Box(
+                modifier = Modifier.graphicsLayer {
+                    val radiusPx = cornerRadius.value.toPx()
+                    clip = radiusPx > 0f
+                    shape = RoundedCornerShape(cornerRadius.value)
+                },
+            ) {
+                entry.Content()
+            }
+        }
     }
-}
-
-private val NavHostController.lifecycleState: Lifecycle.State?
-    get() = currentBackStackEntry?.lifecycle?.currentState

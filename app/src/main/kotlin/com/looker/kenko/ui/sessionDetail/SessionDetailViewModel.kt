@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,10 +17,8 @@ package com.looker.kenko.ui.sessionDetail
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.platform.UriHandler
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.looker.kenko.R
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.PlanItem
@@ -31,11 +29,13 @@ import com.looker.kenko.data.model.week
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.data.repository.SettingsRepo
-import com.looker.kenko.ui.sessionDetail.navigation.SessionDetailRoute
+import com.looker.kenko.ui.navigation.Routes
 import com.looker.kenko.utils.asStateFlow
 import com.looker.kenko.utils.isToday
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,16 +51,19 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 
-@HiltViewModel
-class SessionDetailViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = SessionDetailViewModel.Factory::class)
+class SessionDetailViewModel @AssistedInject constructor(
     private val repo: SessionRepo,
     private val planRepo: PlanRepo,
     private val settingsRepo: SettingsRepo,
-    savedStateHandle: SavedStateHandle,
+    @Assisted private val routeData: Routes.SessionDetail,
     private val uriHandler: UriHandler,
 ) : ViewModel() {
 
-    private val routeData: SessionDetailRoute = savedStateHandle.toRoute<SessionDetailRoute>()
+    @AssistedFactory
+    interface Factory {
+        fun create(routeData: Routes.SessionDetail): SessionDetailViewModel
+    }
 
     private val epochDays: Int? = routeData.epochDays.takeIf { it != -1 }
 

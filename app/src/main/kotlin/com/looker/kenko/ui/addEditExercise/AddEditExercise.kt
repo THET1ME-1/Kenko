@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -48,7 +48,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.model.MuscleGroups
@@ -67,8 +66,8 @@ import com.looker.kenko.ui.theme.KenkoTheme
 fun AddEditExercise(
     onDone: () -> Unit,
     onBackPress: () -> Unit,
+    viewModel: AddEditExerciseViewModel,
 ) {
-    val viewModel: AddEditExerciseViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     AddEditExercise(
