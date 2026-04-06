@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,12 +20,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,12 +37,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -65,13 +60,11 @@ import com.looker.kenko.R
 import com.looker.kenko.data.model.PlanStat
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.HealthQuotes
-import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.OutlineBorder
 import com.looker.kenko.ui.components.SecondaryBorder
-import com.looker.kenko.ui.extensions.PHI
-import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.extensions.vertical
+import com.looker.kenko.ui.profile.components.FrequencyGraph
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.end
@@ -85,6 +78,7 @@ fun Profile(
     onExercisesClick: () -> Unit,
     onAddExerciseClick: () -> Unit,
     onPlanClick: () -> Unit,
+    onPlanEdit: (Int) -> Unit,
     onSettingsClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -92,6 +86,7 @@ fun Profile(
         state = state,
         onBackPress = onBackPress,
         onSettingsClick = onSettingsClick,
+        onPlanEdit = onPlanEdit,
         onPlanClick = onPlanClick,
         onAddExerciseClick = onAddExerciseClick,
         onExercisesClick = onExercisesClick,
@@ -105,6 +100,7 @@ private fun Profile(
     onBackPress: () -> Unit,
     onSettingsClick: () -> Unit,
     onPlanClick: () -> Unit,
+    onPlanEdit: (Int) -> Unit,
     onAddExerciseClick: () -> Unit,
     onExercisesClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -130,19 +126,12 @@ private fun Profile(
                 .verticalScroll(rememberScrollState()),
         ) {
             if (state.isPlanAvailable) {
+                ActivitySection(state.activity)
+                Spacer(modifier = Modifier.height(12.dp))
                 CurrentPlanCard(
                     onPlanClick = onPlanClick,
+                    onPlanEdit = { onPlanEdit(state.planId) },
                     name = state.planName,
-                    content = {
-                        Text(
-                            text = stringResource(
-                                R.string.label_plan_description,
-                                state.planStat!!.exercises,
-                                normalizeInt(state.planStat.workDays),
-                                normalizeInt(state.planStat.restDays),
-                            ),
-                        )
-                    },
                 )
             } else {
                 SelectPlanCard(onPlanClick)
@@ -166,72 +155,40 @@ private fun Profile(
 @Composable
 private fun CurrentPlanCard(
     onPlanClick: () -> Unit,
+    onPlanEdit: () -> Unit,
     name: String,
-    content: @Composable ColumnScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(PHI),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        shape = MaterialTheme.shapes.extraLarge,
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        shape = CircleShape,
         border = SecondaryBorder,
         onClick = onPlanClick,
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceEvenly,
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp, horizontal = 16.dp),
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, top = 2.dp, end = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                shape = MaterialTheme.shapes.extraLarge,
+                onClick = onPlanEdit,
             ) {
-                Icon(painter = KenkoIcons.Plan, contentDescription = null)
-                Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = stringResource(R.string.label_current_plan),
-                    style = MaterialTheme.typography.titleMedium,
+                    text = stringResource(R.string.label_current_plan_FORMAT, name),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
                 )
-                Spacer(modifier = Modifier.weight(1F))
-                FilledIconButton(onClick = onPlanClick) {
-                    Icon(painter = KenkoIcons.Rename, contentDescription = null)
-                }
             }
-            HorizontalDivider(
-                thickness = KenkoBorderWidth,
-                color = MaterialTheme.colorScheme.secondary,
+            Spacer(Modifier.width(8.dp))
+            Icon(
+                painter = KenkoIcons.ArrowOutward,
+                contentDescription = null,
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(start = 24.dp, bottom = 16.dp),
-                ) {
-                    Text(
-                        text = name,
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    CompositionLocalProvider(
-                        LocalTextStyle provides MaterialTheme.typography.bodyLarge,
-                        LocalContentColor provides MaterialTheme.colorScheme.outline,
-                    ) {
-                        content()
-                    }
-                }
-                Icon(
-                    imageVector = KenkoIcons.Stack,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.offset(x = 0.dp),
-                )
-            }
         }
     }
 }
@@ -256,7 +213,7 @@ fun SelectPlanCard(
             Text(
                 text = stringResource(R.string.label_select_plan),
                 style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier.paddingFromBaseline(bottom = 16.dp)
+                modifier = Modifier.paddingFromBaseline(bottom = 16.dp),
             )
 
             Icon(
@@ -359,24 +316,50 @@ private fun LiftsCard(setsPerformed: Int) {
     }
 }
 
+@Composable
+private fun ActivitySection(
+    activity: Map<Int, Int>,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(R.string.label_activity),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        if (activity.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            FrequencyGraph(activity = activity) { EmptyPlot() }
+        } else {
+            EmptyPlot()
+        }
+    }
+}
+
+@Composable
+private fun EmptyPlot() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = stringResource(R.string.error_not_enough_activity),
+            color = MaterialTheme.colorScheme.outline,
+            style = MaterialTheme.typography.bodyLarge,
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun PlanCard() {
     KenkoTheme {
         CurrentPlanCard(
-            onPlanClick = {
-            },
+            onPlanClick = {},
+            onPlanEdit = {},
             name = "Push-Pull-Leg",
-            content = {
-                Text(
-                    text = stringResource(
-                        R.string.label_plan_description,
-                        12,
-                        normalizeInt(5),
-                        normalizeInt(2),
-                    ),
-                )
-            },
         )
     }
 }
@@ -402,10 +385,19 @@ private fun ExerciseCardPreview() {
 private fun ProfileNoPlanPreview() {
     KenkoTheme {
         Profile(
-            state = ProfileUiState(12, false, "Push-Pull-Leg", 2, PlanStat(12, 5)),
+            state = ProfileUiState(
+                numberOfExercises = 12,
+                isPlanAvailable = false,
+                planId = 1,
+                planName = "Push-Pull-Leg",
+                totalLifts = 2,
+                activity = emptyMap(),
+                planStat = PlanStat(12, 5)
+            ),
             onBackPress = { },
             onSettingsClick = { },
             onPlanClick = { },
+            onPlanEdit = {},
             onAddExerciseClick = { },
             onExercisesClick = { },
         )
@@ -417,10 +409,19 @@ private fun ProfileNoPlanPreview() {
 private fun ProfilePreview() {
     KenkoTheme {
         Profile(
-            state = ProfileUiState(12, true, "Push-Pull-Leg", 2, PlanStat(12, 5)),
+            state = ProfileUiState(
+                numberOfExercises = 12,
+                isPlanAvailable = true,
+                planId = 1,
+                planName = "Push-Pull-Leg",
+                totalLifts = 2,
+                activity = mapOf(1 to 2, 2 to 1, 3 to 10),
+                planStat = PlanStat(12, 5),
+            ),
             onBackPress = { },
             onSettingsClick = { },
             onPlanClick = { },
+            onPlanEdit = {},
             onAddExerciseClick = { },
             onExercisesClick = { },
         )

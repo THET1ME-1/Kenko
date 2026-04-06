@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,15 +15,34 @@
 package com.looker.kenko.data.local.dao
 
 import androidx.room.Dao
+import androidx.room.MapColumn
+import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.Transaction
 import androidx.room.Upsert
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.looker.kenko.data.local.model.SetTypeEntity
 import com.looker.kenko.data.repository.Performance
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PerformanceDao {
+
+    @Query(
+        """
+        SELECT sessions.date AS date, COUNT(sets.id) AS count
+        FROM sessions
+        LEFT JOIN sets ON sets.sessionId = sessions.id
+        GROUP BY sessions.date
+        ORDER BY sessions.date ASC
+        """,
+    )
+    fun activity(): Flow<
+        Map<
+            @MapColumn("date") Int,
+            @MapColumn("count") Int,
+            >,
+        >
 
     @Upsert
     suspend fun upsertSetTypeLookup(type: List<SetTypeEntity>)
@@ -40,6 +59,7 @@ interface PerformanceDao {
             append("SUM(")
 
             // Ratings = reps * weight * set_type_modifier * rir_modifier
+
             append("sets.reps * ")
             append("sets.weight * ")
             append("set_type.modifier * ")

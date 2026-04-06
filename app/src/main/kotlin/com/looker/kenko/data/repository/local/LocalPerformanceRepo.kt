@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,10 +19,13 @@ import com.looker.kenko.data.local.model.defaultSetTypes
 import com.looker.kenko.data.repository.Performance
 import com.looker.kenko.data.repository.PerformanceRepo
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 class LocalPerformanceRepo @Inject constructor(
     private val performanceDao: PerformanceDao,
 ) : PerformanceRepo {
+
+    override val activity: Flow<Map<Int, Int>> = performanceDao.activity()
 
     override suspend fun updateModifiers() {
         performanceDao.upsertSetTypeLookup(defaultSetTypes())

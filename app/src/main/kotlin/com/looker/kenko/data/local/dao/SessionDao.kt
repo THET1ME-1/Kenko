@@ -55,7 +55,7 @@ interface SessionDao {
         FROM sessions
         """,
     )
-    suspend fun getTotalSessions(): Int
+    fun totalSessions(): Flow<Int>
 
     @Query(
         """

@@ -50,6 +50,8 @@ class LocalSessionRepo @Inject constructor(
     override val setsCount: Flow<Int> =
         setsDao.totalSetCount()
 
+    override val sessionsCount: Flow<Int> = dao.totalSessions()
+
     override suspend fun addSet(sessionId: Int, set: Set) {
         setsDao.insert(
             set.toEntity(

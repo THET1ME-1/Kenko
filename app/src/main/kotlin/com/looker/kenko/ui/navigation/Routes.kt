@@ -40,9 +40,6 @@ sealed interface Routes : NavKey {
     data object Exercises : Routes
 
     @Serializable
-    data object Performance : Routes
-
-    @Serializable
     data class PlanEdit(val id: Int) : Routes
 
     @Serializable

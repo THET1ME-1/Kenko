@@ -27,6 +27,8 @@ interface SessionRepo {
 
     val setsCount: Flow<Int>
 
+    val sessionsCount: Flow<Int>
+
     suspend fun addSet(sessionId: Int, set: Set)
 
     suspend fun addSet(

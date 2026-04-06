@@ -123,6 +123,7 @@ fun KenkoNavHost(
                         onAddExerciseClick = { backStack.add(Routes.AddEditExercise()) },
                         onExercisesClick = { backStack.add(Routes.Exercises) },
                         onPlanClick = { backStack.add(Routes.Plan) },
+                        onPlanEdit = { backStack.add(Routes.PlanEdit(it)) },
                         onSettingsClick = { backStack.add(Routes.Settings) },
                         onBackPress = { backStack.removeAt(backStack.lastIndex) },
                         viewModel = hiltViewModel(),

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2025 LooKeR & Contributors
+  ~ Copyright (C) 2026 LooKeR & Contributors
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -57,6 +57,7 @@
     <string name="label_select_plan">Select Plan</string>
     <string name="label_select_plan_one">Select Plan</string>
     <string name="label_current_plan">Current Plan</string>
+    <string name="label_current_plan_FORMAT">Current: %s</string>
     <string name="label_lifts">Lifts</string>
     <string name="label_plan_description">
         <ul>%1$s exercises</ul>\n
@@ -110,6 +111,10 @@
     <string name="label_home">Home</string>
     <string name="label_performance">Performance</string>
     <string name="label_profile">You</string>
+
+    <!--Performance Dashboard-->
+    <string name="label_activity">Activity</string>
+    <string name="error_not_enough_activity">Get moving...</string>
 
     <!--Error-->
     <string name="error_invalid_reference">Invalid Reference</string>

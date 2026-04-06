@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModel
 import com.looker.kenko.data.model.Plan
 import com.looker.kenko.data.model.PlanStat
 import com.looker.kenko.data.repository.ExerciseRepo
+import com.looker.kenko.data.repository.PerformanceRepo
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.utils.asStateFlow
@@ -33,6 +34,7 @@ class ProfileViewModel @Inject constructor(
     planRepo: PlanRepo,
     sessionRepo: SessionRepo,
     exerciseRepo: ExerciseRepo,
+    performanceRepo: PerformanceRepo,
 ) : ViewModel() {
 
     private val currentPlan: Flow<Plan?> = planRepo.current
@@ -41,12 +43,15 @@ class ProfileViewModel @Inject constructor(
         currentPlan,
         sessionRepo.setsCount,
         exerciseRepo.numberOfExercise,
-    ) { plan, sets, number ->
+        performanceRepo.activity,
+    ) { plan, sets, number, activity ->
         ProfileUiState(
             numberOfExercises = number,
             totalLifts = sets,
             isPlanAvailable = plan != null,
             planName = plan?.name ?: "",
+            planId = plan?.id ?: -1,
+            activity = activity,
             planStat = plan?.stat,
         )
     }.asStateFlow(ProfileUiState())
@@ -56,7 +61,9 @@ class ProfileViewModel @Inject constructor(
 data class ProfileUiState(
     val numberOfExercises: Int = 0,
     val isPlanAvailable: Boolean = false,
+    val planId: Int = -1,
     val planName: String = "",
     val totalLifts: Int = 0,
+    val activity: Map<Int, Int> = emptyMap(),
     val planStat: PlanStat? = null,
 )
