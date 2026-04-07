@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,10 +31,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -69,13 +69,8 @@ fun DaySwitcher(
         modifier = modifier.widthIn(max = 400.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
-        val buttonColors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Button(
+        OutlinedButton(
             modifier = Modifier.height(56.dp),
-            colors = buttonColors,
             onClick = onPrevious,
         ) {
             Icon(
@@ -88,8 +83,8 @@ fun DaySwitcher(
             modifier = Modifier
                 .height(56.dp)
                 .weight(1F)
-                .clip(MaterialTheme.shapes.large)
-                .background(MaterialTheme.colorScheme.secondaryContainer)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.tertiary)
                 .clickable(onClick = onClick),
             contentAlignment = Alignment.Center,
             content = {
@@ -106,14 +101,14 @@ fun DaySwitcher(
                     Text(
                         text = kenkoDayName(dayOfWeek = day),
                         style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onTertiary,
                     )
                 }
             },
         )
         Spacer(modifier = Modifier.width(6.dp))
-        Button(
+        OutlinedButton(
             modifier = Modifier.height(56.dp),
-            colors = buttonColors,
             onClick = onNext,
         ) {
             Icon(
