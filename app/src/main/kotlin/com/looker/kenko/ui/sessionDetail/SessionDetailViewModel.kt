@@ -28,7 +28,6 @@ import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.model.week
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SessionRepo
-import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.ui.navigation.Routes
 import com.looker.kenko.utils.asStateFlow
 import com.looker.kenko.utils.isToday
@@ -36,8 +35,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlin.time.Clock
-import kotlin.time.Instant
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,7 +52,6 @@ import kotlinx.datetime.minus
 class SessionDetailViewModel @AssistedInject constructor(
     private val repo: SessionRepo,
     private val planRepo: PlanRepo,
-    private val settingsRepo: SettingsRepo,
     @Assisted private val routeData: Routes.SessionDetail,
     private val uriHandler: UriHandler,
 ) : ViewModel() {
@@ -94,8 +90,6 @@ class SessionDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private val lastSetTimeStream = settingsRepo.get { lastSetTime }
-
     private val _currentExercise: MutableStateFlow<Exercise?> = MutableStateFlow(null)
     val current: StateFlow<Exercise?> = _currentExercise
 
@@ -103,9 +97,9 @@ class SessionDetailViewModel @AssistedInject constructor(
         combine(
             sessionStream,
             exercisesToday,
-            lastSetTimeStream,
             previousSessionExists,
-        ) { session, exercises, lastSetTime, previousSession ->
+            planRepo.current,
+        ) { session, exercises, previousSession, activePlan ->
             if (session == null && epochDays != null) {
                 return@combine SessionDetailState.Error.InvalidSession
             }
@@ -125,29 +119,19 @@ class SessionDetailViewModel @AssistedInject constructor(
                 else -> emptyMap()
             }
 
+            val planId = session?.planId ?: if (sessionDate.isToday) activePlan?.id else null
+
             SessionDetailState.Success(
                 SessionUiData(
                     date = currentSession.date,
                     sets = exerciseMap,
                     isToday = currentSession.date.isToday,
-                    lastSetTime = lastSetTime,
+                    planId = planId,
                     hasPreviousSession = previousSession,
                 ),
             )
         }.onStart { emit(SessionDetailState.Loading) }
             .asStateFlow(SessionDetailState.Loading)
-
-    fun startRestTimer() {
-        viewModelScope.launch {
-            settingsRepo.setLastSetTime(Clock.System.now())
-        }
-    }
-
-    fun resetRestTimer() {
-        viewModelScope.launch {
-            settingsRepo.setLastSetTime(null)
-        }
-    }
 
     fun removeSet(setId: Int?) {
         if (setId == null) return
@@ -184,7 +168,7 @@ data class SessionUiData(
     val date: LocalDate,
     val sets: Map<Exercise, List<Set>>,
     val isToday: Boolean = false,
-    val lastSetTime: Instant? = null,
+    val planId: Int? = null,
     val hasPreviousSession: Boolean = false,
 )
 

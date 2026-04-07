@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,7 +33,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -50,9 +49,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -78,12 +75,7 @@ import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.utils.DateFormat
 import com.looker.kenko.utils.formatDate
-import java.util.*
-import kotlin.time.Clock
-import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Instant
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
@@ -92,12 +84,13 @@ fun SessionDetails(
     viewModel: SessionDetailViewModel,
     onBackPress: () -> Unit,
     onHistoryClick: (LocalDate) -> Unit,
+    onEditPlanClick: (Int) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     SessionDetail(
         state = state,
         onBackPress = onBackPress,
-        onTimerClick = viewModel::resetRestTimer,
+        onEditPlanClick = onEditPlanClick,
         onRemoveSet = viewModel::removeSet,
         onReferenceClick = viewModel::openReference,
         onSelectBottomSheet = viewModel::showBottomSheet,
@@ -108,7 +101,7 @@ fun SessionDetails(
         AddSetSheet(
             exercise = exercise!!,
             onDismiss = viewModel::hideSheet,
-            onAddSet = viewModel::startRestTimer,
+            onAddSet = {},
         )
     }
 }
@@ -118,7 +111,7 @@ fun SessionDetails(
 private fun SessionDetail(
     state: SessionDetailState,
     onBackPress: () -> Unit = {},
-    onTimerClick: () -> Unit = {},
+    onEditPlanClick: (Int) -> Unit = {},
     onRemoveSet: (Int?) -> Unit = {},
     onReferenceClick: (String) -> Unit = {},
     onSelectBottomSheet: (Exercise) -> Unit = {},
@@ -163,11 +156,11 @@ private fun SessionDetail(
             SetsList(
                 date = data.date,
                 exerciseSets = data.sets,
-                lastSetTime = data.lastSetTime,
+                planId = data.planId,
                 isEditable = data.isToday,
                 hasPreviousSession = data.hasPreviousSession,
                 onBackPress = onBackPress,
-                onTimerClick = onTimerClick,
+                onEditPlanClick = onEditPlanClick,
                 onRemoveSet = onRemoveSet,
                 onReferenceClick = onReferenceClick,
                 onSelectBottomSheet = onSelectBottomSheet,
@@ -182,11 +175,11 @@ private fun SessionDetail(
 private fun SetsList(
     date: LocalDate,
     exerciseSets: Map<Exercise, List<Set>>,
-    lastSetTime: Instant?,
+    planId: Int?,
     isEditable: Boolean,
     hasPreviousSession: Boolean,
     onBackPress: () -> Unit,
-    onTimerClick: () -> Unit,
+    onEditPlanClick: (Int) -> Unit,
     onRemoveSet: (Int?) -> Unit,
     onReferenceClick: (String) -> Unit,
     onSelectBottomSheet: (Exercise) -> Unit,
@@ -213,12 +206,13 @@ private fun SetsList(
                             )
                         }
                     }
-
-                    if (lastSetTime != null && lastSetTime - Clock.System.now() < 1.hours) {
-                        TimerBox(
-                            lastSetTime = lastSetTime,
-                            onTimerClick = onTimerClick
-                        )
+                    if (planId != null) {
+                        IconButton(onClick = { onEditPlanClick(planId) }) {
+                            Icon(
+                                painter = KenkoIcons.Rename,
+                                contentDescription = null,
+                            )
+                        }
                     }
                 },
             )
@@ -303,43 +297,6 @@ private fun Header(
         },
 
     )
-}
-
-@Composable
-fun TimerBox(
-    lastSetTime: Instant,
-    onTimerClick: () -> Unit,
-) {
-    var restTimeInSeconds by remember { mutableLongStateOf(0L) }
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            restTimeInSeconds = (Clock.System.now() - lastSetTime).inWholeSeconds
-            delay(1000)
-        }
-    }
-
-    Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        onClick = onTimerClick,
-        shape = CircleShape,
-    ) {
-        Text(
-            text = formatTime(restTimeInSeconds),
-            style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(
-                horizontal = 12.dp,
-                vertical = 6.dp,
-            ),
-        )
-    }
-}
-
-@Composable
-private fun formatTime(seconds: Long): String = remember(seconds) {
-    val minutes = seconds % 3600 / 60
-    val secs = seconds % 60
-    String.format(Locale.getDefault(), "%02d:%02d", minutes, secs)
 }
 
 @Composable

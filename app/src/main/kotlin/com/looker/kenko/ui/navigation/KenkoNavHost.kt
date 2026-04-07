@@ -158,6 +158,7 @@ fun KenkoNavHost(
                         onHistoryClick = { date ->
                             backStack.add(Routes.SessionDetail(date.toEpochDays().toInt()))
                         },
+                        onEditPlanClick = { planId -> backStack.add(Routes.PlanEdit(planId)) },
                         viewModel = hiltViewModel<SessionDetailViewModel, SessionDetailViewModel.Factory> {
                             it.create(key)
                         },

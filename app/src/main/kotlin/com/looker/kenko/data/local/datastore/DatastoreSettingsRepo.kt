@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -58,16 +58,6 @@ class DatastoreSettingsRepo @Inject constructor(
 
     override suspend fun setTheme(theme: Theme) {
         THEME.update(theme.name)
-    }
-
-    override suspend fun setLastSetTime(instant: Instant?) {
-        dataStore.edit { preference ->
-            if (instant != null) {
-                preference[LAST_SET_TIME_SECONDS] = instant.epochSeconds
-            } else {
-                preference.remove(LAST_SET_TIME_SECONDS)
-            }
-        }
     }
 
     override suspend fun setBackupUri(uri: String?) {
