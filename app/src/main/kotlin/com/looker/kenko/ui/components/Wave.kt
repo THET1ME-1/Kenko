@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,8 +35,11 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -116,10 +119,12 @@ fun DrawScope.drawWave(
     )
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun WavePreview() {
-    KenkoTheme {
+private fun WavePreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(text = "How the Wave?")
             Wave(
@@ -131,10 +136,12 @@ private fun WavePreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun AnimatedWavePreview() {
-    KenkoTheme {
+private fun AnimatedWavePreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(text = "How the Wave?")
             AnimatedWave(

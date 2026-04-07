@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
@@ -46,6 +45,8 @@ import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.ExercisesPreviewParameter
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 
 @Composable
 fun ExerciseItem(
@@ -114,22 +115,25 @@ fun KenkoAddButton(onClick: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun ExerciseItemPreview(
-    @PreviewParameter(ExercisesPreviewParameter::class, limit = 2) exercises: List<Exercise>,
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
 ) {
-    KenkoTheme {
-        ExerciseItem(exercise = exercises.first()) {
+    val exercise = ExercisesPreviewParameter().values.first().first()
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
+        ExerciseItem(exercise = exercise) {
             Text(text = "01")
         }
     }
 }
 
-@PreviewLightDark
+@Preview
 @Composable
-private fun ExerciseButtonPreview() {
-    KenkoTheme {
+private fun ExerciseButtonPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         KenkoAddButton {
         }
     }

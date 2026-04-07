@@ -58,7 +58,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.data.model.Exercise
@@ -73,6 +74,8 @@ import com.looker.kenko.ui.planEdit.components.dayName
 import com.looker.kenko.ui.sessionDetail.components.SetItem
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.utils.DateFormat
 import com.looker.kenko.utils.formatDate
 import kotlin.time.Duration.Companion.milliseconds
@@ -375,10 +378,12 @@ private fun AddSetSheet(
     }
 }
 
-@PreviewLightDark
+@Preview
 @Composable
-private fun SessionDetailPreview() {
-    KenkoTheme {
+private fun SessionDetailPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         val data = remember {
             SessionDetailState.Success(
                 SessionUiData(
@@ -394,10 +399,12 @@ private fun SessionDetailPreview() {
     }
 }
 
-@PreviewLightDark
+@Preview
 @Composable
-private fun SessionErrorPreview() {
-    KenkoTheme {
+private fun SessionErrorPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         val data = remember {
             SessionDetailState.Error.InvalidSession
         }

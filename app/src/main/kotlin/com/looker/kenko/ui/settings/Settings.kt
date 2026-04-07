@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -75,6 +75,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -87,7 +88,8 @@ import com.looker.kenko.ui.components.HealthQuotes
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
-import com.looker.kenko.ui.theme.colorSchemes.sereneColorSchemes
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.ui.theme.dynamicColorSchemes
 import com.looker.kenko.ui.theme.end
 import com.looker.kenko.ui.theme.start
@@ -671,8 +673,10 @@ private fun formatBackupTime(instant: Instant): String {
 
 @Preview
 @Composable
-private fun ColorSelectionPreview() {
-    KenkoTheme(colorSchemes = sereneColorSchemes) {
+private fun ColorSelectionPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         var isSelected by remember { mutableStateOf(false) }
         ColorPaletteItem(
             modifier = Modifier.clickable {
@@ -687,16 +691,20 @@ private fun ColorSelectionPreview() {
 
 @Preview
 @Composable
-private fun ThemePreview() {
-    KenkoTheme {
+private fun ThemePreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         ThemeButton(selectedTheme = Theme.System, onClick = {})
     }
 }
 
 @Preview
 @Composable
-private fun SettingsPreview() {
-    KenkoTheme {
+private fun SettingsPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Settings(
             state = SettingsUiData(
                 selectedTheme = Theme.System,
@@ -722,8 +730,10 @@ private fun SettingsPreview() {
 
 @Preview
 @Composable
-private fun BackupSectionPreview() {
-    KenkoTheme {
+private fun BackupSectionPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         BackupSection(
             backupUri = "content://com.android.providers.downloads/tree/downloads",
             backupInterval = BackupInterval.Daily,

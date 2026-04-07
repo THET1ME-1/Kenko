@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -37,7 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
@@ -46,6 +46,8 @@ import com.looker.kenko.data.model.PlanPreviewParameters
 import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 
 @Composable
 fun PlanItem(
@@ -119,19 +121,25 @@ fun PlanItem(
     }
 }
 
-@PreviewLightDark
+@Preview
 @Composable
-private fun PlanItemPreview(@PreviewParameter(PlanPreviewParameters::class) plans: List<Plan>) {
-    KenkoTheme {
+private fun PlanItemPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    val plans = PlanPreviewParameters().values.first()
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         var plan by remember { mutableStateOf(plans.first()) }
         PlanItem(plan = plan, { plan = plan.copy(isActive = it) }, {})
     }
 }
 
-@PreviewLightDark
+@Preview
 @Composable
-private fun PlanItemInActivePreview(@PreviewParameter(PlanPreviewParameters::class) plans: List<Plan>) {
-    KenkoTheme {
-        PlanItem(plan = plans.first(), {}, {})
+private fun PlanItemInActivePreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    val plan = PlanPreviewParameters().values.first().first()
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
+        PlanItem(plan = plan, {}, {})
     }
 }

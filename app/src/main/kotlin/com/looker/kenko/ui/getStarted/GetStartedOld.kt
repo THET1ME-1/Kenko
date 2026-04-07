@@ -52,7 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
 import com.looker.kenko.ui.components.HealthQuotes
@@ -61,6 +61,8 @@ import com.looker.kenko.ui.extensions.PHI
 import com.looker.kenko.ui.extensions.vertical
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -239,10 +241,11 @@ private fun ButtonIcon(
 }
 
 @Preview
-@PreviewScreenSizes
 @Composable
-private fun GetStartedPreview() {
-    KenkoTheme {
+private fun GetStartedPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         GetStarted(isOnboardingDone = false, onNextClick = {})
     }
 }

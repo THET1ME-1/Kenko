@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -79,6 +79,8 @@ import com.looker.kenko.ui.planEdit.components.kenkoDayName
 import com.looker.kenko.ui.selectExercise.SelectExercise
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.ui.theme.numbers
 import com.looker.kenko.utils.minus
 import com.looker.kenko.utils.plus
@@ -403,10 +405,11 @@ private fun AddExerciseSheet(
 @Preview
 @Composable
 private fun ExerciseItemPreview(
-    @PreviewParameter(ExercisesPreviewParameter::class, limit = 2) exercises: List<Exercise>,
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
 ) {
-    KenkoTheme {
-        ExerciseItem(exercise = exercises.first()) {
+    val exercise = ExercisesPreviewParameter().values.first().first()
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
+        ExerciseItem(exercise = exercise) {
             ExerciseItemActions(index = 1) {
             }
         }

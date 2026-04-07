@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -43,7 +43,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
@@ -55,6 +55,8 @@ import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.utils.DateFormat
 import com.looker.kenko.utils.formatDate
 import com.looker.kenko.utils.isToday
@@ -200,10 +202,12 @@ fun SessionCard(
     }
 }
 
-@PreviewLightDark
+@Preview
 @Composable
-private fun SessionCardPreview() {
-    KenkoTheme {
+private fun SessionCardPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         SessionCard(
             session = Session(
                 planId = 1,
@@ -217,8 +221,10 @@ private fun SessionCardPreview() {
 
 @Preview
 @Composable
-private fun SessionsPreview() {
-    KenkoTheme {
+private fun SessionsPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Sessions(
             state = SessionsUiData(listOf(Session(1, emptyList())), false),
             onBackPress = {},

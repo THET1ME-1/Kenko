@@ -54,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
@@ -67,6 +68,8 @@ import com.looker.kenko.ui.extensions.vertical
 import com.looker.kenko.ui.profile.components.FrequencyGraph
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.ui.theme.end
 import com.looker.kenko.ui.theme.numbers
 import com.looker.kenko.ui.theme.start
@@ -352,10 +355,12 @@ private fun EmptyPlot() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun PlanCard() {
-    KenkoTheme {
+private fun PlanCard(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         CurrentPlanCard(
             onPlanClick = {},
             onPlanEdit = {},
@@ -364,26 +369,32 @@ private fun PlanCard() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun EmptyPlanCardPreview() {
-    KenkoTheme {
+private fun EmptyPlanCardPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         SelectPlanCard({})
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun ExerciseCardPreview() {
-    KenkoTheme {
+private fun ExerciseCardPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         ExerciseCard(21, {}, {})
     }
 }
 
 @Preview
 @Composable
-private fun ProfileNoPlanPreview() {
-    KenkoTheme {
+private fun ProfileNoPlanPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Profile(
             state = ProfileUiState(
                 numberOfExercises = 12,
@@ -406,8 +417,10 @@ private fun ProfileNoPlanPreview() {
 
 @Preview
 @Composable
-private fun ProfilePreview() {
-    KenkoTheme {
+private fun ProfilePreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Profile(
             state = ProfileUiState(
                 numberOfExercises = 12,

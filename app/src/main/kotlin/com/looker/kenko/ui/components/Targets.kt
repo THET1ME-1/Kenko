@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,10 +36,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.data.model.MuscleGroups
 import com.looker.kenko.ui.exercises.string
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 
 private val SortedTargets = MuscleGroups.entries.sortedBy { it.string }
 private val Targets = listOf(null) + SortedTargets
@@ -120,10 +123,12 @@ fun HorizontalTargetChips(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun HorizontalTargetChipsPreview() {
-    KenkoTheme {
+private fun HorizontalTargetChipsPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         LazyTargets {
             TargetChip(
                 selected = it == null,
@@ -135,10 +140,12 @@ private fun HorizontalTargetChipsPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun FlowTargetChipsPreview() {
-    KenkoTheme {
+private fun FlowTargetChipsPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         FlowTargets {
             TargetChip(
                 selected = false,

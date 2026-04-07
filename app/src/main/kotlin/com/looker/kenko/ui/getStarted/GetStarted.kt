@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -50,7 +50,7 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
 import com.looker.kenko.ui.components.HealthQuotes
@@ -58,9 +58,11 @@ import com.looker.kenko.ui.components.TickerText
 import com.looker.kenko.ui.components.TypingText
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.ui.theme.header
-import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.launch
 
 @Composable
 fun GetStarted(onNext: () -> Unit) {
@@ -219,10 +221,11 @@ private fun ButtonIcon(
 }
 
 @Preview
-@PreviewScreenSizes
 @Composable
-private fun GetStartedPreview() {
-    KenkoTheme {
+private fun GetStartedPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         GetStarted(onNextClick = {})
     }
 }

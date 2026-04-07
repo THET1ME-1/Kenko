@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,17 +34,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
 import com.looker.kenko.data.local.model.SetType
-import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.ExercisesPreviewParameter
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.repDurationStringRes
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.ui.theme.numbers
 
 @Composable
@@ -109,14 +110,15 @@ private fun PerformedItem(
     }
 }
 
-@PreviewScreenSizes
+@Preview
 @Composable
 private fun SetItemPreview(
-    @PreviewParameter(ExercisesPreviewParameter::class, limit = 2) exercises: List<Exercise>,
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
 ) {
-    KenkoTheme {
+    val exercise = ExercisesPreviewParameter().values.first().first()
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         SetItem(
-            Set(12, 40F, SetType.Drop, exercises.first(), RepsInReserve(2)),
+            Set(12, 40F, SetType.Drop, exercise, RepsInReserve(2)),
         ) {
             Text(text = "01")
         }

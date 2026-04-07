@@ -46,10 +46,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.utils.minus
 import com.looker.kenko.utils.plus
 import kotlinx.datetime.DayOfWeek
@@ -138,8 +141,10 @@ fun dayName(dayOfWeek: DayOfWeek): String {
 
 @Preview
 @Composable
-private fun DaySelectorPreview() {
-    KenkoTheme {
+private fun DaySelectorPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         var isSelected by remember {
             mutableStateOf(THURSDAY)
         }

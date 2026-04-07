@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -51,6 +51,8 @@ import com.looker.kenko.ui.planEdit.components.KenkoAddButton
 import com.looker.kenko.ui.plans.components.PlanItem
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 
 @Composable
 fun Plan(
@@ -153,9 +155,10 @@ private fun Plan(
 @Preview
 @Composable
 private fun PlanPreview(
-    @PreviewParameter(PlanPreviewParameters::class) plans: List<Plan>,
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
 ) {
-    KenkoTheme {
+    val plans = PlanPreviewParameters().values.first()
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Plan(
             plans = plans,
             onSelectPlan = {},

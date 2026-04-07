@@ -46,7 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
@@ -61,6 +61,8 @@ import com.looker.kenko.ui.exercises.string
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 
 @Composable
 fun AddEditExercise(
@@ -258,10 +260,12 @@ private fun IsIsometricButton(isIsometric: Boolean, onChange: (Boolean) -> Unit)
     }
 }
 
-@PreviewLightDark
+@Preview
 @Composable
-private fun ReferenceTextFieldPreview() {
-    KenkoTheme {
+private fun ReferenceTextFieldPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         ReferenceTextField(
             reference = "https://youtu.be",
             onReferenceChange = {},
@@ -271,10 +275,12 @@ private fun ReferenceTextFieldPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun IsIsometricButtonPreview() {
-    KenkoTheme {
+private fun IsIsometricButtonPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         var isIso by remember {
             mutableStateOf(false)
         }
@@ -282,10 +288,12 @@ private fun IsIsometricButtonPreview() {
     }
 }
 
-@Preview(name = "Exercise Name Field")
+@Preview
 @Composable
-private fun NameTextFieldPreview() {
-    KenkoTheme {
+private fun NameTextFieldPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         ExerciseTextField(
             exerciseName = "Bench Press",
             onNameChange = {},
@@ -296,10 +304,12 @@ private fun NameTextFieldPreview() {
     }
 }
 
-@Preview(name = "Exercise Name Field - Error")
+@Preview
 @Composable
-private fun ErrorNameTextFieldPreview() {
-    KenkoTheme {
+private fun ErrorNameTextFieldPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         ExerciseTextField(
             exerciseName = "Bench Press",
             onNameChange = {},
@@ -310,10 +320,12 @@ private fun ErrorNameTextFieldPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun AddEditPreview() {
-    KenkoTheme {
+private fun AddEditPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         AddEditExercise(
             exerciseName = "BenchPress",
             exerciseReference = "yt.be",
