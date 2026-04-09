@@ -491,7 +491,7 @@ private fun BackupSection(
         BackupSettingRow(
             title = stringResource(R.string.label_backup_location),
             value = backupUri?.let { extractFolderName(it) }
-                ?: stringResource(R.string.label_backup_location_not_set),
+                ?: stringResource(R.string.label_select_backup_location),
             onClick = { folderPickerLauncher.launch(null) },
         )
 

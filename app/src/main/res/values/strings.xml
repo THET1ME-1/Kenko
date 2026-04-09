@@ -25,11 +25,8 @@
     <!--Home-->
     <string name="label_continue_session">Continue</string>
     <string name="label_start_session">Start</string>
-    <string name="label_explore_sessions">Explore\nSessions</string>
     <string name="label_explore_exercises">Explore\nExercises</string>
-    <string name="label_add_new_exercises_home">Add\nExercise</string>
     <string name="label_session_history_home">Session\nHistory</string>
-    <string name="label_current_plan_home">Current\nPlan</string>
 
     <!--Sessions-->
     <string name="label_sessions_title">Sessions</string>
@@ -53,10 +50,8 @@
     </string>
 
     <!--Profile-->
-    <string name="label_profile_greeting">hey there</string>
     <string name="label_select_plan">Select Plan</string>
     <string name="label_select_plan_one">Select Plan</string>
-    <string name="label_current_plan">Current Plan</string>
     <string name="label_current_plan_FORMAT">Current: %s</string>
     <string name="label_lifts">Lifts</string>
     <string name="label_plan_description">
@@ -105,11 +100,8 @@
     <string name="label_reps">.reps</string>
     <string name="label_duration">.duration</string>
     <string name="label_weight">.weight</string>
-    <string name="label_coming_soon">Coming Soon</string>
 
     <!--Navigation-->
-    <string name="label_home">Home</string>
-    <string name="label_performance">Performance</string>
     <string name="label_profile">You</string>
 
     <!--Performance Dashboard-->
@@ -117,14 +109,12 @@
     <string name="error_not_enough_activity">Get moving...</string>
 
     <!--Error-->
-    <string name="error_invalid_reference">Invalid Reference</string>
     <string name="error_invalid_reference_format">Invalid reference format</string>
     <string name="error_invalid_url">Invalid URL</string>
     <string name="error_unknown">Unknown Error</string>
     <string name="error_plan_name_empty">Enter a plan name</string>
     <string name="error_plan_name_exists">Plan name already in use</string>
     <string name="error_exercise_name_empty">Enter an exercise name</string>
-    <string name="error_plan_empty">Plan is empty</string>
     <string name="error_plan_empty_prompt">Discard Plan?. Press back again to go back.</string>
     <string name="error_cant_find_session">Can\'t Find Session</string>
     <string name="error_cant_find_exercise">Can\'t Find Exercise</string>
@@ -146,7 +136,6 @@
     <!--Backup-->
     <string name="label_backup">Backup &amp; Restore</string>
     <string name="label_backup_location">Backup Location</string>
-    <string name="label_backup_location_not_set">Not set</string>
     <string name="label_backup_interval">Backup Frequency</string>
     <string name="label_backup_off">Off</string>
     <string name="label_backup_daily">Daily</string>
@@ -155,7 +144,6 @@
     <string name="label_backup_now">Backup Now</string>
     <string name="label_restore">Restore</string>
     <string name="label_last_backup">Last Backup: %s</string>
-    <string name="label_last_backup_never">Never</string>
     <string name="label_backup_in_progress">Backing up…</string>
     <string name="label_restore_in_progress">Restoring…</string>
     <string name="label_backup_success">Backup completed</string>
@@ -164,7 +152,6 @@
     <string name="error_restore_failed">Restore failed</string>
     <string name="label_restore_warning">This will replace all current data. Continue?</string>
     <string name="label_select_backup_location">Select backup folder</string>
-    <string name="label_select_backup_file">Select backup file</string>
 
     <!--Muscle Groups-->
     <string name="label_muscle_biceps">Biceps</string>
@@ -181,8 +168,6 @@
     <string name="label_muscle_shoulders">Shoulders</string>
 
     <!--Day of Week-->
-    <string name="label_today">.today</string>
-    <string name="label_plan">Plan</string>
     <string name="label_select_a_plan">Select A Plan</string>
     <string name="label_selecting_a_plan">Start by Selecting a Plan</string>
     <string name="label_start_first_session">Start your first session</string>
