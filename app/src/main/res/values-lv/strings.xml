@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ veselīgs</string>
+    <string name="label_kenko_meaning_ALT">○ stiprs</string>
+    <string name="label_lets_go">Sākt darbu</string>
+    <string name="label_continue_session">Turpināt</string>
+    <string name="label_start_session">Sākt</string>
+    <string name="label_explore_exercises">Izpētiet\nVingrinājumus</string>
+    <string name="label_session_history_home">Sesijas\nVēsture</string>
+    <string name="label_sessions_title">Trenings</string>
+    <string name="label_nothing_today">Šodien neko</string>
+    <string name="label_missed_day">Vai palaidāt kādu dienu?</string>
+    <string name="label_plans_title">Plāni</string>
+    <string name="label_edit_plan">Rediģēt plānu</string>
+    <string name="no_exercises_yet">Vēl nav pieejamas nevienas nodarbības.</string>
+    <string name="label_clean_up">Tīrīt</string>
+    <string name="label_clean_up_plans">Vai dzēst tukšos plānus?</string>
+    <string name="heading_select_plan_name">Izvēlieties plāna nosaukumu</string>
+    <string name="heading_select_plan_items">Izvēlieties vingrinājumus</string>
+    <string name="desc_select_plan_name">Plāna nosaukumam jābūt viegli atcerams un ne pārāk garam. Ideāli, ja tas ir unikāls un nesatur īpašus simbolus.
+  piemēram: Push Pull Leg, Strength Cycle, utt.</string>
+    <string name="label_select_plan">Izvēlieties plānu</string>
+    <string name="label_select_plan_one">Izvēlieties plānu</string>
+    <string name="label_current_plan_FORMAT">Pašreizējais: %s</string>
+    <string name="label_lifts">Līkumi</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Pārlūkot vingrinājumus</string>
+    <string name="label_all_muscle_groups">Viss</string>
+    <string name="label_create_exercise">Izveidot</string>
+    <string name="label_new_exercise">Pievienot vingrinājumu</string>
+    <string name="label_edit_exercise">Rediģēt</string>
+    <string name="label_target">Mērķis</string>
+    <string name="label_is_isometric">Izometri</string>
+    <string name="label_reference">Reference</string>
+    <string name="label_is_isometric_DESC">Vingrinājumiem nepieciešami statiski nostāvēšanas posmi.</string>
+    <string name="label_reference_optional">optional*</string>
+    <string name="label_exercise_exists">Šis vingrojums jau pastāv</string>
+    <string name="label_add_exercise_header">Pievienot vingrinājumu</string>
+    <string name="label_search_exercise">Meklēt vingrinājumu</string>
+    <string name="label_no_exercise_today">Šodien nav ieplānoti treniņi.</string>
+    <string name="label_add_set_for">Pievienot seri ju</string>
+    <string name="label_plus_int">%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Iestatījumi</string>
+    <string name="label_name">Vārds</string>
+    <string name="label_add">Pievienot</string>
+    <string name="label_save">Saglabāt</string>
+    <string name="label_yes">Jā</string>
+    <string name="label_no">Nē</string>
+    <string name="label_session">Sesija</string>
+    <string name="label_exercise">Vingrinājums</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">.duration</string>
+    <string name="label_weight">svars</string>
+    <string name="label_profile">Jūs</string>
+    <string name="label_activity">Aktivitāte</string>
+    <string name="error_not_enough_activity">Sāciet kustēt...</string>
+    <string name="error_invalid_reference_format">Nepareiza formāta atsauce</string>
+    <string name="error_invalid_url">Nepareiza URL adrese</string>
+    <string name="error_unknown">Nepazīsta kļūda</string>
+    <string name="error_plan_name_empty">Ievadiet plāna nosaukumu</string>
+    <string name="error_plan_name_exists">Plāna nosaukums jau tiek izmantots</string>
+    <string name="error_exercise_name_empty">Ievadiet vingrinājuma nosaukumu</string>
+    <string name="error_plan_empty_prompt">Vai vēlaties dzēst plānu? Nospiediet atpakaļ, lai atgrieztos.</string>
+    <string name="error_cant_find_session">Nevar atrast sesiju</string>
+    <string name="error_cant_find_exercise">Nevar atrast vingrinājumu</string>
+    <string name="label_theme">Tēma</string>
+    <string name="label_theme_system">Sistēma</string>
+    <string name="label_theme_light">Gaismas</string>
+    <string name="label_theme_dark">Tumšs</string>
+    <string name="label_color_palettes">Krāsu paletes</string>
+    <string name="label_color_scheme_default">Noklusējums</string>
+    <string name="label_color_scheme_dynamic">Dinamiska</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Enerģisks</string>
+    <string name="label_color_scheme_twilight">Twilight</string>
+    <string name="label_backup">Dubultošana un atjaunošana</string>
+    <string name="label_backup_location">Rezerves datu atrašanās vieta</string>
+    <string name="label_backup_interval">Rezerveskopijas frekvence</string>
+    <string name="label_backup_off">Izslēgts</string>
+    <string name="label_backup_daily">Katru dienu</string>
+    <string name="label_backup_weekly">Nedēļa</string>
+    <string name="label_backup_monthly">Mēneša</string>
+    <string name="label_backup_now">Veikt dublējumu tagad</string>
+    <string name="label_restore">Atjaunot</string>
+    <string name="label_last_backup">Pēdējā reize, kad tika veidota rezerves kopija: %s</string>
+    <string name="label_backup_in_progress">Datumu tiek veidota kopija…</string>
+    <string name="label_restore_in_progress">Atjaunošana…</string>
+    <string name="label_backup_success">Atjaunošana veiksmīgi pabeigta</string>
+    <string name="label_restore_success">Atjaunošana ir pabeigta. Lūdzu, restartējiet lietotni.</string>
+    <string name="error_backup_failed">Atveršanas fails neizdevās.</string>
+    <string name="error_restore_failed">Atjaunošana neizdevās</string>
+    <string name="label_restore_warning">Tasēs dzēsīs visas esošās datus. Vai turpināt?</string>
+    <string name="label_select_backup_location">Izvēlieties rezerves kopijas mapi</string>
+    <string name="label_muscle_biceps">Biceps</string>
+    <string name="label_muscle_triceps">Triceps</string>
+    <string name="label_muscle_back">Atpakaļ</string>
+    <string name="label_muscle_lats">Lati</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Krūtis</string>
+    <string name="label_muscle_core">Sirds</string>
+    <string name="label_muscle_glutes">Gluteāli</string>
+    <string name="label_muscle_calves">Ķēveles</string>
+    <string name="label_muscle_hamstrings">Hamstringi</string>
+    <string name="label_muscle_quads">Kvadricepsi</string>
+    <string name="label_muscle_shoulders">Pleci</string>
+    <string name="label_select_a_plan">Izvēlieties plānu</string>
+    <string name="label_selecting_a_plan">Sāciet, izvēloties plānu.</string>
+    <string name="label_start_first_session">Sāciet savu pirmo treniņu.</string>
+    <string name="label_start_session_heading">Sāciet šodienas treniņu</string>
+    <string name="label_continue_session_heading">Turpināt šodienas treniņu</string>
+    <string name="label_next">Nākamais</string>
+    <string name="label_boarding_quote">Tava nākamā transformācija sākas šeit.</string>
+    <string name="label_no_sessions">Nav veikta neviena treniņu sesija</string>
+    <string-array name="label_features">
+        <item>Progresa izsekošana</item>
+        <item>Pakāpeniska pārslodze</item>
+        <item>Statistika</item>
+        <item>Plānu pārvaldība</item>
+        <item>Ātra atgriezeniskā saite</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>tu vari to izdarīt</item>
+        <item>veselība ir tavās rokās</item>
+        <item>veselība ir bagātība</item>
+        <item>treniņš ir arī mana terapija</item>
+        <item>treniņš ir arī mana terapija</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>jā, draugs… viegls svars</item>
+        <item>viegls svars</item>
+        <item>nav nekā grūta, tikai jādara</item>
+        <item>nav svarīgi, cik viegls tas ir</item>
+        <item>es domāju, ka tas ir lieliski, vai ne?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>.pirmdiena</item>
+        <item>.otrdiena</item>
+        <item>.trešdiena</item>
+        <item>.ceturtdiena</item>
+        <item>.piektdiena</item>
+        <item>.sestdiena</item>
+        <item>.svētdiena</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Pirmdiena</item>
+        <item>Otrdiena</item>
+        <item>Trešdiena</item>
+        <item>Ceturtdiena</item>
+        <item>Piektdiena</item>
+        <item>Sestdiena</item>
+        <item>Svētdiena</item>
+    </string-array>
+</resources>

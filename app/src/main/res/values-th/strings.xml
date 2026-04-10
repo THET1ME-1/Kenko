@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ สุขภาพดี</string>
+    <string name="label_kenko_meaning_ALT">แข็งแรง</string>
+    <string name="label_lets_go">เริ่มต้นใช้งาน</string>
+    <string name="label_continue_session">ดำเนินการต่อ</string>
+    <string name="label_start_session">เริ่มต้น</string>
+    <string name="label_explore_exercises">ค้นหา\nแบบฝึก</string>
+    <string name="label_session_history_home">ประวัติการใช้งาน</string>
+    <string name="label_sessions_title">เซสชัน</string>
+    <string name="label_nothing_today">ไม่มีอะไรในวันนี้</string>
+    <string name="label_missed_day">คุณพลาดวันไปหรือเปล่า</string>
+    <string name="label_plans_title">แผน</string>
+    <string name="label_edit_plan">แก้ไขแผน</string>
+    <string name="no_exercises_yet">ยังไม่มีท่าออกกำลังกาย</string>
+    <string name="label_clean_up">ทำความสะอาด</string>
+    <string name="label_clean_up_plans">ต้องการล้างแผนการฝึกที่ว่างเปล่าหรือไม่</string>
+    <string name="heading_select_plan_name">เลือกชื่อแผน</string>
+    <string name="heading_select_plan_items">เลือกท่าออกกำลังกาย</string>
+    <string name="desc_select_plan_name">ชื่อแผนควรเป็นชื่อที่จำง่ายและไม่ยาวเกินไป ควรเป็นชื่อที่ไม่ซ้ำและไม่มีสัญลักษณ์พิเศษ
+ตัวอย่าง: Push Pull Leg, Strength Cycle, เป็นต้น</string>
+    <string name="label_select_plan">เลือกแผน</string>
+    <string name="label_select_plan_one">เลือกแผน</string>
+    <string name="label_current_plan_FORMAT">ปัจจุบัน: %s</string>
+    <string name="label_lifts">การยกน้ำหนัก</string>
+    <string name="label_plan_description">(ไม่มีข้อความที่ต้องแปล)</string>
+    <string name="label_browse_exercises">เรียกดูท่าออกกำลังกาย</string>
+    <string name="label_all_muscle_groups">ทั้งหมด</string>
+    <string name="label_create_exercise">สร้าง</string>
+    <string name="label_new_exercise">เพิ่มการออกกำลังกาย</string>
+    <string name="label_edit_exercise">แก้ไข</string>
+    <string name="label_target">เป้าหมาย</string>
+    <string name="label_is_isometric">Isometric</string>
+    <string name="label_reference">อ้างอิง</string>
+    <string name="label_is_isometric_DESC">การออกกำลังกายต้องใช้ท่าทางที่คงที่</string>
+    <string name="label_reference_optional">optional*</string>
+    <string name="label_exercise_exists">แบบฝึกหัดนี้มีอยู่แล้ว</string>
+    <string name="label_add_exercise_header">เพิ่มการออกกำลังกาย</string>
+    <string name="label_search_exercise">ค้นหาท่าออกกำลังกาย</string>
+    <string name="label_no_exercise_today">วันนี้ไม่มีการวางแผนการออกกำลังกาย</string>
+    <string name="label_add_set_for">เพิ่มเซ็ตสำหรับ</string>
+    <string name="label_plus_int">+%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">การตั้งค่า</string>
+    <string name="label_name">ชื่อ</string>
+    <string name="label_add">เพิ่ม</string>
+    <string name="label_save">บันทึก</string>
+    <string name="label_yes">ใช่</string>
+    <string name="label_no">ไม่มี</string>
+    <string name="label_session">เซสชัน</string>
+    <string name="label_exercise">การออกกำลังกาย</string>
+    <string name="label_reps">จำนวนครั้ง</string>
+    <string name="label_duration">ระยะเวลา</string>
+    <string name="label_weight">น้ำหนัก</string>
+    <string name="label_profile">คุณ</string>
+    <string name="label_activity">กิจกรรม</string>
+    <string name="error_not_enough_activity">เริ่มต้นออกกำลังกาย...</string>
+    <string name="error_invalid_reference_format">รูปแบบอ้างอิงไม่ถูกต้อง</string>
+    <string name="error_invalid_url">URL ไม่ถูกต้อง</string>
+    <string name="error_unknown">ข้อผิดพลาดที่ไม่รู้จัก</string>
+    <string name="error_plan_name_empty">กรุณาใส่ชื่อแผน</string>
+    <string name="error_plan_name_exists">ชื่อแผนนี้ถูกใช้งานแล้ว</string>
+    <string name="error_exercise_name_empty">กรุณาใส่ชื่อท่าออกกำลังกาย</string>
+    <string name="error_plan_empty_prompt">ยกเลิกแผนการหรือไม่ กดปุ่มย้อนกลับอีกครั้งเพื่อกลับสู่หน้าเดิม</string>
+    <string name="error_cant_find_session">ไม่พบเซสชัน</string>
+    <string name="error_cant_find_exercise">ไม่พบท่าออกกำลังกาย</string>
+    <string name="label_theme">ธีม</string>
+    <string name="label_theme_system">ระบบ</string>
+    <string name="label_theme_light">แสง</string>
+    <string name="label_theme_dark">สีดำ</string>
+    <string name="label_color_palettes">ชุดสี</string>
+    <string name="label_color_scheme_default">ค่าเริ่มต้น</string>
+    <string name="label_color_scheme_dynamic">แบบไดนามิก</string>
+    <string name="label_color_scheme_serene">สงบ</string>
+    <string name="label_color_scheme_zestful">สดชื่น</string>
+    <string name="label_color_scheme_twilight">Twilight</string>
+    <string name="label_backup">สำรองข้อมูลและกู้คืน</string>
+    <string name="label_backup_location">ตำแหน่งสำรองข้อมูล</string>
+    <string name="label_backup_interval">ความถี่ในการสำรองข้อมูล</string>
+    <string name="label_backup_off">ปิด</string>
+    <string name="label_backup_daily">รายวัน</string>
+    <string name="label_backup_weekly">รายสัปดาห์</string>
+    <string name="label_backup_monthly">รายเดือน</string>
+    <string name="label_backup_now">สำรองข้อมูลทันที</string>
+    <string name="label_restore">กู้คืน</string>
+    <string name="label_last_backup">การสำรองข้อมูลครั้งล่าสุด: %s</string>
+    <string name="label_backup_in_progress">กำลังสำรองข้อมูล…</string>
+    <string name="label_restore_in_progress">กำลังกู้คืน…</string>
+    <string name="label_backup_success">การสำรองข้อมูลเสร็จสมบูรณ์</string>
+    <string name="label_restore_success">การคืนค่าสำเร็จ โปรดรีสตาร์ทแอปพลิเคชัน</string>
+    <string name="error_backup_failed">การสำรองข้อมูลล้มเหลว</string>
+    <string name="error_restore_failed">การกู้คืนไม่สำเร็จ</string>
+    <string name="label_restore_warning">สิ่งนี้จะลบข้อมูลทั้งหมดที่มีอยู่ คุณต้องการดำเนินการต่อหรือไม่</string>
+    <string name="label_select_backup_location">เลือกโฟลเดอร์สำรองข้อมูล</string>
+    <string name="label_muscle_biceps">Biceps</string>
+    <string name="label_muscle_triceps">Triceps</string>
+    <string name="label_muscle_back">กลับ</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">หน้าอก</string>
+    <string name="label_muscle_core">แกนหลัก</string>
+    <string name="label_muscle_glutes">กล้ามเนื้อก้น</string>
+    <string name="label_muscle_calves">น่อง</string>
+    <string name="label_muscle_hamstrings">กล้ามเนื้อต้นขาด้านหลัง</string>
+    <string name="label_muscle_quads">ต้นขา</string>
+    <string name="label_muscle_shoulders">ไหล่</string>
+    <string name="label_select_a_plan">เลือกแผน</string>
+    <string name="label_selecting_a_plan">เริ่มต้นด้วยการเลือกแผน</string>
+    <string name="label_start_first_session">เริ่มต้นเซสชันแรกของคุณ</string>
+    <string name="label_start_session_heading">เริ่มเซสชันของวันนี้</string>
+    <string name="label_continue_session_heading">ดำเนินการต่อเซสชันในวันนี้</string>
+    <string name="label_next">ถัดไป</string>
+    <string name="label_boarding_quote">การเปลี่ยนแปลงครั้งต่อไปของคุณเริ่มต้นที่นี่</string>
+    <string name="label_no_sessions">ยังไม่มีเซสชันที่บันทึก</string>
+    <string-array name="label_features">
+        <item>การติดตามความคืบหน้า</item>
+        <item>การเพิ่มภาระอย่างต่อเนื่อง</item>
+        <item>สถิติ</item>
+        <item>การจัดการแผน</item>
+        <item>ข้อเสนอแนะที่รวดเร็ว</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>คุณทำได้</item>
+        <item>สุขภาพอยู่ในมือคุณ</item>
+        <item>สุขภาพคือทรัพย์สมบัติ</item>
+        <item>การออกกำลังกายคือการบำบัดของฉันด้วย</item>
+        <item>การออกกำลังกายคือการบำบัดของฉันด้วย</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>ใช่เลยเพื่อน… น้ำหนักเบา</item>
+        <item>น้ำหนักเบา</item>
+        <item>มันง่ายมาก</item>
+        <item>มันไม่ได้เกี่ยวกับน้ำหนัก</item>
+        <item>ฉันหมายถึง มันยอดเยี่ยมมาก ใช่ไหม</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>วันจันทร์</item>
+        <item>วันอังคาร</item>
+        <item>วันพุธ</item>
+        <item>วันพฤหัสบดี</item>
+        <item>วันศุกร์</item>
+        <item>วันเสาร์</item>
+        <item>วันอาทิตย์</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>วันจันทร์</item>
+        <item>วันอังคาร</item>
+        <item>วันพุธ</item>
+        <item>วันพฤหัสบดี</item>
+        <item>วันศุกร์</item>
+        <item>วันเสาร์</item>
+        <item>วันอาทิตย์</item>
+    </string-array>
+</resources>

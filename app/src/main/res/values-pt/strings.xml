@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ saudável</string>
+    <string name="label_kenko_meaning_ALT">○ forte</string>
+    <string name="label_lets_go">Comece</string>
+    <string name="label_continue_session">Continuar</string>
+    <string name="label_start_session">Começar</string>
+    <string name="label_explore_exercises">Explorar\nExercícios</string>
+    <string name="label_session_history_home">Histórico de treinos</string>
+    <string name="label_sessions_title">Sessões</string>
+    <string name="label_nothing_today">Nada para hoje</string>
+    <string name="label_missed_day">Você perdeu o dia?</string>
+    <string name="label_plans_title">Planos</string>
+    <string name="label_edit_plan">Editar plano</string>
+    <string name="no_exercises_yet">Ainda não há exercícios.</string>
+    <string name="label_clean_up">Limpar</string>
+    <string name="label_clean_up_plans">Limpar planos vazios?</string>
+    <string name="heading_select_plan_name">Selecione um nome de plano</string>
+    <string name="heading_select_plan_items">Selecione os exercícios</string>
+    <string name="desc_select_plan_name">O nome do plano deve ser fácil de lembrar e não muito longo. Idealmente, deve ser único e não conter símbolos especiais.
+  e.g.: Treino de Empurrar/Puxar/Pernas, Ciclo de Força, etc.</string>
+    <string name="label_select_plan">Selecione o plano</string>
+    <string name="label_select_plan_one">Selecione o plano</string>
+    <string name="label_current_plan_FORMAT">Atual: %s</string>
+    <string name="label_lifts">Levantamentos</string>
+    <string name="label_plan_description">```text
+  \n
+```</string>
+    <string name="label_browse_exercises">Navegar Exercícios</string>
+    <string name="label_all_muscle_groups">Tudo</string>
+    <string name="label_create_exercise">Criar</string>
+    <string name="label_new_exercise">Adicionar exercício</string>
+    <string name="label_edit_exercise">Editar</string>
+    <string name="label_target">Alvo</string>
+    <string name="label_is_isometric">Isométrico</string>
+    <string name="label_reference">Referência</string>
+    <string name="label_is_isometric_DESC">O exercício requer posições estáticas.</string>
+    <string name="label_reference_optional">opcional*</string>
+    <string name="label_exercise_exists">Exercício já existe</string>
+    <string name="label_add_exercise_header">Adicionar exercício</string>
+    <string name="label_search_exercise">Pesquisar Exercício</string>
+    <string name="label_no_exercise_today">Nenhum exercício planejado para hoje.</string>
+    <string name="label_add_set_for">Adicionar série para</string>
+    <string name="label_plus_int">%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Configurações</string>
+    <string name="label_name">Nome</string>
+    <string name="label_add">Adicionar</string>
+    <string name="label_save">Salvar</string>
+    <string name="label_yes">Sim</string>
+    <string name="label_no">Não</string>
+    <string name="label_session">Sessão</string>
+    <string name="label_exercise">Exercício</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">duração</string>
+    <string name="label_weight">.peso</string>
+    <string name="label_profile">Você</string>
+    <string name="label_activity">Atividade</string>
+    <string name="error_not_enough_activity">Comece a se exercitar...</string>
+    <string name="error_invalid_reference_format">Formato de referência inválido</string>
+    <string name="error_invalid_url">URL inválido</string>
+    <string name="error_unknown">Erro desconhecido</string>
+    <string name="error_plan_name_empty">Digite um nome para o plano.</string>
+    <string name="error_plan_name_exists">O nome do plano já está em uso.</string>
+    <string name="error_exercise_name_empty">Digite o nome de um exercício.</string>
+    <string name="error_plan_empty_prompt">Descartar plano? Pressione o botão voltar novamente para retornar.</string>
+    <string name="error_cant_find_session">Não foi possível encontrar a sessão.</string>
+    <string name="error_cant_find_exercise">Não foi possível encontrar o exercício.</string>
+    <string name="label_theme">Tema</string>
+    <string name="label_theme_system">Sistema</string>
+    <string name="label_theme_light">Luz</string>
+    <string name="label_theme_dark">Escuro</string>
+    <string name="label_color_palettes">Paletas de Cores</string>
+    <string name="label_color_scheme_default">Padrão</string>
+    <string name="label_color_scheme_dynamic">Dinâmico</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Zestful</string>
+    <string name="label_color_scheme_twilight">Crepúsculo</string>
+    <string name="label_backup">Backup e Restaurar</string>
+    <string name="label_backup_location">Localização do backup</string>
+    <string name="label_backup_interval">Frequência de backup</string>
+    <string name="label_backup_off">Desligado</string>
+    <string name="label_backup_daily">Diariamente</string>
+    <string name="label_backup_weekly">Semanal</string>
+    <string name="label_backup_monthly">Mensal</string>
+    <string name="label_backup_now">Faça backup agora</string>
+    <string name="label_restore">Restaurar</string>
+    <string name="label_last_backup">Último backup: %s</string>
+    <string name="label_backup_in_progress">Fazendo backup…</string>
+    <string name="label_restore_in_progress">Restaurando…</string>
+    <string name="label_backup_success">Backup concluído</string>
+    <string name="label_restore_success">Restauração concluída. Por favor, reinicie o aplicativo.</string>
+    <string name="error_backup_failed">Falha ao fazer backup</string>
+    <string name="error_restore_failed">A restauração falhou</string>
+    <string name="label_restore_warning">Isso irá substituir todos os dados atuais. Deseja continuar?</string>
+    <string name="label_select_backup_location">Selecione a pasta de backup</string>
+    <string name="label_muscle_biceps">Bíceps</string>
+    <string name="label_muscle_triceps">Tríceps</string>
+    <string name="label_muscle_back">Voltar</string>
+    <string name="label_muscle_lats">Dorsais</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Peito</string>
+    <string name="label_muscle_core">Núcleo</string>
+    <string name="label_muscle_glutes">Glúteos</string>
+    <string name="label_muscle_calves">Panturrilhas</string>
+    <string name="label_muscle_hamstrings">Posteriores</string>
+    <string name="label_muscle_quads">Quadríceps</string>
+    <string name="label_muscle_shoulders">Ombros</string>
+    <string name="label_select_a_plan">Selecione um plano</string>
+    <string name="label_selecting_a_plan">Comece selecionando um plano.</string>
+    <string name="label_start_first_session">Comece sua primeira sessão</string>
+    <string name="label_start_session_heading">Comece a sessão de hoje</string>
+    <string name="label_continue_session_heading">Continue a sessão de hoje</string>
+    <string name="label_next">Próximo</string>
+    <string name="label_boarding_quote">Sua próxima transformação começa aqui.</string>
+    <string name="label_no_sessions">Nenhuma sessão realizada</string>
+    <string-array name="label_features">
+        <item>Acompanhamento do progresso</item>
+        <item>Sobrecarga progressiva</item>
+        <item>Estatísticas</item>
+        <item>Gerenciamento de planos</item>
+        <item>Feedback rápido</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>você consegue</item>
+        <item>a saúde está em suas mãos</item>
+        <item>a saúde é riqueza</item>
+        <item>o exercício é minha terapia também</item>
+        <item>o exercício é minha terapia também</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>sim, amigo… peso leve</item>
+        <item>peso leve</item>
+        <item>não é nada demais, é só fazer</item>
+        <item>não se trata de ser leve</item>
+        <item>eu quero dizer, é ótimo, certo\?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>seg</item>
+        <item>ter</item>
+        <item>qua</item>
+        <item>qui</item>
+        <item>sex</item>
+        <item>sáb</item>
+        <item>dom</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Segunda-feira</item>
+        <item>Terça-feira</item>
+        <item>Quarta-feira</item>
+        <item>Quinta-feira</item>
+        <item>Sexta-feira</item>
+        <item>Sábado</item>
+        <item>Domingo</item>
+    </string-array>
+</resources>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ zdravo</string>
+    <string name="label_kenko_meaning_ALT">○ jak</string>
+    <string name="label_lets_go">Započnite</string>
+    <string name="label_continue_session">Nastavi</string>
+    <string name="label_start_session">Start</string>
+    <string name="label_explore_exercises">Istražite\nVježbe</string>
+    <string name="label_session_history_home">Session
+Povijest</string>
+    <string name="label_sessions_title">Sesije</string>
+    <string name="label_nothing_today">Ništa danas</string>
+    <string name="label_missed_day">Jeste li propustili dan?</string>
+    <string name="label_plans_title">Planovi</string>
+    <string name="label_edit_plan">Uredi plan</string>
+    <string name="no_exercises_yet">Jo još nema vježbi.</string>
+    <string name="label_clean_up">Učisti</string>
+    <string name="label_clean_up_plans">Želite li obrisati prazne planove?</string>
+    <string name="heading_select_plan_name">Odaberite naziv plana.</string>
+    <string name="heading_select_plan_items">Odaberite vježbe</string>
+    <string name="desc_select_plan_name">Ime plana bi trebalo biti lako za pamćenje i ne predugačko. Idealno bi bilo da bude jedinstveno i bez posebnih znakova.
+  e.g: Push Pull Leg, Strength Cycle, itd.</string>
+    <string name="label_select_plan">Odaberite plan</string>
+    <string name="label_select_plan_one">Odaberite program</string>
+    <string name="label_current_plan_FORMAT">Trenutno: %s</string>
+    <string name="label_lifts">Ponovi</string>
+    <string name="label_plan_description">Nema teksta za prevođenje.</string>
+    <string name="label_browse_exercises">Pregled vježbi</string>
+    <string name="label_all_muscle_groups">Sve</string>
+    <string name="label_create_exercise">Kreiraj</string>
+    <string name="label_new_exercise">Dodaj vježbu</string>
+    <string name="label_edit_exercise">Uredi</string>
+    <string name="label_target">Cilj</string>
+    <string name="label_is_isometric">Izometrično</string>
+    <string name="label_reference">Referenca</string>
+    <string name="label_is_isometric_DESC">Vježba zahtijeva statična zadržavanja.</string>
+    <string name="label_reference_optional">opcional*</string>
+    <string name="label_exercise_exists">Vježba već postoji.</string>
+    <string name="label_add_exercise_header">Dodaj vježbu</string>
+    <string name="label_search_exercise">Pretraži vježbu</string>
+    <string name="label_no_exercise_today">Nema planiranih vježbi za danas.</string>
+    <string name="label_add_set_for">Dodaj seriju za</string>
+    <string name="label_plus_int">+%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Postavke</string>
+    <string name="label_name">Ime</string>
+    <string name="label_add">Dodaj</string>
+    <string name="label_save">Spremi</string>
+    <string name="label_yes">Da</string>
+    <string name="label_no">Nema</string>
+    <string name="label_session">Sesija</string>
+    <string name="label_exercise">Vježba</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">.duration</string>
+    <string name="label_weight">.weight</string>
+    <string name="label_profile">Vi</string>
+    <string name="label_activity">Aktivnost</string>
+    <string name="error_not_enough_activity">Krenite u akciji...</string>
+    <string name="error_invalid_reference_format">Neispravan format reference.</string>
+    <string name="error_invalid_url">Neispravna URL adresa</string>
+    <string name="error_unknown">Nepoznata greška</string>
+    <string name="error_plan_name_empty">Unesite naziv plana</string>
+    <string name="error_plan_name_exists">Ime plana već je u upotrebi</string>
+    <string name="error_exercise_name_empty">Unesite naziv vježbe</string>
+    <string name="error_plan_empty_prompt">Želite li obrisati plan?. Ponovno pritisnite gumb natrag za povratak.</string>
+    <string name="error_cant_find_session">Nije moguće pronaći sesiju.</string>
+    <string name="error_cant_find_exercise">Nije moguće pronaći vježbu.</string>
+    <string name="label_theme">Tema</string>
+    <string name="label_theme_system">Sustav</string>
+    <string name="label_theme_light">Svjetlo</string>
+    <string name="label_theme_dark">Tamno</string>
+    <string name="label_color_palettes">Palete boja</string>
+    <string name="label_color_scheme_default">Zadano</string>
+    <string name="label_color_scheme_dynamic">Dinamično</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Zestful</string>
+    <string name="label_color_scheme_twilight">Zora</string>
+    <string name="label_backup">Sigurna kopija i obnova</string>
+    <string name="label_backup_location">Lokacija sigurnosne kopije</string>
+    <string name="label_backup_interval">Frekvencija sigurnosnih kopija</string>
+    <string name="label_backup_off">Ugasiti</string>
+    <string name="label_backup_daily">Dnevno</string>
+    <string name="label_backup_weekly">Tjedno</string>
+    <string name="label_backup_monthly">Mjesečno</string>
+    <string name="label_backup_now">Snima sada</string>
+    <string name="label_restore">Vraćanje</string>
+    <string name="label_last_backup">Posljednja sigurnosna kopija: %s</string>
+    <string name="label_backup_in_progress">Izvršuje se sigurnosna kopija…</string>
+    <string name="label_restore_in_progress">Vraćanje…</string>
+    <string name="label_backup_success">Kopiranje je završeno</string>
+    <string name="label_restore_success">Vraćanje je završeno. Molimo ponovno pokrenite aplikaciju.</string>
+    <string name="error_backup_failed">Kopiranje nije uspjelo</string>
+    <string name="error_restore_failed">Kvarilo se tijekom obnavljanja</string>
+    <string name="label_restore_warning">Ovo će zamijeniti sve trenutne podatke. Želite nastaviti?</string>
+    <string name="label_select_backup_location">Odaberite mapu za sigurnosnu kopiju.</string>
+    <string name="label_muscle_biceps">Biceps</string>
+    <string name="label_muscle_triceps">Triceps</string>
+    <string name="label_muscle_back">Nazad</string>
+    <string name="label_muscle_lats">Lati</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Prsa</string>
+    <string name="label_muscle_core">Osnovno</string>
+    <string name="label_muscle_glutes">Gluteus</string>
+    <string name="label_muscle_calves">Listovi</string>
+    <string name="label_muscle_hamstrings">Mišići stražnje dijela bedara</string>
+    <string name="label_muscle_quads">Quadriceps</string>
+    <string name="label_muscle_shoulders">Ramena</string>
+    <string name="label_select_a_plan">Odaberite plan</string>
+    <string name="label_selecting_a_plan">Započnite odabirom plana.</string>
+    <string name="label_start_first_session">Započnite svoju prvu vježbu.</string>
+    <string name="label_start_session_heading">Započnite današnji trening.</string>
+    <string name="label_continue_session_heading">Nastavite današnji trening.</string>
+    <string name="label_next">Sljedeće</string>
+    <string name="label_boarding_quote">Vaša sljedeća transformacija počinje ovdje.</string>
+    <string name="label_no_sessions">Nijedna vježba nije obavljena.</string>
+    <string-array name="label_features">
+        <item>Praćenje napretka</item>
+        <item>Progresivno opterećenje</item>
+        <item>Statistike</item>
+        <item>Upravljanje planom</item>
+        <item>Brza povratna informacija</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>možete to</item>
+        <item>zdravlje je u vašim rukama</item>
+        <item>zdravlje je bogatstvo</item>
+        <item>trening je i moja terapija</item>
+        <item>trening je i moja terapija</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>da, prijatelju… lagana težina</item>
+        <item>lagana težina</item>
+        <item>nije ništa, samo treba raditi</item>
+        <item>nije bitno da je lagano</item>
+        <item>mislim, to je super, zar ne?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>.pon</item>
+        <item>.uto</item>
+        <item>.sri</item>
+        <item>.čet</item>
+        <item>.pet</item>
+        <item>.sub</item>
+        <item>.ned</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Ponedjeljak</item>
+        <item>Utorak</item>
+        <item>Srijeda</item>
+        <item>Četvrtak</item>
+        <item>Petak</item>
+        <item>Subota</item>
+        <item>Nedjelja</item>
+    </string-array>
+</resources>

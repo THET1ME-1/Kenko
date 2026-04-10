@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ saludable</string>
+    <string name="label_kenko_meaning_ALT">○ fort</string>
+    <string name="label_lets_go">Comença\&#39;n</string>
+    <string name="label_continue_session">Continua</string>
+    <string name="label_start_session">Comença</string>
+    <string name="label_explore_exercises">Explora\nExercicis</string>
+    <string name="label_session_history_home">Sessió\nHistorial</string>
+    <string name="label_sessions_title">Sessions</string>
+    <string name="label_nothing_today">Res no disponible avui</string>
+    <string name="label_missed_day">Heuvas ets de la jornada?</string>
+    <string name="label_plans_title">Plans</string>
+    <string name="label_edit_plan">Edita el pla</string>
+    <string name="no_exercises_yet">Encara no hi ha exercicis.</string>
+    <string name="label_clean_up">Netejar</string>
+    <string name="label_clean_up_plans">Esborrar plans buits?</string>
+    <string name="heading_select_plan_name">Seleccioneu un nom de pla.</string>
+    <string name="heading_select_plan_items">Seleccioneu exercicis</string>
+    <string name="desc_select_plan_name">El nom del pla ha de ser fàcil de recordar i no massa llarg. Idealment, ha de ser únic i sense símbols especials.
+  e.g.: Push Pull Leg, Strength Cycle, etc.</string>
+    <string name="label_select_plan">Seleccioneu el pla</string>
+    <string name="label_select_plan_one">Seleccioneu el pla</string>
+    <string name="label_current_plan_FORMAT">Actual: %s</string>
+    <string name="label_lifts">Repeticions</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Explorar exercicis</string>
+    <string name="label_all_muscle_groups">Tot</string>
+    <string name="label_create_exercise">Crea</string>
+    <string name="label_new_exercise">Afegir exercici</string>
+    <string name="label_edit_exercise">Edita</string>
+    <string name="label_target">Target</string>
+    <string name="label_is_isometric">Isomètrics</string>
+    <string name="label_reference">Referència</string>
+    <string name="label_is_isometric_DESC">L\&#39;exercici requereix postures estàtiques.</string>
+    <string name="label_reference_optional">opcional*</string>
+    <string name="label_exercise_exists">L\&#39;exercici ja existeix</string>
+    <string name="label_add_exercise_header">Afegir exercici</string>
+    <string name="label_search_exercise">Cerca exercici</string>
+    <string name="label_no_exercise_today">No hi ha exercicis planificats per avui.</string>
+    <string name="label_add_set_for">Afegeix sèrie per</string>
+    <string name="label_plus_int">+%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Configuració</string>
+    <string name="label_name">Nom</string>
+    <string name="label_add">Afegeix</string>
+    <string name="label_save">Guarda</string>
+    <string name="label_yes">Sí</string>
+    <string name="label_no">No</string>
+    <string name="label_session">Sessió</string>
+    <string name="label_exercise">Exercici</string>
+    <string name="label_reps">reps</string>
+    <string name="label_duration">durada</string>
+    <string name="label_weight">pes</string>
+    <string name="label_profile">Tu</string>
+    <string name="label_activity">Activitat</string>
+    <string name="error_not_enough_activity">Comença a moure\&#39;t...</string>
+    <string name="error_invalid_reference_format">Format de referència no vàlid</string>
+    <string name="error_invalid_url">URL no vàlida</string>
+    <string name="error_unknown">Error desconegut</string>
+    <string name="error_plan_name_empty">Introdueix un nom per al pla</string>
+    <string name="error_plan_name_exists">El nom del pla ja està en ús.</string>
+    <string name="error_exercise_name_empty">Introdueix el nom d\&#39;un exercici.</string>
+    <string name="error_plan_empty_prompt">Descartar plan?. Premereu el botó enrere de nou per tornar enrere.</string>
+    <string name="error_cant_find_session">No es pot trobar la sessió.</string>
+    <string name="error_cant_find_exercise">No es pot trobar l\&#39;exercici.</string>
+    <string name="label_theme">Tema</string>
+    <string name="label_theme_system">Sistema</string>
+    <string name="label_theme_light">Llum</string>
+    <string name="label_theme_dark">Fosc</string>
+    <string name="label_color_palettes">Paleta de colors</string>
+    <string name="label_color_scheme_default">Per defecte</string>
+    <string name="label_color_scheme_dynamic">Dinàmic</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Zestful</string>
+    <string name="label_color_scheme_twilight">Crepuscul</string>
+    <string name="label_backup">Copia de seguretat i restauració</string>
+    <string name="label_backup_location">Ubicació de còpia de seguretat</string>
+    <string name="label_backup_interval">Freqüència de còpia de seguretat</string>
+    <string name="label_backup_off">Desactivat</string>
+    <string name="label_backup_daily">Diari</string>
+    <string name="label_backup_weekly">Setmanal</string>
+    <string name="label_backup_monthly">Mensual</string>
+    <string name="label_backup_now">Realitza una còpia de seguretat ara</string>
+    <string name="label_restore">Restaurar</string>
+    <string name="label_last_backup">Última còpia de seguretat: %s</string>
+    <string name="label_backup_in_progress">Realitzant còpia de seguretat…</string>
+    <string name="label_restore_in_progress">Restaurant…</string>
+    <string name="label_backup_success">Còpia de seguretat completada</string>
+    <string name="label_restore_success">S\&#39;ha restaurat correctament. Si us plau, reinicieu l\&#39;aplicació.</string>
+    <string name="error_backup_failed">La còpia de seguretat ha fallat.</string>
+    <string name="error_restore_failed">La restauració ha fallat.</string>
+    <string name="label_restore_warning">Això substituirà totes les dades actuals. Continuar?</string>
+    <string name="label_select_backup_location">Seleccioneu la carpeta de còpia de seguretat.</string>
+    <string name="label_muscle_biceps">Biceps</string>
+    <string name="label_muscle_triceps">Triceps</string>
+    <string name="label_muscle_back">Enrere</string>
+    <string name="label_muscle_lats">Darrers</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Pit</string>
+    <string name="label_muscle_core">Núcleo</string>
+    <string name="label_muscle_glutes">Glúteos</string>
+    <string name="label_muscle_calves">Solpeus</string>
+    <string name="label_muscle_hamstrings">Isquiotibials</string>
+    <string name="label_muscle_quads">Cuadriceps</string>
+    <string name="label_muscle_shoulders">Hombros</string>
+    <string name="label_select_a_plan">Seleccioneu un pla</string>
+    <string name="label_selecting_a_plan">Comença seleccionant un pla.</string>
+    <string name="label_start_first_session">Comença la teva primera sessió</string>
+    <string name="label_start_session_heading">Comença la sessió d\&#39;avui</string>
+    <string name="label_continue_session_heading">Continua la sessió d\&#39;avui</string>
+    <string name="label_next">Següent</string>
+    <string name="label_boarding_quote">La teva propera transformació comença aquí.</string>
+    <string name="label_no_sessions">No s\&#39;han realitzat sessions.</string>
+    <string-array name="label_features">
+        <item>Seguimiento del progreso</item>
+        <item>Sobrecarga progresiva</item>
+        <item>Estadísticas</item>
+        <item>Gestión de planes</item>
+        <item>Retroalimentación rápida</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>ho pots aconseguir</item>
+        <item>la salut està a les teves mans</item>
+        <item>la salut és riquesa</item>
+        <item>l\&#39;entrenament també és la meva teràpia</item>
+        <item>l\&#39;entrenament també és la meva teràpia</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>sí, compi... pes a la lleugera</item>
+        <item>pes a la lleugera</item>
+        <item>no hi ha res més que fer</item>
+        <item>no es tracta de ser lleuger</item>
+        <item>volia dir que és fantàstic, oi?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>dilluns</item>
+        <item>dimarts</item>
+        <item>dimecres</item>
+        <item>dijous</item>
+        <item>divendres</item>
+        <item>dissabte</item>
+        <item>diumenge</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>dilluns</item>
+        <item>dimarts</item>
+        <item>dimecres</item>
+        <item>dijous</item>
+        <item>divendres</item>
+        <item>dissabte</item>
+        <item>diumenge</item>
+    </string-array>
+</resources>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ terveellinen</string>
+    <string name="label_kenko_meaning_ALT">○ vahva</string>
+    <string name="label_lets_go">Aloita</string>
+    <string name="label_continue_session">Jatka</string>
+    <string name="label_start_session">Aloita</string>
+    <string name="label_explore_exercises">Tutustu\nHarjoituksiin</string>
+    <string name="label_session_history_home">Harjoituskerta\nHistoria</string>
+    <string name="label_sessions_title">Treenit</string>
+    <string name="label_nothing_today">Ei mitään tänään</string>
+    <string name="label_missed_day">Jäikö treeni väliin?</string>
+    <string name="label_plans_title">Suunnitelmat</string>
+    <string name="label_edit_plan">Muokkaa ohjelma</string>
+    <string name="no_exercises_yet">Ei vielä liikuntatreeniohjelmia</string>
+    <string name="label_clean_up">Siivoa</string>
+    <string name="label_clean_up_plans">Tyhjennäkö tyhjät suunnitelmat?</string>
+    <string name="heading_select_plan_name">Valitse ohjelman nimi</string>
+    <string name="heading_select_plan_items">Valitse harjoitukset</string>
+    <string name="desc_select_plan_name">Suunnitelman nimen tulisi olla helppo muistaa ja ei liian pitkä. Ihannetapauksessa se on yksilöllinen eikä sisällä erikoismerkkejä.\n
+  esim: Push Pull Leg, Strength Cycle jne.</string>
+    <string name="label_select_plan">Valitse ohjelma</string>
+    <string name="label_select_plan_one">Valitse ohjelma</string>
+    <string name="label_current_plan_FORMAT">Nykyinen: %s</string>
+    <string name="label_lifts">Toiminnat</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Sela harjoitukset</string>
+    <string name="label_all_muscle_groups">Kaikki</string>
+    <string name="label_create_exercise">Luo</string>
+    <string name="label_new_exercise">Lisää harjoitus</string>
+    <string name="label_edit_exercise">Muokkaa</string>
+    <string name="label_target">Kohde</string>
+    <string name="label_is_isometric">Isometrinen</string>
+    <string name="label_reference">Viittaus</string>
+    <string name="label_is_isometric_DESC">Liikunta vaatii staattisia asentoja.</string>
+    <string name="label_reference_optional">valinnainen*</string>
+    <string name="label_exercise_exists">Harjoitus on jo olemassa</string>
+    <string name="label_add_exercise_header">Lisää harjoitus</string>
+    <string name="label_search_exercise">Etsi harjoitus</string>
+    <string name="label_no_exercise_today">Ei suunniteltuja harjoituksia tänään.</string>
+    <string name="label_add_set_for">Lisää toisto</string>
+    <string name="label_plus_int">+%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Asetukset</string>
+    <string name="label_name">Nimi</string>
+    <string name="label_add">Lisää</string>
+    <string name="label_save">Tallenna</string>
+    <string name="label_yes">Kyllä</string>
+    <string name="label_no">Ei</string>
+    <string name="label_session">Treeni</string>
+    <string name="label_exercise">Harjoitus</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">kesto</string>
+    <string name="label_weight">.weight</string>
+    <string name="label_profile">Sinä</string>
+    <string name="label_activity">Aktiivisuus</string>
+    <string name="error_not_enough_activity">Lähde liikkeelle...</string>
+    <string name="error_invalid_reference_format">Virheellinen viittausmuoto</string>
+    <string name="error_invalid_url">Virheellinen URL-osoite</string>
+    <string name="error_unknown">Tuntematon virhe</string>
+    <string name="error_plan_name_empty">Anna ohjelman nimi</string>
+    <string name="error_plan_name_exists">Suunnitelman nimi on jo käytössä</string>
+    <string name="error_exercise_name_empty">Anna harjoituksen nimi</string>
+    <string name="error_plan_empty_prompt">Hylätäänkö suunnitelma?. Paina takaisin-painiketta uudelleen palataksesi.</string>
+    <string name="error_cant_find_session">Ei löydy harjoitusta</string>
+    <string name="error_cant_find_exercise">Liikuntaa ei löydy</string>
+    <string name="label_theme">Teema</string>
+    <string name="label_theme_system">Järjestelmä</string>
+    <string name="label_theme_light">Valo</string>
+    <string name="label_theme_dark">Tumma</string>
+    <string name="label_color_palettes">Väripaletit</string>
+    <string name="label_color_scheme_default">Oletusarvo</string>
+    <string name="label_color_scheme_dynamic">Dynaaminen</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Eläväinen</string>
+    <string name="label_color_scheme_twilight">Twilight</string>
+    <string name="label_backup">Varmuuskopioi ja palauta</string>
+    <string name="label_backup_location">Varmuuskopion sijainti</string>
+    <string name="label_backup_interval">Varmuuskopioinnin tiheys</string>
+    <string name="label_backup_off">Pois</string>
+    <string name="label_backup_daily">Päivittäin</string>
+    <string name="label_backup_weekly">Viikoittain</string>
+    <string name="label_backup_monthly">Kuukausittain</string>
+    <string name="label_backup_now">Varmuuskopioi nyt</string>
+    <string name="label_restore">Palauta</string>
+    <string name="label_last_backup">Viimeisin varmuuskopio: %s</string>
+    <string name="label_backup_in_progress">Varmuuskopiointi käynnissä…</string>
+    <string name="label_restore_in_progress">Palautetaan…</string>
+    <string name="label_backup_success">Varmuuskopiointi valmis</string>
+    <string name="label_restore_success">Palautus on valmis. Käynnistä sovellus uudelleen.</string>
+    <string name="error_backup_failed">Varmuuskopiointi epäonnistui</string>
+    <string name="error_restore_failed">Palautus epäonnistui</string>
+    <string name="label_restore_warning">Tämä korvaa kaikki nykyiset tiedot. Jatkaako?</string>
+    <string name="label_select_backup_location">Valitse varmuuskopiointikansio</string>
+    <string name="label_muscle_biceps">Biceps</string>
+    <string name="label_muscle_triceps">Triceps</string>
+    <string name="label_muscle_back">Takaisin</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Rinta</string>
+    <string name="label_muscle_core">Core</string>
+    <string name="label_muscle_glutes">Pakaralihakset</string>
+    <string name="label_muscle_calves">Pohkeet</string>
+    <string name="label_muscle_hamstrings">Takareidet</string>
+    <string name="label_muscle_quads">Reidet</string>
+    <string name="label_muscle_shoulders">Olkapäät</string>
+    <string name="label_select_a_plan">Valitse ohjelma</string>
+    <string name="label_selecting_a_plan">Aloita valitsemalla ohjelma.</string>
+    <string name="label_start_first_session">Aloita ensimmäinen harjoituskerta</string>
+    <string name="label_start_session_heading">Aloita tämän päivän treeni.</string>
+    <string name="label_continue_session_heading">Jatka tämän päivän treeniä</string>
+    <string name="label_next">Seuraava</string>
+    <string name="label_boarding_quote">Seuraava kehitysmatkasi alkaa tästä.</string>
+    <string name="label_no_sessions">Ei suoritettuja treenejä</string>
+    <string-array name="label_features">
+        <item>Edistymisen seuranta</item>
+        <item>Progressiivinen kuormitus</item>
+        <item>Tilastot</item>
+        <item>Suunnittelu</item>
+        <item>Nopea palaute</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>voit tehdä sen</item>
+        <item>terveys on sinun käsissäsi</item>
+        <item>terveys on vauraus</item>
+        <item>harjoittelu on myös minun terapiaani</item>
+        <item>harjoittelu on myös minun terapiaani</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>kyllä joo… pieni paino</item>
+        <item>pieni paino</item>
+        <item>ei tässä ole mitään, paitsi tekemistä</item>
+        <item>ei ole kyse siitä, että paino olisi pieni</item>
+        <item>tarkoitan, se on mahtavaa, eikö\?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>.maanantai</item>
+        <item>.tiistai</item>
+        <item>.keskiviikko</item>
+        <item>.torstai</item>
+        <item>.perjantai</item>
+        <item>.lauantai</item>
+        <item>.sunnuntai</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Maanantai</item>
+        <item>Tiistai</item>
+        <item>Keskiviikko</item>
+        <item>Torstai</item>
+        <item>Perjantai</item>
+        <item>Lauantai</item>
+        <item>Sunnuntai</item>
+    </string-array>
+</resources>

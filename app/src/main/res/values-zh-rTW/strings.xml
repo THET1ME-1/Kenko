@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ 健康</string>
+    <string name="label_kenko_meaning_ALT">○ strong</string>
+    <string name="label_lets_go">開始使用</string>
+    <string name="label_continue_session">繼續</string>
+    <string name="label_start_session">開始</string>
+    <string name="label_explore_exercises">探索\n運動</string>
+    <string name="label_session_history_home">训练\n记录</string>
+    <string name="label_sessions_title">訓練課程</string>
+    <string name="label_nothing_today">今天沒有任何內容</string>
+    <string name="label_missed_day">您錯過了一天嗎？</string>
+    <string name="label_plans_title">計畫</string>
+    <string name="label_edit_plan">編輯計畫</string>
+    <string name="no_exercises_yet">目前沒有任何運動項目。</string>
+    <string name="label_clean_up">清理</string>
+    <string name="label_clean_up_plans">清除空的計畫？</string>
+    <string name="heading_select_plan_name">選擇計畫名稱</string>
+    <string name="heading_select_plan_items">選擇運動項目</string>
+    <string name="desc_select_plan_name">計畫名稱應該容易記住且不宜過長。理想情況下，名稱應獨一無二且不含特殊符號。
+  例如：Push Pull Leg, Strength Cycle 等。</string>
+    <string name="label_select_plan">選擇方案</string>
+    <string name="label_select_plan_one">選擇方案</string>
+    <string name="label_current_plan_FORMAT">目前：%s</string>
+    <string name="label_lifts">舉重</string>
+    <string name="label_plan_description">\n
+  \n</string>
+    <string name="label_browse_exercises">瀏覽運動項目</string>
+    <string name="label_all_muscle_groups">全部</string>
+    <string name="label_create_exercise">創建</string>
+    <string name="label_new_exercise">新增運動</string>
+    <string name="label_edit_exercise">編輯</string>
+    <string name="label_target">目標</string>
+    <string name="label_is_isometric">等長收縮</string>
+    <string name="label_reference">參考</string>
+    <string name="label_is_isometric_DESC">運動需要靜態保持。</string>
+    <string name="label_reference_optional">可選*</string>
+    <string name="label_exercise_exists">運動已存在</string>
+    <string name="label_add_exercise_header">新增運動</string>
+    <string name="label_search_exercise">搜尋運動</string>
+    <string name="label_no_exercise_today">今天沒有安排任何運動項目。</string>
+    <string name="label_add_set_for">添加组数</string>
+    <string name="label_plus_int">+%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">設定</string>
+    <string name="label_name">名稱</string>
+    <string name="label_add">新增</string>
+    <string name="label_save">儲存</string>
+    <string name="label_yes">是</string>
+    <string name="label_no">無</string>
+    <string name="label_session">Session</string>
+    <string name="label_exercise">運動</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">.duration</string>
+    <string name="label_weight">.weight</string>
+    <string name="label_profile">您</string>
+    <string name="label_activity">活動</string>
+    <string name="error_not_enough_activity">開始運動...</string>
+    <string name="error_invalid_reference_format">無效的引用格式</string>
+    <string name="error_invalid_url">無效的網址</string>
+    <string name="error_unknown">未知錯誤</string>
+    <string name="error_plan_name_empty">輸入計畫名稱</string>
+    <string name="error_plan_name_exists">计划名称已在使用中</string>
+    <string name="error_exercise_name_empty">輸入運動名稱</string>
+    <string name="error_plan_empty_prompt">放棄計畫？再次點擊返回按鈕以返回。</string>
+    <string name="error_cant_find_session">找不到課程</string>
+    <string name="error_cant_find_exercise">找不到運動項目</string>
+    <string name="label_theme">主題</string>
+    <string name="label_theme_system">系统</string>
+    <string name="label_theme_light">亮度</string>
+    <string name="label_theme_dark">深色</string>
+    <string name="label_color_palettes">色彩方案</string>
+    <string name="label_color_scheme_default">預設</string>
+    <string name="label_color_scheme_dynamic">動態</string>
+    <string name="label_color_scheme_serene">寧靜</string>
+    <string name="label_color_scheme_zestful">活力四射</string>
+    <string name="label_color_scheme_twilight">暮光</string>
+    <string name="label_backup">備份與還原</string>
+    <string name="label_backup_location">備份位置</string>
+    <string name="label_backup_interval">備份頻率</string>
+    <string name="label_backup_off">關閉</string>
+    <string name="label_backup_daily">每日</string>
+    <string name="label_backup_weekly">每週</string>
+    <string name="label_backup_monthly">每月</string>
+    <string name="label_backup_now">立即備份</string>
+    <string name="label_restore">恢復</string>
+    <string name="label_last_backup">上次備份：%s</string>
+    <string name="label_backup_in_progress">正在备份…</string>
+    <string name="label_restore_in_progress">正在恢复…</string>
+    <string name="label_backup_success">備份完成</string>
+    <string name="label_restore_success">恢復完成。請重新啟動應用程式。</string>
+    <string name="error_backup_failed">備份失敗</string>
+    <string name="error_restore_failed">恢復失敗</string>
+    <string name="label_restore_warning">這將取代所有目前資料。是否繼續？</string>
+    <string name="label_select_backup_location">選擇備份資料夾</string>
+    <string name="label_muscle_biceps">肱二頭肌</string>
+    <string name="label_muscle_triceps">肱三头肌</string>
+    <string name="label_muscle_back">返回</string>
+    <string name="label_muscle_lats">背闊肌</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">胸部</string>
+    <string name="label_muscle_core">核心</string>
+    <string name="label_muscle_glutes">臀部</string>
+    <string name="label_muscle_calves">小腿</string>
+    <string name="label_muscle_hamstrings">跱绳肌</string>
+    <string name="label_muscle_quads">股四頭肌</string>
+    <string name="label_muscle_shoulders">肩膀</string>
+    <string name="label_select_a_plan">選擇方案</string>
+    <string name="label_selecting_a_plan">開始時，請選擇一個計畫。</string>
+    <string name="label_start_first_session">開始您的第一項訓練</string>
+    <string name="label_start_session_heading">開始今天的訓練。</string>
+    <string name="label_continue_session_heading">繼續今天的訓練</string>
+    <string name="label_next">下一步</string>
+    <string name="label_boarding_quote">您的下一次蛻變從這裡開始。</string>
+    <string name="label_no_sessions">尚未進行任何訓練。</string>
+    <string-array name="label_features">
+        <item>進度追蹤</item>
+        <item>漸進式超負荷</item>
+        <item>統計資料</item>
+        <item>計畫管理</item>
+        <item>快速回饋</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>你可以做到</item>
+        <item>健康掌握在你的手中</item>
+        <item>健康是财富</item>
+        <item>運動是我的療法</item>
+        <item>運動是我的療法</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>沒問題，伙計… 輕重量</item>
+        <item>輕重量</item>
+        <item>這沒什麼難的，只要去做</item>
+        <item>重點不在重量</item>
+        <item>我是說，這真是太棒了，對吧？</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>星期一</item>
+        <item>星期二</item>
+        <item>星期三</item>
+        <item>星期四</item>
+        <item>星期五</item>
+        <item>星期六</item>
+        <item>星期日</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>星期一</item>
+        <item>星期二</item>
+        <item>星期三</item>
+        <item>星期四</item>
+        <item>星期五</item>
+        <item>星期六</item>
+        <item>星期日</item>
+    </string-array>
+</resources>

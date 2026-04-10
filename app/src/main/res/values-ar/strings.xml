@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ صحي</string>
+    <string name="label_kenko_meaning_ALT">○ قوي</string>
+    <string name="label_lets_go">ابدأ الآن</string>
+    <string name="label_continue_session">استمر</string>
+    <string name="label_start_session">ابدأ</string>
+    <string name="label_explore_exercises">استكشف التمارين</string>
+    <string name="label_session_history_home">السجل\nالتاريخ</string>
+    <string name="label_sessions_title">الجلسات</string>
+    <string name="label_nothing_today">لا شيء اليوم</string>
+    <string name="label_missed_day">هل فوّت يومًا؟</string>
+    <string name="label_plans_title">خطط</string>
+    <string name="label_edit_plan">تعديل الخطة</string>
+    <string name="no_exercises_yet">لم يتم إضافة تمارين بعد</string>
+    <string name="label_clean_up">نظف</string>
+    <string name="label_clean_up_plans">هل تريد مسح الخطط الفارغة؟</string>
+    <string name="heading_select_plan_name">اختر اسمًا للخطة</string>
+    <string name="heading_select_plan_items">اختر التمارين</string>
+    <string name="desc_select_plan_name">يجب أن يكون اسم الخطة سهل التذكر وغير طويل جدًا. من الأفضل أن يكون فريدًا ولا يحتوي على رموز خاصة.
+  مثال: Push Pull Leg, Strength Cycle، إلخ.</string>
+    <string name="label_select_plan">اختر البرنامج</string>
+    <string name="label_select_plan_one">اختر البرنامج</string>
+    <string name="label_current_plan_FORMAT">الحالي: %s</string>
+    <string name="label_lifts">رفعات</string>
+    <string name="label_plan_description">هذه سلسلة نصية من تطبيق لتتبع اللياقة البدنية للتمارين في صالة الألعاب الرياضية.</string>
+    <string name="label_browse_exercises">تصفح التمارين</string>
+    <string name="label_all_muscle_groups">كل</string>
+    <string name="label_create_exercise">إنشاء</string>
+    <string name="label_new_exercise">إضافة تمرين</string>
+    <string name="label_edit_exercise">تعديل</string>
+    <string name="label_target">هذه سلسلة نصية من تطبيق لتتبع اللياقة البدنية للتمارين في صالة الألعاب الرياضية.</string>
+    <string name="label_is_isometric">تمارين متساوية الشدة</string>
+    <string name="label_reference">مرجع</string>
+    <string name="label_is_isometric_DESC">يتطلب التمرين ثباتًا في الوضع.</string>
+    <string name="label_reference_optional">اختياري*</string>
+    <string name="label_exercise_exists">تمت إضافة التمرين بالفعل</string>
+    <string name="label_add_exercise_header">إضافة تمرين</string>
+    <string name="label_search_exercise">ابحث عن تمرين</string>
+    <string name="label_no_exercise_today">لم يتم تخطيط أي تمارين لليوم.</string>
+    <string name="label_add_set_for">أضف مجموعة تمارين</string>
+    <string name="label_plus_int">+%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">الإعدادات</string>
+    <string name="label_name">الاسم</string>
+    <string name="label_add">أضف</string>
+    <string name="label_save">حفظ</string>
+    <string name="label_yes">نعم</string>
+    <string name="label_no">لا</string>
+    <string name="label_session">الجلسة</string>
+    <string name="label_exercise">تمرين</string>
+    <string name="label_reps">عدد التكرارات</string>
+    <string name="label_duration">المدة</string>
+    <string name="label_weight">.weight</string>
+    <string name="label_profile">أنت</string>
+    <string name="label_activity">نشاط</string>
+    <string name="error_not_enough_activity">ابدأ التحرك...</string>
+    <string name="error_invalid_reference_format">تنسيق مرجع غير صالح</string>
+    <string name="error_invalid_url">عنوان URL غير صالح</string>
+    <string name="error_unknown">خطأ غير معروف</string>
+    <string name="error_plan_name_empty">أدخل اسم الخطة</string>
+    <string name="error_plan_name_exists">اسم الخطة مستخدم بالفعل</string>
+    <string name="error_exercise_name_empty">أدخل اسم التمرين</string>
+    <string name="error_plan_empty_prompt">هل تريد التخلي عن الخطة؟ اضغط على زر الرجوع مرة أخرى للعودة.</string>
+    <string name="error_cant_find_session">لا يمكن العثور على الجلسة</string>
+    <string name="error_cant_find_exercise">لا يمكن العثور على التمرين</string>
+    <string name="label_theme">السمة</string>
+    <string name="label_theme_system">النظام</string>
+    <string name="label_theme_light">إضاءة</string>
+    <string name="label_theme_dark">داكن</string>
+    <string name="label_color_palettes">لوحات الألوان</string>
+    <string name="label_color_scheme_default">الافتراضي</string>
+    <string name="label_color_scheme_dynamic">ديناميكي</string>
+    <string name="label_color_scheme_serene">هادئ</string>
+    <string name="label_color_scheme_zestful">Zestful</string>
+    <string name="label_color_scheme_twilight">الشفق</string>
+    <string name="label_backup">النسخ الاحتياطي والاستعادة</string>
+    <string name="label_backup_location">موقع النسخ الاحتياطي</string>
+    <string name="label_backup_interval">تكرار النسخ الاحتياطي</string>
+    <string name="label_backup_off">إيقاف</string>
+    <string name="label_backup_daily">يوميًا</string>
+    <string name="label_backup_weekly">أسبوعي</string>
+    <string name="label_backup_monthly">شهري</string>
+    <string name="label_backup_now">قم بعمل نسخة احتياطية الآن</string>
+    <string name="label_restore">استعادة</string>
+    <string name="label_last_backup">آخر نسخة احتياطية: %s</string>
+    <string name="label_backup_in_progress">جاري النسخ الاحتياطي…</string>
+    <string name="label_restore_in_progress">جار الاستعادة…</string>
+    <string name="label_backup_success">تمت عملية النسخ الاحتياطي بنجاح</string>
+    <string name="label_restore_success">تمت الاستعادة بنجاح. يرجى إعادة تشغيل التطبيق.</string>
+    <string name="error_backup_failed">فشل النسخ الاحتياطي</string>
+    <string name="error_restore_failed">فشل الاستعادة</string>
+    <string name="label_restore_warning">سيؤدي هذا إلى استبدال جميع البيانات الحالية. هل تريد المتابعة؟</string>
+    <string name="label_select_backup_location">اختر مجلد النسخ الاحتياطي</string>
+    <string name="label_muscle_biceps">عضلات الذراع الأمامية</string>
+    <string name="label_muscle_triceps">العضلة ثلاثية الرؤوس</string>
+    <string name="label_muscle_back">رجوع</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_traps">فخاخ</string>
+    <string name="label_muscle_chest">الصدر</string>
+    <string name="label_muscle_core">جوهر</string>
+    <string name="label_muscle_glutes">عضلات الأرداف</string>
+    <string name="label_muscle_calves">الساقين</string>
+    <string name="label_muscle_hamstrings">عضلات الفخذ الخلفية</string>
+    <string name="label_muscle_quads">عضلات الفخذ الأمامية</string>
+    <string name="label_muscle_shoulders">الكتفين</string>
+    <string name="label_select_a_plan">اختر خطة</string>
+    <string name="label_selecting_a_plan">ابدأ باختيار خطة</string>
+    <string name="label_start_first_session">ابدأ أول تمرين لك</string>
+    <string name="label_start_session_heading">ابدأ جلسة اليوم</string>
+    <string name="label_continue_session_heading">استمر في التمرين اليوم.</string>
+    <string name="label_next">التالي</string>
+    <string name="label_boarding_quote">تبدأ رحلتك نحو التحول التالي من هنا.</string>
+    <string name="label_no_sessions">لم يتم إجراء أي جلسات</string>
+    <string-array name="label_features">
+        <item>تتبع التقدم</item>
+        <item>زيادة تدريجية</item>
+        <item>إحصائيات</item>
+        <item>إدارة الخطط</item>
+        <item>تغذية راجعة سريعة</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>يمكنك فعل ذلك</item>
+        <item>الصحة بين يديك</item>
+        <item>الصحة هي الثروة</item>
+        <item>التمارين الرياضية هي علاجي أيضًا</item>
+        <item>التمارين الرياضية هي علاجي أيضًا</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>نعم يا صديقي… وزن خفيف</item>
+        <item>وزن خفيف</item>
+        <item>الأمر ليس صعبًا، بل سهل</item>
+        <item>الأمر لا يتعلق بكونه خفيفًا</item>
+        <item>أعني أنه رائع، أليس كذلك؟</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>الاثنين</item>
+        <item>الثلاثاء</item>
+        <item>الأربعاء</item>
+        <item>الخميس</item>
+        <item>الجمعة</item>
+        <item>السبت</item>
+        <item>الأحد</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>الاثنين</item>
+        <item>الثلاثاء</item>
+        <item>الأربعاء</item>
+        <item>الخميس</item>
+        <item>الجمعة</item>
+        <item>السبت</item>
+        <item>الأحد</item>
+    </string-array>
+</resources>

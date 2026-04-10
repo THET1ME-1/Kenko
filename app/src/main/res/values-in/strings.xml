@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ sehat</string>
+    <string name="label_kenko_meaning_ALT">○ kuat</string>
+    <string name="label_lets_go">Mulai</string>
+    <string name="label_continue_session">Lanjutkan</string>
+    <string name="label_start_session">Mulai</string>
+    <string name="label_explore_exercises">Jelajahi\nLatihan</string>
+    <string name="label_session_history_home">Riwayat Sesi</string>
+    <string name="label_sessions_title">Sesi</string>
+    <string name="label_nothing_today">Tidak ada yang perlu dilakukan hari ini</string>
+    <string name="label_missed_day">Apakah Anda melewatkan hari itu?</string>
+    <string name="label_plans_title">Rencana</string>
+    <string name="label_edit_plan">Edit Rencana</string>
+    <string name="no_exercises_yet">Belum ada latihan.</string>
+    <string name="label_clean_up">Bersihkan</string>
+    <string name="label_clean_up_plans">Apakah Anda ingin menghapus rencana yang kosong?</string>
+    <string name="heading_select_plan_name">Pilih nama rencana</string>
+    <string name="heading_select_plan_items">Pilih latihan</string>
+    <string name="desc_select_plan_name">Nama rencana sebaiknya mudah diingat dan tidak terlalu panjang. Idealnya unik dan tidak mengandung simbol khusus.
+  e.g: Push Pull Leg, Strength Cycle, dll.</string>
+    <string name="label_select_plan">Pilih Program</string>
+    <string name="label_select_plan_one">Pilih Program</string>
+    <string name="label_current_plan_FORMAT">Saat ini: %s</string>
+    <string name="label_lifts">Latihan</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Jelajahi Latihan</string>
+    <string name="label_all_muscle_groups">Semua</string>
+    <string name="label_create_exercise">Buat</string>
+    <string name="label_new_exercise">Tambahkan Latihan</string>
+    <string name="label_edit_exercise">Edit</string>
+    <string name="label_target">Target</string>
+    <string name="label_is_isometric">Isometric</string>
+    <string name="label_reference">Referensi</string>
+    <string name="label_is_isometric_DESC">Latihan membutuhkan posisi statis.</string>
+    <string name="label_reference_optional">opsional*</string>
+    <string name="label_exercise_exists">Latihan Sudah Ada</string>
+    <string name="label_add_exercise_header">Tambahkan Latihan</string>
+    <string name="label_search_exercise">Cari Latihan</string>
+    <string name="label_no_exercise_today">Tidak ada latihan yang direncanakan hari ini</string>
+    <string name="label_add_set_for">Tambahkan Set untuk</string>
+    <string name="label_plus_int">%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Pengaturan</string>
+    <string name="label_name">Nama</string>
+    <string name="label_add">Tambahkan</string>
+    <string name="label_save">Simpan</string>
+    <string name="label_yes">Ya</string>
+    <string name="label_no">Tidak</string>
+    <string name="label_session">Sesi</string>
+    <string name="label_exercise">Latihan</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">durasi</string>
+    <string name="label_weight">berat</string>
+    <string name="label_profile">Anda</string>
+    <string name="label_activity">Aktivitas</string>
+    <string name="error_not_enough_activity">Mulai bergerak...</string>
+    <string name="error_invalid_reference_format">Format referensi tidak valid</string>
+    <string name="error_invalid_url">URL tidak valid</string>
+    <string name="error_unknown">Kesalahan Tidak Diketahui</string>
+    <string name="error_plan_name_empty">Masukkan nama rencana</string>
+    <string name="error_plan_name_exists">Nama rencana sudah digunakan</string>
+    <string name="error_exercise_name_empty">Masukkan nama latihan</string>
+    <string name="error_plan_empty_prompt">Batalkan rencana? Tekan tombol kembali lagi untuk kembali.</string>
+    <string name="error_cant_find_session">Tidak dapat menemukan sesi</string>
+    <string name="error_cant_find_exercise">Tidak dapat menemukan latihan</string>
+    <string name="label_theme">Tema</string>
+    <string name="label_theme_system">Sistem</string>
+    <string name="label_theme_light">Cahaya</string>
+    <string name="label_theme_dark">Gelap</string>
+    <string name="label_color_palettes">Palet Warna</string>
+    <string name="label_color_scheme_default">Default</string>
+    <string name="label_color_scheme_dynamic">Dinamis</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Zestful</string>
+    <string name="label_color_scheme_twilight">Twilight</string>
+    <string name="label_backup">Cadangkan &amp; Pulihkan</string>
+    <string name="label_backup_location">Lokasi Cadangan</string>
+    <string name="label_backup_interval">Frekuensi Pencadangan</string>
+    <string name="label_backup_off">Off</string>
+    <string name="label_backup_daily">Harian</string>
+    <string name="label_backup_weekly">Mingguan</string>
+    <string name="label_backup_monthly">Bulanan</string>
+    <string name="label_backup_now">Cadangkan Sekarang</string>
+    <string name="label_restore">Pulihkan</string>
+    <string name="label_last_backup">Cadangan Terakhir: %s</string>
+    <string name="label_backup_in_progress">Sedang melakukan pencadangan…</string>
+    <string name="label_restore_in_progress">Memulihkan…</string>
+    <string name="label_backup_success">Pencadangan selesai</string>
+    <string name="label_restore_success">Pemulihan selesai. Harap mulai ulang aplikasi.</string>
+    <string name="error_backup_failed">Pencadangan gagal</string>
+    <string name="error_restore_failed">Pemulihan gagal</string>
+    <string name="label_restore_warning">Ini akan mengganti semua data yang ada. Lanjutkan?</string>
+    <string name="label_select_backup_location">Pilih folder cadangan</string>
+    <string name="label_muscle_biceps">Biceps</string>
+    <string name="label_muscle_triceps">Triceps</string>
+    <string name="label_muscle_back">Kembali</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Dada</string>
+    <string name="label_muscle_core">Inti</string>
+    <string name="label_muscle_glutes">Glutes</string>
+    <string name="label_muscle_calves">Betis</string>
+    <string name="label_muscle_hamstrings">Otot paha belakang</string>
+    <string name="label_muscle_quads">Quadriceps</string>
+    <string name="label_muscle_shoulders">Bahu</string>
+    <string name="label_select_a_plan">Pilih Rencana</string>
+    <string name="label_selecting_a_plan">Mulai dengan memilih sebuah rencana.</string>
+    <string name="label_start_first_session">Mulai sesi pertama Anda</string>
+    <string name="label_start_session_heading">Mulai sesi hari ini</string>
+    <string name="label_continue_session_heading">Lanjutkan sesi hari ini</string>
+    <string name="label_next">Selanjutnya</string>
+    <string name="label_boarding_quote">Transformasi Anda berikutnya dimulai di sini.</string>
+    <string name="label_no_sessions">Tidak ada sesi yang dilakukan</string>
+    <string-array name="label_features">
+        <item>Pelacakan Kemajuan</item>
+        <item>Peningkatan Bertahap</item>
+        <item>Statistik</item>
+        <item>Manajemen Rencana</item>
+        <item>Umpan Balik Cepat</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>Anda bisa melakukannya</item>
+        <item>Kesehatan ada di tangan Anda</item>
+        <item>Kesehatan adalah kekayaan</item>
+        <item>Olahraga adalah terapi saya juga</item>
+        <item>Olahraga adalah terapi saya juga</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>ya, teman… beban ringan</item>
+        <item>beban ringan</item>
+        <item>tidak ada yang sulit selain melakukannya</item>
+        <item>ini bukan tentang beban ringan</item>
+        <item>maksudku, ini luar biasa, kan?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>Senin</item>
+        <item>Selasa</item>
+        <item>Rabu</item>
+        <item>Kamis</item>
+        <item>Jumat</item>
+        <item>Sabtu</item>
+        <item>Minggu</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Senin</item>
+        <item>Selasa</item>
+        <item>Rabu</item>
+        <item>Kamis</item>
+        <item>Jumat</item>
+        <item>Sabtu</item>
+        <item>Minggu</item>
+    </string-array>
+</resources>

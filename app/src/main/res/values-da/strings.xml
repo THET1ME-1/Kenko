@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ sund</string>
+    <string name="label_kenko_meaning_ALT">○ strong</string>
+    <string name="label_lets_go">Kom i gang</string>
+    <string name="label_continue_session">Fortsæt</string>
+    <string name="label_start_session">Start</string>
+    <string name="label_explore_exercises">Udforsk\nØvelser</string>
+    <string name="label_session_history_home">Session
+Historik</string>
+    <string name="label_sessions_title">Træningspas</string>
+    <string name="label_nothing_today">Intet i dag</string>
+    <string name="label_missed_day">Missede du dagen?</string>
+    <string name="label_plans_title">Planer</string>
+    <string name="label_edit_plan">Rediger program</string>
+    <string name="no_exercises_yet">Ingen øvelser endnu</string>
+    <string name="label_clean_up">Ryd op</string>
+    <string name="label_clean_up_plans">Vil du slette tomme træningsplaner?</string>
+    <string name="heading_select_plan_name">Vælg et programnavn</string>
+    <string name="heading_select_plan_items">Vælg øvelser</string>
+    <string name="desc_select_plan_name">Navnet på træningsprogrammet skal være let at huske og ikke for langt. Ideelt set unikt og uden specielle symboler.
+  e.g.: Push Pull Leg, Strength Cycle, osv.</string>
+    <string name="label_select_plan">Vælg program</string>
+    <string name="label_select_plan_one">Vælg program</string>
+    <string name="label_current_plan_FORMAT">Nuværende: %s</string>
+    <string name="label_lifts">Løft</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Gennemse øvelser</string>
+    <string name="label_all_muscle_groups">Alt</string>
+    <string name="label_create_exercise">Opret</string>
+    <string name="label_new_exercise">Tilføj træning</string>
+    <string name="label_edit_exercise">Rediger</string>
+    <string name="label_target">Mål</string>
+    <string name="label_is_isometric">Isometrisk</string>
+    <string name="label_reference">Reference</string>
+    <string name="label_is_isometric_DESC">Træning kræver statiske hold.</string>
+    <string name="label_reference_optional">valgfri*</string>
+    <string name="label_exercise_exists">Øvelsen findes allerede</string>
+    <string name="label_add_exercise_header">Tilføj træning</string>
+    <string name="label_search_exercise">Søg efter træning</string>
+    <string name="label_no_exercise_today">Ingen træning planlagt i dag.</string>
+    <string name="label_add_set_for">Tilføj sæt for</string>
+    <string name="label_plus_int">%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Indstillinger</string>
+    <string name="label_name">Navn</string>
+    <string name="label_add">Tilføj</string>
+    <string name="label_save">Gem</string>
+    <string name="label_yes">Ja</string>
+    <string name="label_no">Nej</string>
+    <string name="label_session">Session</string>
+    <string name="label_exercise">Træning</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">varighed</string>
+    <string name="label_weight">vægt</string>
+    <string name="label_profile">Du</string>
+    <string name="label_activity">Aktivitet</string>
+    <string name="error_not_enough_activity">Kom i gang...</string>
+    <string name="error_invalid_reference_format">Ugyldig referencestruktur</string>
+    <string name="error_invalid_url">Ugyldig URL</string>
+    <string name="error_unknown">Ukendt fejl</string>
+    <string name="error_plan_name_empty">Indtast et programnavn</string>
+    <string name="error_plan_name_exists">Planens navn er allerede i brug</string>
+    <string name="error_exercise_name_empty">Indtast et navn for øvelsen</string>
+    <string name="error_plan_empty_prompt">Slet træningsplanen? Tryk på tilbage igen for at gå tilbage.</string>
+    <string name="error_cant_find_session">Kan ikke finde session</string>
+    <string name="error_cant_find_exercise">Kan ikke finde øvelse</string>
+    <string name="label_theme">Tema</string>
+    <string name="label_theme_system">System</string>
+    <string name="label_theme_light">Lys</string>
+    <string name="label_theme_dark">Mørk</string>
+    <string name="label_color_palettes">Farvepaletter</string>
+    <string name="label_color_scheme_default">Standard</string>
+    <string name="label_color_scheme_dynamic">Dynamisk</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Zestful</string>
+    <string name="label_color_scheme_twilight">Twilight</string>
+    <string name="label_backup">Sikkerhedskopi og gendannelse</string>
+    <string name="label_backup_location">Backup placering</string>
+    <string name="label_backup_interval">Backupfrekvens</string>
+    <string name="label_backup_off">Sluk</string>
+    <string name="label_backup_daily">Dagligt</string>
+    <string name="label_backup_weekly">Ugentlig</string>
+    <string name="label_backup_monthly">Månedlig</string>
+    <string name="label_backup_now">Sikkerhedskopiér nu</string>
+    <string name="label_restore">Gendan</string>
+    <string name="label_last_backup">Sidste sikkerhedskopi: %s</string>
+    <string name="label_backup_in_progress">Sikkerhedskopiering…</string>
+    <string name="label_restore_in_progress">Gendan…</string>
+    <string name="label_backup_success">Backup gennemført</string>
+    <string name="label_restore_success">Restaureringen er fuldført. Genstart venligst appen.</string>
+    <string name="error_backup_failed">Backup mislykkedes</string>
+    <string name="error_restore_failed">Gendan fejlede</string>
+    <string name="label_restore_warning">Dette vil overskrive alle eksisterende data. Vil du fortsætte?</string>
+    <string name="label_select_backup_location">Vælg backup-mappe</string>
+    <string name="label_muscle_biceps">Biceps</string>
+    <string name="label_muscle_triceps">Triceps</string>
+    <string name="label_muscle_back">Tilbage</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Bryst</string>
+    <string name="label_muscle_core">Ker</string>
+    <string name="label_muscle_glutes">Glutes</string>
+    <string name="label_muscle_calves">Calvemuskler</string>
+    <string name="label_muscle_hamstrings">Hamstrings</string>
+    <string name="label_muscle_quads">Quads</string>
+    <string name="label_muscle_shoulders">Skuldre</string>
+    <string name="label_select_a_plan">Vælg et program</string>
+    <string name="label_selecting_a_plan">Start med at vælge et program.</string>
+    <string name="label_start_first_session">Start din første træning</string>
+    <string name="label_start_session_heading">Start dagens træning</string>
+    <string name="label_continue_session_heading">Fortsæt dagens træning</string>
+    <string name="label_next">Næste</string>
+    <string name="label_boarding_quote">Din næste forandring starter her.</string>
+    <string name="label_no_sessions">Ingen træningspas udført</string>
+    <string-array name="label_features">
+        <item>Fremdriftssporing</item>
+        <item>Progressiv belastning</item>
+        <item>Statistik</item>
+        <item>Planlægning</item>
+        <item>Hurtig feedback</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>du kan klare det</item>
+        <item>sundhed er i dine hænder</item>
+        <item>sundhed er velstand</item>
+        <item>træning er også min terapi</item>
+        <item>træning er også min terapi</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>ja, min ven… let vægt</item>
+        <item>let vægt</item>
+        <item>det er ikke noget problem, bare gør det</item>
+        <item>det handler ikke om at være let</item>
+        <item>jeg mener, det er fantastisk, ikke sandt?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>mandag</item>
+        <item>tirsdag</item>
+        <item>onsdag</item>
+        <item>torsdag</item>
+        <item>fredag</item>
+        <item>lørdag</item>
+        <item>søndag</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Mandag</item>
+        <item>Tirsdag</item>
+        <item>Onsdag</item>
+        <item>Torsdag</item>
+        <item>Fredag</item>
+        <item>Lørdag</item>
+        <item>Søndag</item>
+    </string-array>
+</resources>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ υγιής</string>
+    <string name="label_kenko_meaning_ALT">○ δυνατός</string>
+    <string name="label_lets_go">Ξεκινήστε</string>
+    <string name="label_continue_session">Συνέχεια</string>
+    <string name="label_start_session">Ξεκινήστε</string>
+    <string name="label_explore_exercises">Εξερευνήστε\nΑσκήσεις</string>
+    <string name="label_session_history_home">Ιστορικό προπονήσεων</string>
+    <string name="label_sessions_title">Προπονήσεις</string>
+    <string name="label_nothing_today">Τίποτα σήμερα</string>
+    <string name="label_missed_day">Ξεπαστήσατε την ημέρα;</string>
+    <string name="label_plans_title">Προγράμματα</string>
+    <string name="label_edit_plan">Επεξεργασία Προγράμματος</string>
+    <string name="no_exercises_yet">Δεν υπάρχουν ακόμη ασκήσεις</string>
+    <string name="label_clean_up">Καθαρισμός</string>
+    <string name="label_clean_up_plans">Θα διαγράψετε τα άδεια προγράμματα;</string>
+    <string name="heading_select_plan_name">Επιλέξτε ένα όνομα προγράμματος</string>
+    <string name="heading_select_plan_items">Επιλέξτε ασκήσεις</string>
+    <string name="desc_select_plan_name">Το όνομα του προγράμματος πρέπει να είναι εύκολο να το θυμάστε και όχι πολύ μεγάλο. Ιδανικά, θα πρέπει να είναι μοναδικό και να μην περιέχει ειδικούς χαρακτήρες.\n
+  Παραδείγματα: Push Pull Leg, Strength Cycle, κ.λπ.</string>
+    <string name="label_select_plan">Επιλέξτε πρόγραμμα</string>
+    <string name="label_select_plan_one">Επιλέξτε πρόγραμμα</string>
+    <string name="label_current_plan_FORMAT">Τρέχουσα: %s</string>
+    <string name="label_lifts">Ασκήσεις</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Περιήγηση στις Ασκήσεις</string>
+    <string name="label_all_muscle_groups">Όλα</string>
+    <string name="label_create_exercise">Δημιουργία</string>
+    <string name="label_new_exercise">Προσθήκη Άσκησης</string>
+    <string name="label_edit_exercise">Επεξεργασία</string>
+    <string name="label_target">Στόχος</string>
+    <string name="label_is_isometric">Ισομετρική</string>
+    <string name="label_reference">Αναφορά</string>
+    <string name="label_is_isometric_DESC">Η άσκηση απαιτεί στατικές στάσεις.</string>
+    <string name="label_reference_optional">προαιρετικό*</string>
+    <string name="label_exercise_exists">Η άσκηση υπάρχει ήδη.</string>
+    <string name="label_add_exercise_header">Προσθήκη Άσκησης</string>
+    <string name="label_search_exercise">Αναζήτηση Άσκησης</string>
+    <string name="label_no_exercise_today">Δεν έχουν προγραμματιστεί ασκήσεις για σήμερα.</string>
+    <string name="label_add_set_for">Προσθήκη Σετ για</string>
+    <string name="label_plus_int">+%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Ρυθμίσεις</string>
+    <string name="label_name">Όνομα</string>
+    <string name="label_add">Προσθέστε</string>
+    <string name="label_save">Αποθήκευση</string>
+    <string name="label_yes">Ναι</string>
+    <string name="label_no">Όχι</string>
+    <string name="label_session">Συνεδρία</string>
+    <string name="label_exercise">Άσκηση</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">διάρκεια</string>
+    <string name="label_weight">.βάρος</string>
+    <string name="label_profile">Εσείς</string>
+    <string name="label_activity">Δραστηριότητα</string>
+    <string name="error_not_enough_activity">Ξεκινήστε την κίνηση...</string>
+    <string name="error_invalid_reference_format">Μη έγκυρη μορφή αναφοράς</string>
+    <string name="error_invalid_url">Μη έγκυρη διεύθυνση URL</string>
+    <string name="error_unknown">Άγνωστο σφάλμα</string>
+    <string name="error_plan_name_empty">Εισάγετε ένα όνομα για το πρόγραμμα.</string>
+    <string name="error_plan_name_exists">Το όνομα του προγράμματος χρησιμοποιείται ήδη.</string>
+    <string name="error_exercise_name_empty">Εισάγετε το όνομα μιας άσκησης</string>
+    <string name="error_plan_empty_prompt">Απορρίψτε το πρόγραμμα; Πατήστε ξανά το κουμπί &#34;Πίσω&#34; για να επιστρέψετε.</string>
+    <string name="error_cant_find_session">Δεν μπορώ να βρω την προπόνηση</string>
+    <string name="error_cant_find_exercise">Δεν μπορώ να βρω την άσκηση.</string>
+    <string name="label_theme">Θέμα</string>
+    <string name="label_theme_system">Σύστημα</string>
+    <string name="label_theme_light">Φως</string>
+    <string name="label_theme_dark">Σκούρο</string>
+    <string name="label_color_palettes">Χρωματικές Παλέτες</string>
+    <string name="label_color_scheme_default">Προεπιλογή</string>
+    <string name="label_color_scheme_dynamic">Δυναμικό</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Ενθουσιώδης</string>
+    <string name="label_color_scheme_twilight">Twilight</string>
+    <string name="label_backup">Δημιουργία αντιγράφου ασφαλείας &amp; Επαναφορά</string>
+    <string name="label_backup_location">Θέση Δημιουργίας Αντιγράφου</string>
+    <string name="label_backup_interval">Συχνότητα Δημιουργίας Αντιγράφων Ασφαλείας</string>
+    <string name="label_backup_off">Απενεργοποίηση</string>
+    <string name="label_backup_daily">Καθημερινά</string>
+    <string name="label_backup_weekly">Εβδομαδιαία</string>
+    <string name="label_backup_monthly">Μηνιαία</string>
+    <string name="label_backup_now">Δημιουργία αντιγράφου ασφαλείας τώρα</string>
+    <string name="label_restore">Επαναφορά</string>
+    <string name="label_last_backup">Τελευταία Αντίγραφο Ασφαλείας: %s</string>
+    <string name="label_backup_in_progress">Δημιουργία αντιγράφου ασφαλείας…</string>
+    <string name="label_restore_in_progress">Επαναφορά…</string>
+    <string name="label_backup_success">Η δημιουργία αντιγράφου ασφαλείας ολοκληρώθηκε.</string>
+    <string name="label_restore_success">Η επαναφορά ολοκληρώθηκε. Παρακαλώ επανεκκινήστε την εφαρμογή.</string>
+    <string name="error_backup_failed">Η δημιουργία αντιγράφου ασφαλείας απέτυχε.</string>
+    <string name="error_restore_failed">Η επαναφορά απέτυχε</string>
+    <string name="label_restore_warning">Αυτό θα αντικαταστήσει όλα τα τρέχοντα δεδομένα. Θέλετε να συνεχίσετε;</string>
+    <string name="label_select_backup_location">Επιλέξτε φάκελο δημιουργίας αντιγράφων ασφαλείας</string>
+    <string name="label_muscle_biceps">Δικέφαλοι μυς</string>
+    <string name="label_muscle_triceps">Τρικέφαλοι</string>
+    <string name="label_muscle_back">Πίσω</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Στήθος</string>
+    <string name="label_muscle_core">Κεντρικό</string>
+    <string name="label_muscle_glutes">Γλουτοί</string>
+    <string name="label_muscle_calves">Γάμπες</string>
+    <string name="label_muscle_hamstrings">Οπίσθιοι μηριαίοι</string>
+    <string name="label_muscle_quads">Quads</string>
+    <string name="label_muscle_shoulders">Ώμοι</string>
+    <string name="label_select_a_plan">Επιλέξτε ένα πρόγραμμα</string>
+    <string name="label_selecting_a_plan">Ξεκινήστε επιλέγοντας ένα πρόγραμμα.</string>
+    <string name="label_start_first_session">Ξεκινήστε την πρώτη σας προπόνηση</string>
+    <string name="label_start_session_heading">Ξεκινήστε τη σημερινή προπόνηση</string>
+    <string name="label_continue_session_heading">Συνεχίστε τη σημερινή προπόνηση</string>
+    <string name="label_next">Επόμενο</string>
+    <string name="label_boarding_quote">Η επόμενη σας μεταμόρφωση ξεκινά εδώ.</string>
+    <string name="label_no_sessions">Δεν πραγματοποιήθηκαν προπονήσεις</string>
+    <string-array name="label_features">
+        <item>Παρακολούθηση Προόδου</item>
+        <item>Προοδευτική Υπερφόρτωση</item>
+        <item>Στατιστικά</item>
+        <item>Διαχείριση Προγράμματος</item>
+        <item>Άμεση Ανατροφοδότηση</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>μπορείς να το κάνεις</item>
+        <item>η υγεία είναι στα χέρια σου</item>
+        <item>η υγεία είναι πλούτος</item>
+        <item>η προπόνηση είναι και η θεραπεία μου</item>
+        <item>η προπόνηση είναι και η θεραπεία μου</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>ναι φίλε… ελαφρύ βάρος</item>
+        <item>ελαφρύ βάρος</item>
+        <item>δεν είναι τίποτα, απλά κάν\&#39;το</item>
+        <item>δεν πρόκειται για το αν είναι ελαφρύ</item>
+        <item>εννοώ ότι είναι καταπληκτικό, σωστά?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>.Δευτέρα</item>
+        <item>.Τρίτη</item>
+        <item>.Τετάρτη</item>
+        <item>.Πέμπτη</item>
+        <item>.Παρασκευή</item>
+        <item>.Σάββατο</item>
+        <item>.Κυριακή</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Δευτέρα</item>
+        <item>Τρίτη</item>
+        <item>Τετάρτη</item>
+        <item>Πέμπτη</item>
+        <item>Παρασκευή</item>
+        <item>Σάββατο</item>
+        <item>Κυριακή</item>
+    </string-array>
+</resources>

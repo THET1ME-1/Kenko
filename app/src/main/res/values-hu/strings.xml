@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ egészséges</string>
+    <string name="label_kenko_meaning_ALT">erős</string>
+    <string name="label_lets_go">Kezdés</string>
+    <string name="label_continue_session">Folytatás</string>
+    <string name="label_start_session">Kezdés</string>
+    <string name="label_explore_exercises">Fedezd fel\nA gyakorlatokat</string>
+    <string name="label_session_history_home">Edzés\nElőzmények</string>
+    <string name="label_sessions_title">Edzések</string>
+    <string name="label_nothing_today">Semmi ma.</string>
+    <string name="label_missed_day">Elfogtad a kihagyott napot?</string>
+    <string name="label_plans_title">Programok</string>
+    <string name="label_edit_plan">Szerkesztés</string>
+    <string name="no_exercises_yet">Még nincs edzés hozzáadva</string>
+    <string name="label_clean_up">Takarítás</string>
+    <string name="label_clean_up_plans">Törölje a üres edzésterveket?</string>
+    <string name="heading_select_plan_name">Válasszon egy terv nevet</string>
+    <string name="heading_select_plan_items">Válassza ki a gyakorlatokat</string>
+    <string name="desc_select_plan_name">A tervek nevek könnyen emlékezetesek és nem túl hosszúak legyenek. Ideális esetben egyediek, és ne tartalmazzanak speciális szimbólumokat.\n
+  például: Push Pull Leg, Strength Cycle, stb.</string>
+    <string name="label_select_plan">Válassza ki a programot</string>
+    <string name="label_select_plan_one">Válassza ki a programot</string>
+    <string name="label_current_plan_FORMAT">Aktuális: %s</string>
+    <string name="label_lifts">Lifting</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Nézd meg a gyakorlatokat</string>
+    <string name="label_all_muscle_groups">Minden</string>
+    <string name="label_create_exercise">Létrehozás</string>
+    <string name="label_new_exercise">Add Exercise</string>
+    <string name="label_edit_exercise">Szerkesztés</string>
+    <string name="label_target">Cél</string>
+    <string name="label_is_isometric">Izometrikus</string>
+    <string name="label_reference">Referencia</string>
+    <string name="label_is_isometric_DESC">A gyakorlat statikus tartást igényel.</string>
+    <string name="label_reference_optional">opcionális*</string>
+    <string name="label_exercise_exists">A gyakorlat már létezik</string>
+    <string name="label_add_exercise_header">Add Exercise</string>
+    <string name="label_search_exercise">Keresés gyakorlat</string>
+    <string name="label_no_exercise_today">Nincs edzés tervezve a mai napra</string>
+    <string name="label_add_set_for">Add Set for</string>
+    <string name="label_plus_int">%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Beállítások</string>
+    <string name="label_name">Név</string>
+    <string name="label_add">Hozzáadás</string>
+    <string name="label_save">Mentés</string>
+    <string name="label_yes">Igen</string>
+    <string name="label_no">Nem</string>
+    <string name="label_session">Edzés</string>
+    <string name="label_exercise">Edzés</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">időtartam</string>
+    <string name="label_weight">súly</string>
+    <string name="label_profile">Te</string>
+    <string name="label_activity">Tevékenység</string>
+    <string name="error_not_enough_activity">Légy aktív...</string>
+    <string name="error_invalid_reference_format">Érvénytelen referencia formátum</string>
+    <string name="error_invalid_url">Érvénytelen URL</string>
+    <string name="error_unknown">Ismeretlen hiba</string>
+    <string name="error_plan_name_empty">Adjon nevet a programnak</string>
+    <string name="error_plan_name_exists">A megadott név már használatban van</string>
+    <string name="error_exercise_name_empty">Adjon meg egy gyakorlat nevét</string>
+    <string name="error_plan_empty_prompt">Törölje a tervet? Nyomja meg újra a visszatérítés gombot a kilépéshez.</string>
+    <string name="error_cant_find_session">Nem találom a tréninget</string>
+    <string name="error_cant_find_exercise">Nem találom a gyakorlatot</string>
+    <string name="label_theme">Téma</string>
+    <string name="label_theme_system">Rendszer</string>
+    <string name="label_theme_light">Világosság</string>
+    <string name="label_theme_dark">Sötét</string>
+    <string name="label_color_palettes">Színpaletták</string>
+    <string name="label_color_scheme_default">Alapértelmezett</string>
+    <string name="label_color_scheme_dynamic">Dinamikus</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Élményekkel teli</string>
+    <string name="label_color_scheme_twilight">Twilight</string>
+    <string name="label_backup">Mentés és visszaállítás</string>
+    <string name="label_backup_location">Mentési hely</string>
+    <string name="label_backup_interval">Mentési gyakoriság</string>
+    <string name="label_backup_off">Ki</string>
+    <string name="label_backup_daily">Napi</string>
+    <string name="label_backup_weekly">Heti</string>
+    <string name="label_backup_monthly">Havi</string>
+    <string name="label_backup_now">Változat készítése most</string>
+    <string name="label_restore">Visszaállítás</string>
+    <string name="label_last_backup">Utolsó biztonsági mentés: %s</string>
+    <string name="label_backup_in_progress">Visszaállítás…</string>
+    <string name="label_restore_in_progress">Visszaállítás…</string>
+    <string name="label_backup_success">A biztonsági mentés befejeződött</string>
+    <string name="label_restore_success">A visszaállítás befejeződött. Kérjük, indítsa újra az alkalmazást.</string>
+    <string name="error_backup_failed">A biztonsági mentés sikertelen volt</string>
+    <string name="error_restore_failed">A visszaállítás nem sikerült</string>
+    <string name="label_restore_warning">Ez felülírja az összes jelenlegi adatot. Folytatja?</string>
+    <string name="label_select_backup_location">Válassza ki a biztonsági mentés helyét</string>
+    <string name="label_muscle_biceps">Biceps</string>
+    <string name="label_muscle_triceps">Triceps</string>
+    <string name="label_muscle_back">Vissza</string>
+    <string name="label_muscle_lats">Lábak</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Mellkas</string>
+    <string name="label_muscle_core">Mag</string>
+    <string name="label_muscle_glutes">Glúteális izmok</string>
+    <string name="label_muscle_calves">Vállak</string>
+    <string name="label_muscle_hamstrings">Hátsó combok</string>
+    <string name="label_muscle_quads">Quads</string>
+    <string name="label_muscle_shoulders">Vállak</string>
+    <string name="label_select_a_plan">Válasszon egy programot</string>
+    <string name="label_selecting_a_plan">Kezdd el a program kiválasztásával</string>
+    <string name="label_start_first_session">Kezd el az első edzésedet</string>
+    <string name="label_start_session_heading">Kezdd el a mai edzést</string>
+    <string name="label_continue_session_heading">Folytasd a mai edzést</string>
+    <string name="label_next">Következő</string>
+    <string name="label_boarding_quote">A következő átalakulás itt kezdődik.</string>
+    <string name="label_no_sessions">Nincs végrehajtott edzés.</string>
+    <string-array name="label_features">
+        <item>Teljesítménykövetés</item>
+        <item>Progresszív túlterhelés</item>
+        <item>Statisztikák</item>
+        <item>Tervkezelés</item>
+        <item>Gyors visszajelzés</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>tudod</item>
+        <item>az egészség a te kezedben van</item>
+        <item>az egészség a vagyon</item>
+        <item>a mozgás a terápia</item>
+        <item>a mozgás a terápia</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>igen, barátom… könnyű súly</item>
+        <item>könnyű súly</item>
+        <item>nincs benne semmi bonyolult</item>
+        <item>nem arról van szó, hogy könnyű legyen</item>
+        <item>úgy értem, ez nagyszerű, nem?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>hétfő</item>
+        <item>kedd</item>
+        <item>szerda</item>
+        <item>csütörtök</item>
+        <item>péntek</item>
+        <item>szombat</item>
+        <item>vasárnap</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Hétfő</item>
+        <item>Kedd</item>
+        <item>Szerda</item>
+        <item>Csütörtök</item>
+        <item>Péntek</item>
+        <item>Szombat</item>
+        <item>Vasárnap</item>
+    </string-array>
+</resources>

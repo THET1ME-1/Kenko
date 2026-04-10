@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ здоровый</string>
+    <string name="label_kenko_meaning_ALT">○ strong</string>
+    <string name="label_lets_go">Начать</string>
+    <string name="label_continue_session">Продолжить</string>
+    <string name="label_start_session">Начать</string>
+    <string name="label_explore_exercises">Исследуйте\nУпражнения</string>
+    <string name="label_session_history_home">История тренировок</string>
+    <string name="label_sessions_title">Тренировки</string>
+    <string name="label_nothing_today">Ничего сегодня</string>
+    <string name="label_missed_day">Вы пропустили тренировку?</string>
+    <string name="label_plans_title">Планы</string>
+    <string name="label_edit_plan">Редактировать программу</string>
+    <string name="no_exercises_yet">Пока нет упражнений</string>
+    <string name="label_clean_up">Очистить</string>
+    <string name="label_clean_up_plans">Очистить пустые планы?</string>
+    <string name="heading_select_plan_name">Выберите название программы</string>
+    <string name="heading_select_plan_items">Выберите упражнения</string>
+    <string name="desc_select_plan_name">Название тренировки должно быть легко запоминающимся и не слишком длинным. Желательно, чтобы оно было уникальным и не содержало специальных символов.\n
+  например: Push Pull Leg, Strength Cycle и т.д.</string>
+    <string name="label_select_plan">Выберите программу</string>
+    <string name="label_select_plan_one">Выберите программу</string>
+    <string name="label_current_plan_FORMAT">Текущее: %s</string>
+    <string name="label_lifts">Подъемы</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Просмотр упражнений</string>
+    <string name="label_all_muscle_groups">Все</string>
+    <string name="label_create_exercise">Создать</string>
+    <string name="label_new_exercise">Добавить упражнение</string>
+    <string name="label_edit_exercise">Редактировать</string>
+    <string name="label_target">Целевое значение</string>
+    <string name="label_is_isometric">Изометрические упражнения</string>
+    <string name="label_reference">Ссылка</string>
+    <string name="label_is_isometric_DESC">Упражнения требуют статических удержаний.</string>
+    <string name="label_reference_optional">опционально*</string>
+    <string name="label_exercise_exists">Упражнение уже существует</string>
+    <string name="label_add_exercise_header">Добавить упражнение</string>
+    <string name="label_search_exercise">Поиск упражнений</string>
+    <string name="label_no_exercise_today">Сегодня не запланировано ни одной тренировки.</string>
+    <string name="label_add_set_for">Добавить подход</string>
+    <string name="label_plus_int">%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Настройки</string>
+    <string name="label_name">Имя</string>
+    <string name="label_add">Добавить</string>
+    <string name="label_save">Сохранить</string>
+    <string name="label_yes">Да</string>
+    <string name="label_no">Нет</string>
+    <string name="label_session">Сессия</string>
+    <string name="label_exercise">Упражнение</string>
+    <string name="label_reps">количество повторений</string>
+    <string name="label_duration">продолжительность</string>
+    <string name="label_weight">вес</string>
+    <string name="label_profile">Вы</string>
+    <string name="label_activity">Активность</string>
+    <string name="error_not_enough_activity">Начните движение...</string>
+    <string name="error_invalid_reference_format">Неверный формат ссылки</string>
+    <string name="error_invalid_url">Неверный URL</string>
+    <string name="error_unknown">Неизвестная ошибка</string>
+    <string name="error_plan_name_empty">Введите название плана</string>
+    <string name="error_plan_name_exists">Название плана уже используется</string>
+    <string name="error_exercise_name_empty">Введите название упражнения</string>
+    <string name="error_plan_empty_prompt">Отменить план?. Нажмите кнопку \&#34;Назад\&#34; еще раз, чтобы вернуться.</string>
+    <string name="error_cant_find_session">Не удалось найти сессию</string>
+    <string name="error_cant_find_exercise">Не удалось найти упражнение</string>
+    <string name="label_theme">Тема</string>
+    <string name="label_theme_system">Система</string>
+    <string name="label_theme_light">Свет</string>
+    <string name="label_theme_dark">Темно</string>
+    <string name="label_color_palettes">Цветовые палитры</string>
+    <string name="label_color_scheme_default">По умолчанию</string>
+    <string name="label_color_scheme_dynamic">Динамический</string>
+    <string name="label_color_scheme_serene">Спокойствие</string>
+    <string name="label_color_scheme_zestful">Бодрый</string>
+    <string name="label_color_scheme_twilight">Сумерки</string>
+    <string name="label_backup">Резервное копирование и восстановление</string>
+    <string name="label_backup_location">Местоположение резервной копии</string>
+    <string name="label_backup_interval">Частота резервного копирования</string>
+    <string name="label_backup_off">Выкл</string>
+    <string name="label_backup_daily">Ежедневно</string>
+    <string name="label_backup_weekly">Еженедельно</string>
+    <string name="label_backup_monthly">Ежемесячно</string>
+    <string name="label_backup_now">Создать резервную копию сейчас</string>
+    <string name="label_restore">Восстановить</string>
+    <string name="label_last_backup">Последняя резервная копия: %s</string>
+    <string name="label_backup_in_progress">Выполняется резервное копирование…</string>
+    <string name="label_restore_in_progress">Восстановление…</string>
+    <string name="label_backup_success">Резервная копия успешно завершена</string>
+    <string name="label_restore_success">Восстановление завершено. Пожалуйста, перезапустите приложение.</string>
+    <string name="error_backup_failed">Резервное копирование не удалось</string>
+    <string name="error_restore_failed">Восстановление не удалось</string>
+    <string name="label_restore_warning">Это заменит все текущие данные. Продолжить?</string>
+    <string name="label_select_backup_location">Выберите папку для резервного копирования.</string>
+    <string name="label_muscle_biceps">Бицепс</string>
+    <string name="label_muscle_triceps">Трицепс</string>
+    <string name="label_muscle_back">Назад</string>
+    <string name="label_muscle_lats">Широчайшие мышцы</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Грудь</string>
+    <string name="label_muscle_core">Основные</string>
+    <string name="label_muscle_glutes">Ягодичные мышцы</string>
+    <string name="label_muscle_calves">Икры</string>
+    <string name="label_muscle_hamstrings">Задние мышцы бедра</string>
+    <string name="label_muscle_quads">Квадрицепсы</string>
+    <string name="label_muscle_shoulders">Плечи</string>
+    <string name="label_select_a_plan">Выберите программу</string>
+    <string name="label_selecting_a_plan">Начните с выбора программы.</string>
+    <string name="label_start_first_session">Начните свой первый тренировочный сеанс</string>
+    <string name="label_start_session_heading">Начать сегодняшнюю тренировку</string>
+    <string name="label_continue_session_heading">Продолжить сегодняшнюю тренировку</string>
+    <string name="label_next">Следующий</string>
+    <string name="label_boarding_quote">Ваше следующее преображение начинается здесь.</string>
+    <string name="label_no_sessions">Тренировки не проводились</string>
+    <string-array name="label_features">
+        <item>Отслеживание прогресса</item>
+        <item>Постепенное увеличение нагрузки</item>
+        <item>Статистика</item>
+        <item>Управление планами</item>
+        <item>Быстрая обратная связь</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>вы можете это сделать</item>
+        <item>здоровье в ваших руках</item>
+        <item>здоровье – это богатство</item>
+        <item>тренировки – это моя терапия</item>
+        <item>тренировки – это моя терапия</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>да, дружище… легкий вес</item>
+        <item>легкий вес</item>
+        <item>это несложно, просто делай</item>
+        <item>важно не то, чтобы было легко</item>
+        <item>я имею в виду, это просто потрясающе, правда?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>понедельник</item>
+        <item>вторник</item>
+        <item>среда</item>
+        <item>четверг</item>
+        <item>пятница</item>
+        <item>суббота</item>
+        <item>воскресенье</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Понедельник</item>
+        <item>Вторник</item>
+        <item>Среда</item>
+        <item>Четверг</item>
+        <item>Пятница</item>
+        <item>Суббота</item>
+        <item>Воскресенье</item>
+    </string-array>
+</resources>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ स्वस्थ</string>
+    <string name="label_kenko_meaning_ALT">○ मजबूत</string>
+    <string name="label_lets_go">शुरू करें</string>
+    <string name="label_continue_session">जारी रखें</string>
+    <string name="label_start_session">शुरू करें</string>
+    <string name="label_explore_exercises">अभ्यास खोजें
+व्यायाम</string>
+    <string name="label_session_history_home">सेशन
+इतिहास</string>
+    <string name="label_sessions_title">सेशन</string>
+    <string name="label_nothing_today">आज कुछ नहीं</string>
+    <string name="label_missed_day">क्या आपने उस दिन की कसरत छोड़ दी?</string>
+    <string name="label_plans_title">योजनाएं</string>
+    <string name="label_edit_plan">योजना संपादित करें</string>
+    <string name="no_exercises_yet">अभी तक कोई व्यायाम नहीं.</string>
+    <string name="label_clean_up">साफ़ करें</string>
+    <string name="label_clean_up_plans">क्या आप खाली योजनाओं को हटाना चाहते हैं?</string>
+    <string name="heading_select_plan_name">एक योजना का नाम चुनें</string>
+    <string name="heading_select_plan_items">अभ्यास चुनें</string>
+    <string name="desc_select_plan_name">प्लान का नाम याद रखने में आसान और बहुत लंबा नहीं होना चाहिए। आदर्श रूप से, यह अद्वितीय होना चाहिए और इसमें कोई विशेष प्रतीक नहीं होना चाहिए।
+उदाहरण: पुश पुल लेग, स्ट्रेंथ साइकिल, आदि।</string>
+    <string name="label_select_plan">योजना चुनें</string>
+    <string name="label_select_plan_one">योजना चुनें</string>
+    <string name="label_current_plan_FORMAT">वर्तमान: %s</string>
+    <string name="label_lifts">Lifts</string>
+    <string name="label_plan_description">खाली दी गई सामग्री का अनुवाद करें:
+\n
+      \n</string>
+    <string name="label_browse_exercises">अभ्यासों को ब्राउज़ करें</string>
+    <string name="label_all_muscle_groups">सब</string>
+    <string name="label_create_exercise">बनाएं</string>
+    <string name="label_new_exercise">अभ्यास जोड़ें</string>
+    <string name="label_edit_exercise">संपादित करें</string>
+    <string name="label_target">लक्ष्य</string>
+    <string name="label_is_isometric">आइसोमेट्रिक</string>
+    <string name="label_reference">संदर्भ</string>
+    <string name="label_is_isometric_DESC">व्यायाम में स्थिर मुद्रा की आवश्यकता होती है</string>
+    <string name="label_reference_optional">वैकल्पिक*</string>
+    <string name="label_exercise_exists">यह व्यायाम पहले से मौजूद है</string>
+    <string name="label_add_exercise_header">अभ्यास जोड़ें</string>
+    <string name="label_search_exercise">व्यायाम खोजें</string>
+    <string name="label_no_exercise_today">आज के लिए कोई व्यायाम निर्धारित नहीं है</string>
+    <string name="label_add_set_for">सेट जोड़ें</string>
+    <string name="label_plus_int">%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">सेटिंग्स</string>
+    <string name="label_name">नाम</string>
+    <string name="label_add">जोड़ें</string>
+    <string name="label_save">सहेजें</string>
+    <string name="label_yes">हाँ</string>
+    <string name="label_no">नहीं</string>
+    <string name="label_session">सेशन</string>
+    <string name="label_exercise">व्यायाम</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">अवधि</string>
+    <string name="label_weight">.weight</string>
+    <string name="label_profile">आप</string>
+    <string name="label_activity">गतिविधि</string>
+    <string name="error_not_enough_activity">चल पड़ो...</string>
+    <string name="error_invalid_reference_format">अमान्य संदर्भ प्रारूप</string>
+    <string name="error_invalid_url">अमान्य यूआरएल</string>
+    <string name="error_unknown">अज्ञात त्रुटि</string>
+    <string name="error_plan_name_empty">एक योजना का नाम दर्ज करें</string>
+    <string name="error_plan_name_exists">प्लान का नाम पहले से उपयोग में है</string>
+    <string name="error_exercise_name_empty">एक व्यायाम का नाम दर्ज करें</string>
+    <string name="error_plan_empty_prompt">क्या आप इस योजना को रद्द करना चाहते हैं? फिर से बैक बटन दबाएं।</string>
+    <string name="error_cant_find_session">सत्र नहीं मिल रहा है</string>
+    <string name="error_cant_find_exercise">व्यायाम नहीं मिल रहा</string>
+    <string name="label_theme">थीम</string>
+    <string name="label_theme_system">सिस्टम</string>
+    <string name="label_theme_light">लाइट</string>
+    <string name="label_theme_dark">अंधेरा</string>
+    <string name="label_color_palettes">रंग पैलेट</string>
+    <string name="label_color_scheme_default">डिफ़ॉल्ट</string>
+    <string name="label_color_scheme_dynamic">गतिशील</string>
+    <string name="label_color_scheme_serene">शांत</string>
+    <string name="label_color_scheme_zestful">उत्साहपूर्ण</string>
+    <string name="label_color_scheme_twilight">ट्विलाइट</string>
+    <string name="label_backup">बैकअप और पुनर्स्थापना</string>
+    <string name="label_backup_location">बैकअप स्थान</string>
+    <string name="label_backup_interval">बैकअप आवृत्ति</string>
+    <string name="label_backup_off">बंद</string>
+    <string name="label_backup_daily">दैनिक</string>
+    <string name="label_backup_weekly">साप्ताहिक</string>
+    <string name="label_backup_monthly">मासिक</string>
+    <string name="label_backup_now">अभी बैकअप लें</string>
+    <string name="label_restore">पुनर्स्थापित करें</string>
+    <string name="label_last_backup">पिछली बैकअप: %s</string>
+    <string name="label_backup_in_progress">बैकअप हो रहा है…</string>
+    <string name="label_restore_in_progress">पुनर्स्थापित किया जा रहा है…</string>
+    <string name="label_backup_success">बैकअप सफलतापूर्वक पूरा हुआ</string>
+    <string name="label_restore_success">पुनर्स्थापना पूर्ण हो गई है। कृपया ऐप को पुनः आरंभ करें।</string>
+    <string name="error_backup_failed">बैकअप विफल हो गया</string>
+    <string name="error_restore_failed">पुनर्स्थापना विफल हो गई</string>
+    <string name="label_restore_warning">यह सभी मौजूदा डेटा को बदल देगा। क्या आप जारी रखना चाहते हैं?</string>
+    <string name="label_select_backup_location">बैकअप फ़ोल्डर चुनें</string>
+    <string name="label_muscle_biceps">बाइसेप्स</string>
+    <string name="label_muscle_triceps">ट्राइसेप्स</string>
+    <string name="label_muscle_back">वापस</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_traps">ट्रैप्स</string>
+    <string name="label_muscle_chest">छाती</string>
+    <string name="label_muscle_core">कोर</string>
+    <string name="label_muscle_glutes">ग्लूट्स</string>
+    <string name="label_muscle_calves">पिंडली</string>
+    <string name="label_muscle_hamstrings">हैमस्ट्रिंग</string>
+    <string name="label_muscle_quads">क्वाड्स</string>
+    <string name="label_muscle_shoulders">शोल्डर्स</string>
+    <string name="label_select_a_plan">एक योजना चुनें</string>
+    <string name="label_selecting_a_plan">सबसे पहले, एक योजना चुनें।</string>
+    <string name="label_start_first_session">अपने पहले सत्र को शुरू करें</string>
+    <string name="label_start_session_heading">आज की कसरत शुरू करें</string>
+    <string name="label_continue_session_heading">आज के सत्र को जारी रखें</string>
+    <string name="label_next">अगला</string>
+    <string name="label_boarding_quote">आपका अगला परिवर्तन यहीं से शुरू होता है.</string>
+    <string name="label_no_sessions">कोई सत्र नहीं किया गया</string>
+    <string-array name="label_features">
+        <item>प्रगति ट्रैकिंग</item>
+        <item>प्रगतिशील अधिभार</item>
+        <item>आँकड़े</item>
+        <item>योजना प्रबंधन</item>
+        <item>त्वरित प्रतिक्रिया</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>आप यह कर सकते हैं</item>
+        <item>स्वास्थ्य आपके हाथों में है</item>
+        <item>स्वास्थ्य ही धन है</item>
+        <item>व्यायाम भी मेरे लिए एक थेरेपी है</item>
+        <item>व्यायाम भी मेरे लिए एक थेरेपी है</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>हाँ दोस्त… हल्का वज़न</item>
+        <item>हल्का वज़न</item>
+        <item>इसमें कोई मुश्किल नहीं है</item>
+        <item>यह सिर्फ़ हल्का होना नहीं है</item>
+        <item>मेरा मतलब है, यह बहुत बढ़िया है, है ना?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>सोमवार</item>
+        <item>मंगलवार</item>
+        <item>बुधवार</item>
+        <item>गुरुवार</item>
+        <item>शुक्रवार</item>
+        <item>शनिवार</item>
+        <item>रविवार</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>सोमवार</item>
+        <item>मंगलवार</item>
+        <item>बुधवार</item>
+        <item>गुरुवार</item>
+        <item>शुक्रवार</item>
+        <item>शनिवार</item>
+        <item>रविवार</item>
+    </string-array>
+</resources>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ osasuna</string>
+    <string name="label_kenko_meaning_ALT">○ indartsu</string>
+    <string name="label_lets_go">Hasi</string>
+    <string name="label_continue_session">Jarraitu</string>
+    <string name="label_start_session">Hasi</string>
+    <string name="label_explore_exercises">Arakatu\nAriketak</string>
+    <string name="label_session_history_home">Sesio\nHistoria</string>
+    <string name="label_sessions_title">Sesioak</string>
+    <string name="label_nothing_today">Ezer gaur</string>
+    <string name="label_missed_day">Egun hori galdu al duzu?</string>
+    <string name="label_plans_title">Planak</string>
+    <string name="label_edit_plan">Plan editatu</string>
+    <string name="no_exercises_yet">Oraindik ez dago ariketa bat ere.</string>
+    <string name="label_clean_up">Garbitu</string>
+    <string name="label_clean_up_plans">Plano hutsak ezabatu?</string>
+    <string name="heading_select_plan_name">Hautatu planaren izena</string>
+    <string name="heading_select_plan_items">Aukatu ariketak</string>
+    <string name="desc_select_plan_name">Planaren izena erraz gogoratu behar da eta ez oso luzea izan. Idealki, bakarra izan behar da eta ez ditu ikur bereziarik izan.\n
+  e.g.: Push Pull Leg, Strength Cycle, etab.</string>
+    <string name="label_select_plan">Plan bat aukatu</string>
+    <string name="label_select_plan_one">Plan bat aukatu</string>
+    <string name="label_current_plan_FORMAT">Unua: %s</string>
+    <string name="label_lifts">Lortutako altuera</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Arakatu ariketak</string>
+    <string name="label_all_muscle_groups">Guzti</string>
+    <string name="label_create_exercise">Sortu</string>
+    <string name="label_new_exercise">Ariketa gehiago</string>
+    <string name="label_edit_exercise">Aldatu</string>
+    <string name="label_target">Helburua</string>
+    <string name="label_is_isometric">Isometriko</string>
+    <string name="label_reference">Aipu</string>
+    <string name="label_is_isometric_DESC">Ariketak eguzkiren mantentzea eskatzen du</string>
+    <string name="label_reference_optional">aukera*</string>
+    <string name="label_exercise_exists">Ariketa dagoeneko existitzen da</string>
+    <string name="label_add_exercise_header">Ariketa gehiago</string>
+    <string name="label_search_exercise">Bilatu ariketa</string>
+    <string name="label_no_exercise_today">Gaur ez dago ariketa planifikatu.</string>
+    <string name="label_add_set_for">Gehitu seriea</string>
+    <string name="label_plus_int">%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Ezarpenak</string>
+    <string name="label_name">Izena</string>
+    <string name="label_add">Gehitu</string>
+    <string name="label_save">Gorde</string>
+    <string name="label_yes">Bai</string>
+    <string name="label_no">Ez</string>
+    <string name="label_session">Sesio</string>
+    <string name="label_exercise">Ariketa</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">.duration</string>
+    <string name="label_weight">.pisu</string>
+    <string name="label_profile">Zu</string>
+    <string name="label_activity">Aktibitatea</string>
+    <string name="error_not_enough_activity">Mugitu zaitez...</string>
+    <string name="error_invalid_reference_format">Formatuko erreferentzia ez du onartzen</string>
+    <string name="error_invalid_url">URL baliogabea</string>
+    <string name="error_unknown">Erro ezezaguna</string>
+    <string name="error_plan_name_empty">Sartu planaren izena</string>
+    <string name="error_plan_name_exists">Izena dagoeneko erabilitzen da</string>
+    <string name="error_exercise_name_empty">Sarrera egin ariketa baten izena</string>
+    <string name="error_plan_empty_prompt">Planoa ezabatu? Atzera botoia berriro sakatu, atzera joateko.</string>
+    <string name="error_cant_find_session">Ezin da saioa aurkitu</string>
+    <string name="error_cant_find_exercise">Ezin da ariketa aurkitu</string>
+    <string name="label_theme">Gaia</string>
+    <string name="label_theme_system">Sistema</string>
+    <string name="label_theme_light">Argia</string>
+    <string name="label_theme_dark">Iluna</string>
+    <string name="label_color_palettes">Kolore paletak</string>
+    <string name="label_color_scheme_default">Lehenetsi</string>
+    <string name="label_color_scheme_dynamic">Dinamikoa</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Zestful</string>
+    <string name="label_color_scheme_twilight">Twilight</string>
+    <string name="label_backup">Babesketa eta berreskuratzea</string>
+    <string name="label_backup_location">Kopiar kokalekua</string>
+    <string name="label_backup_interval">Erreserako maiztasuna</string>
+    <string name="label_backup_off">Itxi</string>
+    <string name="label_backup_daily">Eguneko</string>
+    <string name="label_backup_weekly">Astean</string>
+    <string name="label_backup_monthly">Hileko</string>
+    <string name="label_backup_now">Kopiatu orain</string>
+    <string name="label_restore">Restauratu</string>
+    <string name="label_last_backup">Azken kopia: %s</string>
+    <string name="label_backup_in_progress">Kopiatzen…</string>
+    <string name="label_restore_in_progress">Berrizkargatzen…</string>
+    <string name="label_backup_success">Kopia osatu da</string>
+    <string name="label_restore_success">Prozesua amaitu da. Mesedez, berrabiarazi aplikazioa.</string>
+    <string name="error_backup_failed">Kopia ezarria da.</string>
+    <string name="error_restore_failed">Ezin da berrezarri.</string>
+    <string name="label_restore_warning">Hau da, hau ordezkatuko du egungo datu guztiak. Jarraitu?</string>
+    <string name="label_select_backup_location">Hautatu karpetaren kopia egin beharreko lekua</string>
+    <string name="label_muscle_biceps">Bikizkiek</string>
+    <string name="label_muscle_triceps">Triceps</string>
+    <string name="label_muscle_back">Atzera</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Sagarra</string>
+    <string name="label_muscle_core">Core</string>
+    <string name="label_muscle_glutes">Gluteak</string>
+    <string name="label_muscle_calves">Pantorrillas</string>
+    <string name="label_muscle_hamstrings">Iskiotibialak</string>
+    <string name="label_muscle_quads">Kuadricepsak</string>
+    <string name="label_muscle_shoulders">Hegaztak</string>
+    <string name="label_select_a_plan">Hautatu plan bat</string>
+    <string name="label_selecting_a_plan">Hasi plan bat auketa eginez.</string>
+    <string name="label_start_first_session">Hasi zure lehen saioan</string>
+    <string name="label_start_session_heading">Hasi gaurko saioa</string>
+    <string name="label_continue_session_heading">Jolastu gaurko saioari</string>
+    <string name="label_next">Hurrenera</string>
+    <string name="label_boarding_quote">Zure hurrengo aldaketa hemen hasten da.</string>
+    <string name="label_no_sessions">Ez dago jarduera bat ere eginda.</string>
+    <string-array name="label_features">
+        <item>Aurrerapen jarraiketa</item>
+        <item>Kargaren progresio</item>
+        <item>Estatistikak</item>
+        <item>Plangileen kudeaketa</item>
+        <item>Iragazki azkarra</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>hau da</item>
+        <item>osasuna zure esku dago</item>
+        <item>osasuna da aberria</item>
+        <item>ariketa fisikoa nire terapia da</item>
+        <item>ariketa fisikoa nire terapia da</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>bai, laguna… pisu arina</item>
+        <item>pisu arina</item>
+        <item>ez dago ezer egin arte</item>
+        <item>ez da pisu arinarena</item>
+        <item>esan nahi dut, harrigarria da, ezta\?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>.lunes</item>
+        <item>.martes</item>
+        <item>.merkarrats</item>
+        <item>.osteguna</item>
+        <item>.ostirala</item>
+        <item>.larunbata</item>
+        <item>.igandea</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Astelehena</item>
+        <item>Martitzen</item>
+        <item>Asteazkena</item>
+        <item>Osteguna</item>
+        <item>Ostirala</item>
+        <item>Larunbata</item>
+        <item>Igandea</item>
+    </string-array>
+</resources>

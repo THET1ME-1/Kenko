@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ здравословен</string>
+    <string name="label_kenko_meaning_ALT">○ силен</string>
+    <string name="label_lets_go">Започнете</string>
+    <string name="label_continue_session">Продължете</string>
+    <string name="label_start_session">Стартиране</string>
+    <string name="label_explore_exercises">Разгледайте\nУпражнения</string>
+    <string name="label_session_history_home">История на тренировките</string>
+    <string name="label_sessions_title">Сесии</string>
+    <string name="label_nothing_today">Нищо днес</string>
+    <string name="label_missed_day">Пропуснахте ли тренировката за деня?</string>
+    <string name="label_plans_title">Програми</string>
+    <string name="label_edit_plan">Редактиране на програма</string>
+    <string name="no_exercises_yet">Още няма упражнения.</string>
+    <string name="label_clean_up">Почистване</string>
+    <string name="label_clean_up_plans">Изчистване на празните планове?</string>
+    <string name="heading_select_plan_name">Изберете име на програма</string>
+    <string name="heading_select_plan_items">Изберете упражнения</string>
+    <string name="desc_select_plan_name">Името на тренировката трябва да е лесно за запомняне и не трябва да е твърде дълго. Най-добре е да е уникално и без специални символи.
+  например: Push Pull Leg, Strength Cycle и т.н.</string>
+    <string name="label_select_plan">Изберете програма</string>
+    <string name="label_select_plan_one">Изберете програма</string>
+    <string name="label_current_plan_FORMAT">Текущо: %s</string>
+    <string name="label_lifts">Повдигания</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Разгледай упражненията</string>
+    <string name="label_all_muscle_groups">Всичко</string>
+    <string name="label_create_exercise">Създай</string>
+    <string name="label_new_exercise">Добавяне на упражнение</string>
+    <string name="label_edit_exercise">Редактиране</string>
+    <string name="label_target">Цел</string>
+    <string name="label_is_isometric">Изометрични</string>
+    <string name="label_reference">Референтен</string>
+    <string name="label_is_isometric_DESC">Упражненията изискват статични пози.</string>
+    <string name="label_reference_optional">optional*</string>
+    <string name="label_exercise_exists">Упражнението вече съществува</string>
+    <string name="label_add_exercise_header">Добавяне на упражнение</string>
+    <string name="label_search_exercise">Търсене на упражнение</string>
+    <string name="label_no_exercise_today">Няма планирани упражнения за днес.</string>
+    <string name="label_add_set_for">Добавяне на сет за</string>
+    <string name="label_plus_int">+%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Настройки</string>
+    <string name="label_name">Име</string>
+    <string name="label_add">Добави</string>
+    <string name="label_save">Запази</string>
+    <string name="label_yes">Да</string>
+    <string name="label_no">Не</string>
+    <string name="label_session">Сесия</string>
+    <string name="label_exercise">Упражнение</string>
+    <string name="label_reps">повтаряния</string>
+    <string name="label_duration">.duration</string>
+    <string name="label_weight">.weight</string>
+    <string name="label_profile">Вие</string>
+    <string name="label_activity">Активност</string>
+    <string name="error_not_enough_activity">Започнете да се движите...</string>
+    <string name="error_invalid_reference_format">Невалиден формат на препратка</string>
+    <string name="error_invalid_url">Невалин URL</string>
+    <string name="error_unknown">Неизвестна грешка</string>
+    <string name="error_plan_name_empty">Въведете име на програма</string>
+    <string name="error_plan_name_exists">Името на плана вече е използвано.</string>
+    <string name="error_exercise_name_empty">Въведете име на упражнение</string>
+    <string name="error_plan_empty_prompt">Изтрийте ли плана? Натиснете бутона &#34;Назад&#34; отново, за да се върнете.</string>
+    <string name="error_cant_find_session">Не може да се намери сесия.</string>
+    <string name="error_cant_find_exercise">Не мога да открия упражнението</string>
+    <string name="label_theme">Тема</string>
+    <string name="label_theme_system">Система</string>
+    <string name="label_theme_light">Светлина</string>
+    <string name="label_theme_dark">Тъмно</string>
+    <string name="label_color_palettes">Цветова палитра</string>
+    <string name="label_color_scheme_default">По подразбиране</string>
+    <string name="label_color_scheme_dynamic">Динамичен</string>
+    <string name="label_color_scheme_serene">Спокойствие</string>
+    <string name="label_color_scheme_zestful">Пълна енергия</string>
+    <string name="label_color_scheme_twilight">Twilight</string>
+    <string name="label_backup">Архивиране и възстановяване</string>
+    <string name="label_backup_location">Местоположение за архивиране</string>
+    <string name="label_backup_interval">Честота на архивиране</string>
+    <string name="label_backup_off">Изключено</string>
+    <string name="label_backup_daily">Всеки ден</string>
+    <string name="label_backup_weekly">Седмичен</string>
+    <string name="label_backup_monthly">Месечно</string>
+    <string name="label_backup_now">Създайте резервно копие сега</string>
+    <string name="label_restore">Възстановяване</string>
+    <string name="label_last_backup">Последно архивиране: %s</string>
+    <string name="label_backup_in_progress">Създаване на резервно копие…</string>
+    <string name="label_restore_in_progress">Възстановяване…</string>
+    <string name="label_backup_success">Резервното копие е завършено</string>
+    <string name="label_restore_success">Възстановяването завърши. Моля, рестартирайте приложението.</string>
+    <string name="error_backup_failed">Резервното копие не можа да бъде създадено.</string>
+    <string name="error_restore_failed">Възстановяването не успя.</string>
+    <string name="label_restore_warning">Това ще замени всички текущи данни. Продължавате?</string>
+    <string name="label_select_backup_location">Изберете папка за резервно копие</string>
+    <string name="label_muscle_biceps">Бицепс</string>
+    <string name="label_muscle_triceps">Трицепс</string>
+    <string name="label_muscle_back">Назад</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Гърди</string>
+    <string name="label_muscle_core">Основно</string>
+    <string name="label_muscle_glutes">Glutes</string>
+    <string name="label_muscle_calves">Прасета</string>
+    <string name="label_muscle_hamstrings">Задни бедрени мускули</string>
+    <string name="label_muscle_quads">Quads</string>
+    <string name="label_muscle_shoulders">Рамене</string>
+    <string name="label_select_a_plan">Изберете програма</string>
+    <string name="label_selecting_a_plan">Започнете, като изберете план.</string>
+    <string name="label_start_first_session">Започнете първата си тренировка</string>
+    <string name="label_start_session_heading">Започнете днешната тренировка</string>
+    <string name="label_continue_session_heading">Продължете днешната тренировка</string>
+    <string name="label_next">Следващо</string>
+    <string name="label_boarding_quote">Вашата следваща трансформация започва тук.</string>
+    <string name="label_no_sessions">Няма извършени тренировки</string>
+    <string-array name="label_features">
+        <item>Проследяване на напредъка</item>
+        <item>Прогресивно натоварване</item>
+        <item>Статистики</item>
+        <item>Управление на планове</item>
+        <item>Бърза обратна връзка</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>можеш да го направиш</item>
+        <item>здравето е в твоите ръце</item>
+        <item>здравето е богатство</item>
+        <item>тренировката също е моята терапия</item>
+        <item>тренировката също е моята терапия</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>да, приятелю… леки тежести</item>
+        <item>леки тежести</item>
+        <item>няма нищо трудно в това</item>
+        <item>не става въпрос за леки тежести</item>
+        <item>искам да кажа, страхотно е, нали\?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>.понеделник</item>
+        <item>.вторник</item>
+        <item>.сряда</item>
+        <item>.четвъртък</item>
+        <item>.петък</item>
+        <item>.събота</item>
+        <item>.неделя</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Понеделник</item>
+        <item>Вторник</item>
+        <item>Сряда</item>
+        <item>Четвъртък</item>
+        <item>Петък</item>
+        <item>Събота</item>
+        <item>Неделя</item>
+    </string-array>
+</resources>

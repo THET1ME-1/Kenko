@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ khỏe mạnh</string>
+    <string name="label_kenko_meaning_ALT">○ mạnh</string>
+    <string name="label_lets_go">Bắt đầu</string>
+    <string name="label_continue_session">Tiếp tục</string>
+    <string name="label_start_session">Bắt đầu</string>
+    <string name="label_explore_exercises">Khám phá\nCác bài tập</string>
+    <string name="label_session_history_home">Lịch sử tập luyện</string>
+    <string name="label_sessions_title">Buổi tập</string>
+    <string name="label_nothing_today">Không có gì hôm nay</string>
+    <string name="label_missed_day">Bạn đã bỏ lỡ ngày tập luyện?</string>
+    <string name="label_plans_title">Kế hoạch</string>
+    <string name="label_edit_plan">Chỉnh sửa kế hoạch</string>
+    <string name="no_exercises_yet">Chưa có bài tập nào.</string>
+    <string name="label_clean_up">Dọn dẹp</string>
+    <string name="label_clean_up_plans">Xóa các kế hoạch trống?</string>
+    <string name="heading_select_plan_name">Chọn tên gói.</string>
+    <string name="heading_select_plan_items">Chọn bài tập</string>
+    <string name="desc_select_plan_name">Tên kế hoạch nên dễ nhớ và không quá dài. Tốt nhất là tên đó phải độc đáo và không có ký hiệu đặc biệt.
+  ví dụ: Push Pull Leg, Strength Cycle, v.v.</string>
+    <string name="label_select_plan">Chọn chương trình</string>
+    <string name="label_select_plan_one">Chọn chương trình</string>
+    <string name="label_current_plan_FORMAT">Hiện tại: %s</string>
+    <string name="label_lifts">Lần tập</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Duyệt các bài tập</string>
+    <string name="label_all_muscle_groups">Tất cả</string>
+    <string name="label_create_exercise">Tạo</string>
+    <string name="label_new_exercise">Thêm bài tập</string>
+    <string name="label_edit_exercise">Chỉnh sửa</string>
+    <string name="label_target">Mục tiêu</string>
+    <string name="label_is_isometric">Isometric</string>
+    <string name="label_reference">Tham khảo</string>
+    <string name="label_is_isometric_DESC">Bài tập đòi hỏi các tư thế giữ lâu.</string>
+    <string name="label_reference_optional">tùy chọn*</string>
+    <string name="label_exercise_exists">Bài tập đã tồn tại.</string>
+    <string name="label_add_exercise_header">Thêm bài tập</string>
+    <string name="label_search_exercise">Tìm kiếm bài tập</string>
+    <string name="label_no_exercise_today">Không có bài tập nào được lên kế hoạch cho hôm nay.</string>
+    <string name="label_add_set_for">Thêm hiệp</string>
+    <string name="label_plus_int">+%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Cài đặt</string>
+    <string name="label_name">Tên</string>
+    <string name="label_add">Thêm</string>
+    <string name="label_save">Lưu</string>
+    <string name="label_yes">Có</string>
+    <string name="label_no">Không</string>
+    <string name="label_session">Buổi tập</string>
+    <string name="label_exercise">Bài tập</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">thời lượng</string>
+    <string name="label_weight">.weight</string>
+    <string name="label_profile">Bạn</string>
+    <string name="label_activity">Hoạt động</string>
+    <string name="error_not_enough_activity">Bắt đầu vận động...</string>
+    <string name="error_invalid_reference_format">Định dạng tham chiếu không hợp lệ</string>
+    <string name="error_invalid_url">URL không hợp lệ</string>
+    <string name="error_unknown">Lỗi không xác định</string>
+    <string name="error_plan_name_empty">Nhập tên của kế hoạch</string>
+    <string name="error_plan_name_exists">Tên kế hoạch đã được sử dụng.</string>
+    <string name="error_exercise_name_empty">Nhập tên bài tập</string>
+    <string name="error_plan_empty_prompt">Bỏ qua kế hoạch này sao? Nhấn nút quay lại một lần nữa để trở về.</string>
+    <string name="error_cant_find_session">Không tìm thấy phiên.</string>
+    <string name="error_cant_find_exercise">Không tìm thấy bài tập</string>
+    <string name="label_theme">Chủ đề</string>
+    <string name="label_theme_system">Hệ thống</string>
+    <string name="label_theme_light">Ánh sáng</string>
+    <string name="label_theme_dark">Tối</string>
+    <string name="label_color_palettes">Bảng màu</string>
+    <string name="label_color_scheme_default">Mặc định</string>
+    <string name="label_color_scheme_dynamic">Động</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Zestful</string>
+    <string name="label_color_scheme_twilight">Twilight</string>
+    <string name="label_backup">Sao lưu &amp; Khôi phục</string>
+    <string name="label_backup_location">Vị trí sao lưu</string>
+    <string name="label_backup_interval">Tần suất sao lưu</string>
+    <string name="label_backup_off">Tắt</string>
+    <string name="label_backup_daily">Hàng ngày</string>
+    <string name="label_backup_weekly">Hàng tuần</string>
+    <string name="label_backup_monthly">Hàng tháng</string>
+    <string name="label_backup_now">Sao lưu ngay bây giờ</string>
+    <string name="label_restore">Khôi phục</string>
+    <string name="label_last_backup">Sao lưu cuối cùng: %s</string>
+    <string name="label_backup_in_progress">Đang sao lưu…</string>
+    <string name="label_restore_in_progress">Đang khôi phục…</string>
+    <string name="label_backup_success">Sao lưu đã hoàn tất</string>
+    <string name="label_restore_success">Đã hoàn thành quá trình khôi phục. Vui lòng khởi động lại ứng dụng.</string>
+    <string name="error_backup_failed">Sao lưu không thành công</string>
+    <string name="error_restore_failed">Khôi phục thất bại</string>
+    <string name="label_restore_warning">Điều này sẽ thay thế tất cả dữ liệu hiện tại. Bạn có muốn tiếp tục?</string>
+    <string name="label_select_backup_location">Chọn thư mục sao lưu</string>
+    <string name="label_muscle_biceps">Biceps</string>
+    <string name="label_muscle_triceps">Tam tay</string>
+    <string name="label_muscle_back">Quay lại</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Ngực</string>
+    <string name="label_muscle_core">Core</string>
+    <string name="label_muscle_glutes">Mông</string>
+    <string name="label_muscle_calves">Bắp chân</string>
+    <string name="label_muscle_hamstrings">Cơ đùi sau</string>
+    <string name="label_muscle_quads">Quads</string>
+    <string name="label_muscle_shoulders">Vai</string>
+    <string name="label_select_a_plan">Chọn một chương trình</string>
+    <string name="label_selecting_a_plan">Bắt đầu bằng cách chọn một chương trình.</string>
+    <string name="label_start_first_session">Bắt đầu buổi tập đầu tiên của bạn</string>
+    <string name="label_start_session_heading">Bắt đầu buổi tập hôm nay</string>
+    <string name="label_continue_session_heading">Tiếp tục buổi tập hôm nay</string>
+    <string name="label_next">Tiếp theo</string>
+    <string name="label_boarding_quote">Sự thay đổi tiếp theo của bạn bắt đầu từ đây.</string>
+    <string name="label_no_sessions">Không có buổi tập nào được thực hiện.</string>
+    <string-array name="label_features">
+        <item>Theo dõi tiến độ</item>
+        <item>Tăng dần cường độ</item>
+        <item>Thống kê</item>
+        <item>Quản lý kế hoạch</item>
+        <item>Phản hồi nhanh</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>bạn có thể làm được</item>
+        <item>sức khỏe nằm trong tay bạn</item>
+        <item>sức khỏe là tài sản</item>
+        <item>tập luyện là liệu pháp của tôi</item>
+        <item>tập luyện là liệu pháp của tôi</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>yeah buddy… tạ nhẹ</item>
+        <item>tạ nhẹ</item>
+        <item>không có gì khó khăn cả</item>
+        <item>không phải là về việc tạ nhẹ</item>
+        <item>ý tôi là nó rất tuyệt, đúng không?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>Thứ hai</item>
+        <item>Thứ ba</item>
+        <item>Thứ tư</item>
+        <item>Thứ năm</item>
+        <item>Thứ sáu</item>
+        <item>Thứ bảy</item>
+        <item>Chủ nhật</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Thứ Hai</item>
+        <item>Thứ Ba</item>
+        <item>Thứ Tư</item>
+        <item>Thứ Năm</item>
+        <item>Thứ Sáu</item>
+        <item>Thứ Bảy</item>
+        <item>Chủ Nhật</item>
+    </string-array>
+</resources>

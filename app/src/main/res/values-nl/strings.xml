@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">gezond</string>
+    <string name="label_kenko_meaning_ALT">○ sterk</string>
+    <string name="label_lets_go">Beginnen</string>
+    <string name="label_continue_session">Ga verder</string>
+    <string name="label_start_session">Start</string>
+    <string name="label_explore_exercises">Ontdek\nOefeningen</string>
+    <string name="label_session_history_home">Training\nHistorie</string>
+    <string name="label_sessions_title">Trainings</string>
+    <string name="label_nothing_today">Niets voor vandaag</string>
+    <string name="label_missed_day">Heb je de dag gemist?</string>
+    <string name="label_plans_title">Plannen</string>
+    <string name="label_edit_plan">Bewerk plan</string>
+    <string name="no_exercises_yet">Nog geen oefeningen</string>
+    <string name="label_clean_up">Opruimen</string>
+    <string name="label_clean_up_plans">Lege lege trainingsplannen op?</string>
+    <string name="heading_select_plan_name">Selecteer een plannaam</string>
+    <string name="heading_select_plan_items">Selecteer oefeningen</string>
+    <string name="desc_select_plan_name">De naam van je trainingsplan moet gemakkelijk te onthouden zijn en niet te lang. Idealiter is deze uniek en bevat deze geen speciale symbolen.
+  e.g: Push Pull Leg, Strength Cycle, etc.</string>
+    <string name="label_select_plan">Selecteer plan</string>
+    <string name="label_select_plan_one">Selecteer plan</string>
+    <string name="label_current_plan_FORMAT">Huidig: %s</string>
+    <string name="label_lifts">Oefeningen</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Bekijk oefeningen</string>
+    <string name="label_all_muscle_groups">Alles</string>
+    <string name="label_create_exercise">Maak</string>
+    <string name="label_new_exercise">Voeg oefening toe</string>
+    <string name="label_edit_exercise">Bewerken</string>
+    <string name="label_target">Doel</string>
+    <string name="label_is_isometric">Isometrische</string>
+    <string name="label_reference">Referentie</string>
+    <string name="label_is_isometric_DESC">Oefeningen vereisen statische houdingen.</string>
+    <string name="label_reference_optional">optioneel*</string>
+    <string name="label_exercise_exists">Oefening bestaat al</string>
+    <string name="label_add_exercise_header">Voeg oefening toe</string>
+    <string name="label_search_exercise">Zoek oefening</string>
+    <string name="label_no_exercise_today">Geen trainingen gepland voor vandaag</string>
+    <string name="label_add_set_for">Voeg set toe voor</string>
+    <string name="label_plus_int">%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Instellingen</string>
+    <string name="label_name">Naam</string>
+    <string name="label_add">Voeg toe</string>
+    <string name="label_save">Opslaan</string>
+    <string name="label_yes">Ja</string>
+    <string name="label_no">Nee</string>
+    <string name="label_session">Training</string>
+    <string name="label_exercise">Oefening</string>
+    <string name="label_reps">herhalingen</string>
+    <string name="label_duration">duur</string>
+    <string name="label_weight">gewicht</string>
+    <string name="label_profile">Jij</string>
+    <string name="label_activity">Activiteit</string>
+    <string name="error_not_enough_activity">Kom in beweging...</string>
+    <string name="error_invalid_reference_format">Ongeldig referentieformaat</string>
+    <string name="error_invalid_url">Ongeldige URL</string>
+    <string name="error_unknown">Onbekende fout</string>
+    <string name="error_plan_name_empty">Voer een plannaam in</string>
+    <string name="error_plan_name_exists">Naam al reeds in gebruik</string>
+    <string name="error_exercise_name_empty">Voer een oefeningnaam in</string>
+    <string name="error_plan_empty_prompt">Plan verwijderen? Druk nogmaals op de terugknop om terug te gaan.</string>
+    <string name="error_cant_find_session">Kan de sessie niet vinden</string>
+    <string name="error_cant_find_exercise">Kan de oefening niet vinden</string>
+    <string name="label_theme">Thema</string>
+    <string name="label_theme_system">Systeem</string>
+    <string name="label_theme_light">Licht</string>
+    <string name="label_theme_dark">Donker</string>
+    <string name="label_color_palettes">Kleurenpaletten</string>
+    <string name="label_color_scheme_default">Standaard</string>
+    <string name="label_color_scheme_dynamic">Dynamisch</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Zestful</string>
+    <string name="label_color_scheme_twilight">Twilight</string>
+    <string name="label_backup">Backup en herstel</string>
+    <string name="label_backup_location">Back-up locatie</string>
+    <string name="label_backup_interval">Back-up frequentie</string>
+    <string name="label_backup_off">Uit</string>
+    <string name="label_backup_daily">Dagelijks</string>
+    <string name="label_backup_weekly">Wekelijks</string>
+    <string name="label_backup_monthly">Maandelijks</string>
+    <string name="label_backup_now">Maak nu een back-up</string>
+    <string name="label_restore">Herstellen</string>
+    <string name="label_last_backup">Laatste backup: %s</string>
+    <string name="label_backup_in_progress">Bezig met back-up…</string>
+    <string name="label_restore_in_progress">Herstellen…</string>
+    <string name="label_backup_success">Back-up voltooid</string>
+    <string name="label_restore_success">Herstel voltooid. Start de app opnieuw.</string>
+    <string name="error_backup_failed">Back-up mislukt</string>
+    <string name="error_restore_failed">Herstel mislukt</string>
+    <string name="label_restore_warning">Dit vervangt alle huidige gegevens. Wilt u verdergaan?</string>
+    <string name="label_select_backup_location">Selecteer map voor back-up</string>
+    <string name="label_muscle_biceps">Biceps</string>
+    <string name="label_muscle_triceps">Triceps</string>
+    <string name="label_muscle_back">Terug</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_chest">Borst</string>
+    <string name="label_muscle_core">Kern</string>
+    <string name="label_muscle_glutes">Glutes</string>
+    <string name="label_muscle_calves">Kuiten</string>
+    <string name="label_muscle_hamstrings">Hamstrings</string>
+    <string name="label_muscle_quads">Quadriceps</string>
+    <string name="label_muscle_shoulders">Schouders</string>
+    <string name="label_select_a_plan">Selecteer een programma</string>
+    <string name="label_selecting_a_plan">Begin met het selecteren van een programma</string>
+    <string name="label_start_first_session">Start je eerste sessie</string>
+    <string name="label_start_session_heading">Start vandaag\&#39;s sessie</string>
+    <string name="label_continue_session_heading">Ga verder met de huidige sessie</string>
+    <string name="label_next">Volgende</string>
+    <string name="label_boarding_quote">Jouw volgende transformatie begint hier.</string>
+    <string name="label_no_sessions">Geen sessies uitgevoerd</string>
+    <string-array name="label_features">
+        <item>Voortgangsregistratie</item>
+        <item>Progressieve belasting</item>
+        <item>Statistieken</item>
+        <item>Planbeheer</item>
+        <item>Snelle feedback</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>je kunt het</item>
+        <item>je gezondheid is in je eigen handen</item>
+        <item>gezondheid is rijkdom</item>
+        <item>trainen is ook mijn therapie</item>
+        <item>trainen is ook mijn therapie</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>ja, maat… lichte gewichten</item>
+        <item>lichte gewichten</item>
+        <item>het is niet moeilijk</item>
+        <item>het gaat niet om lichte gewichten</item>
+        <item>ik bedoel, het is geweldig, toch?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>maandag</item>
+        <item>dinsdag</item>
+        <item>woensdag</item>
+        <item>donderdag</item>
+        <item>vrijdag</item>
+        <item>zaterdag</item>
+        <item>zondag</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Maandag</item>
+        <item>Dinsdag</item>
+        <item>Woensdag</item>
+        <item>Donderdag</item>
+        <item>Vrijdag</item>
+        <item>Zaterdag</item>
+        <item>Zondag</item>
+    </string-array>
+</resources>

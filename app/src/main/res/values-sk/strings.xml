@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 LooKeR & Contributors
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="label_kenko_meaning">○ zdravý</string>
+    <string name="label_kenko_meaning_ALT">○ silný</string>
+    <string name="label_lets_go">Začať</string>
+    <string name="label_continue_session">Pokračovať</string>
+    <string name="label_start_session">Začať</string>
+    <string name="label_explore_exercises">Objavte\nCvičenia</string>
+    <string name="label_session_history_home">Tréning\nHistória</string>
+    <string name="label_sessions_title">Tréningy</string>
+    <string name="label_nothing_today">Nič dnes</string>
+    <string name="label_missed_day">Ste ste tento deň vynechali?</string>
+    <string name="label_plans_title">Plány</string>
+    <string name="label_edit_plan">Uprav plán</string>
+    <string name="no_exercises_yet">Zatiaľ žiadne cviky.</string>
+    <string name="label_clean_up">Upratať</string>
+    <string name="label_clean_up_plans">Chcete odstrániť prázdne tréningové plány?</string>
+    <string name="heading_select_plan_name">Vyberte názov plánu.</string>
+    <string name="heading_select_plan_items">Vyberte cviky</string>
+    <string name="desc_select_plan_name">Názov tréningového plánu by mal byť ľahko zapamätateľný a nie príliš dlhý. Ideálne by mal byť jedinečný a bez špeciálnych symbolov.\n
+  e.g.: Push Pull Leg, Strength Cycle, atď.</string>
+    <string name="label_select_plan">Vyberte plán</string>
+    <string name="label_select_plan_one">Vyberte plán</string>
+    <string name="label_current_plan_FORMAT">Aktuálne: %s</string>
+    <string name="label_lifts">Opakovania</string>
+    <string name="label_plan_description">\n
+        \n</string>
+    <string name="label_browse_exercises">Prehliadať cviky</string>
+    <string name="label_all_muscle_groups">Všetko</string>
+    <string name="label_create_exercise">Vytvoriť</string>
+    <string name="label_new_exercise">Pridať cvičenie</string>
+    <string name="label_edit_exercise">Upraviť</string>
+    <string name="label_target">Cieľ</string>
+    <string name="label_is_isometric">Izometrické</string>
+    <string name="label_reference">Referencia</string>
+    <string name="label_is_isometric_DESC">Cvičenie vyžaduje statické držania.</string>
+    <string name="label_reference_optional">voliteľné*</string>
+    <string name="label_exercise_exists">Cvičenie už existuje.</string>
+    <string name="label_add_exercise_header">Pridať cvičenie</string>
+    <string name="label_search_exercise">Hľadať cvičenie</string>
+    <string name="label_no_exercise_today">Žiadne tréningy naplánované na dnes.</string>
+    <string name="label_add_set_for">Pridať sériu</string>
+    <string name="label_plus_int">+%s</string>
+    <string name="label_minus_int">-%s</string>
+    <string name="label_settings">Nastavenia</string>
+    <string name="label_name">Názov</string>
+    <string name="label_add">Pridať</string>
+    <string name="label_save">Uložiť</string>
+    <string name="label_yes">Áno</string>
+    <string name="label_no">Nie</string>
+    <string name="label_session">Tréning</string>
+    <string name="label_exercise">Cvičenie</string>
+    <string name="label_reps">.reps</string>
+    <string name="label_duration">doba trvania</string>
+    <string name="label_weight">váha</string>
+    <string name="label_profile">Ty</string>
+    <string name="label_activity">Aktivita</string>
+    <string name="error_not_enough_activity">Začnite sa hýbať...</string>
+    <string name="error_invalid_reference_format">Neplatný formát odkazu</string>
+    <string name="error_invalid_url">Neplatná URL adresa</string>
+    <string name="error_unknown">Neznáma chyba</string>
+    <string name="error_plan_name_empty">Zadajte názov plánu.</string>
+    <string name="error_plan_name_exists">Názov plánu už je používaný.</string>
+    <string name="error_exercise_name_empty">Zadajte názov cviku.</string>
+    <string name="error_plan_empty_prompt">Odmietnuť plán? Stlačte tlačidlo späť ešte raz, aby ste sa vrátili.</string>
+    <string name="error_cant_find_session">Neda sa nájsť tréning.</string>
+    <string name="error_cant_find_exercise">Nenachádza sa cvik.</string>
+    <string name="label_theme">Téma</string>
+    <string name="label_theme_system">Systém</string>
+    <string name="label_theme_light">Svetlo</string>
+    <string name="label_theme_dark">Tmavé</string>
+    <string name="label_color_palettes">Farebné schémy</string>
+    <string name="label_color_scheme_default">Predvolené</string>
+    <string name="label_color_scheme_dynamic">Dynamické</string>
+    <string name="label_color_scheme_serene">Serene</string>
+    <string name="label_color_scheme_zestful">Zestful</string>
+    <string name="label_color_scheme_twilight">Twilight</string>
+    <string name="label_backup">Zálohovanie a obnovenie</string>
+    <string name="label_backup_location">Umiestnenie zálohy</string>
+    <string name="label_backup_interval">Frekvencia zálohovania</string>
+    <string name="label_backup_off">Vypnúť</string>
+    <string name="label_backup_daily">Denne</string>
+    <string name="label_backup_weekly">Týždenné</string>
+    <string name="label_backup_monthly">Mesačne</string>
+    <string name="label_backup_now">Zálohujte teraz</string>
+    <string name="label_restore">Obnoviť</string>
+    <string name="label_last_backup">Posledná záloha: %s</string>
+    <string name="label_backup_in_progress">Prebieha zálohovanie…</string>
+    <string name="label_restore_in_progress">Obnovuje sa…</string>
+    <string name="label_backup_success">Zálohovanie dokončené</string>
+    <string name="label_restore_success">Obnovenie bolo dokončené. Prosím, reštartujte aplikáciu.</string>
+    <string name="error_backup_failed">Zálohovanie sa nepodarilo.</string>
+    <string name="error_restore_failed">Obnovenie sa nepodarilo</string>
+    <string name="label_restore_warning">Toto prepíše všetky aktuálne údaje. Pokračovať?</string>
+    <string name="label_select_backup_location">Vyberte priečinok pre zálohu.</string>
+    <string name="label_muscle_biceps">Biceps</string>
+    <string name="label_muscle_triceps">Triceps</string>
+    <string name="label_muscle_back">Späť</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_traps">Trapy</string>
+    <string name="label_muscle_chest">Hrudník</string>
+    <string name="label_muscle_core">Jadro</string>
+    <string name="label_muscle_glutes">Glutes</string>
+    <string name="label_muscle_calves">Lýtka</string>
+    <string name="label_muscle_hamstrings">Hamstringy</string>
+    <string name="label_muscle_quads">Kvadricepsy</string>
+    <string name="label_muscle_shoulders">Ramena</string>
+    <string name="label_select_a_plan">Vyberte plán</string>
+    <string name="label_selecting_a_plan">Začnite výberom plánu.</string>
+    <string name="label_start_first_session">Začnite svoju prvú tréningovú jednotku.</string>
+    <string name="label_start_session_heading">Začnite dnešné cvičenie.</string>
+    <string name="label_continue_session_heading">Pokračovať v dnešnej tréningovej jednotke</string>
+    <string name="label_next">Ďalej</string>
+    <string name="label_boarding_quote">Vaša ďalšia transformácia začína tu.</string>
+    <string name="label_no_sessions">Neboli vykonané žiadne tréningy.</string>
+    <string-array name="label_features">
+        <item>Sledovanie pokroku</item>
+        <item>Postupné zvyšovanie záťaže</item>
+        <item>Štatistiky</item>
+        <item>Správa plánov</item>
+        <item>Rýchla spätná väzba</item>
+    </string-array>
+    <string-array name="label_health_quotes">
+        <item>môžete to zvládnuť</item>
+        <item>zdravie je vo vašich rukách</item>
+        <item>zdravie je bohatstvo</item>
+        <item>tréning je aj moja terapia</item>
+        <item>tréning je aj moja terapia</item>
+    </string-array>
+    <string-array name="label_lifting_quotes">
+        <item>áno, kamarát… ľahká váha</item>
+        <item>ľahká váha</item>
+        <item>nie je to nič, len to treba urobiť</item>
+        <item>nie je to o tom, aby to bolo ľahké</item>
+        <item>myslím, že je to skvelé, však?</item>
+    </string-array>
+    <string-array name="kenko_day_of_week">
+        <item>.pon</item>
+        <item>.ut</item>
+        <item>.st</item>
+        <item>.štv</item>
+        <item>.pia</item>
+        <item>.sob</item>
+        <item>.nede</item>
+    </string-array>
+    <string-array name="day_of_week">
+        <item>Pondelok</item>
+        <item>Utorok</item>
+        <item>Streda</item>
+        <item>Štvrtok</item>
+        <item>Piatok</item>
+        <item>Sobota</item>
+        <item>Nedeľa</item>
+    </string-array>
+</resources>
