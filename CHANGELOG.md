@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Backup and restore for whole data
+- Activity graph on the Profile screen
+- Support for 35 additional locales
+- Plan Edit button in session detail
+
+### Changed
+- Removed Rest timer (will be replaced soon)
+- Updated Plan Edit page design
+- Better animations
 
 ## [1.3.2] - 2025-11-13
 
