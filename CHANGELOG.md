@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.3] - 2026-04-11
+
 ### Added
 - Backup and restore for whole data
 - Activity graph on the Profile screen
