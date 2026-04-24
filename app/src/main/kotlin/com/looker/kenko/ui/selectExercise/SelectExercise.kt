@@ -15,6 +15,7 @@
 package com.looker.kenko.ui.selectExercise
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -106,12 +107,12 @@ fun SelectExercise(
             when (searchResult) {
                 SearchResult.Loading -> ContainedLoadingIndicator()
                 SearchResult.NotFound -> SearchNotFound(
-                    onAddNewExercise = { onRequestNewExercise(viewModel.searchQuery, target) }
+                    onAddNewExercise = { onRequestNewExercise(viewModel.searchQuery, target) },
                 )
 
                 is SearchResult.Success -> SearchResult(
                     searchResult = searchResult as SearchResult.Success,
-                    onClick = onDone
+                    onClick = onDone,
                 )
             }
         }
@@ -127,7 +128,7 @@ private fun SearchResult(
         items(searchResult.exercises) { exercise ->
             ExerciseItem(
                 exercise = exercise,
-                onClick = { onClick(exercise) },
+                modifier = Modifier.clickable { onClick(exercise) },
             )
         }
     }
@@ -142,8 +143,8 @@ private fun SearchNotFound(onAddNewExercise: () -> Unit, modifier: Modifier = Mo
             .padding(horizontal = 12.dp)
             .background(
                 color = MaterialTheme.colorScheme.errorContainer,
-                shape = MaterialTheme.shapes.large
-            )
+                shape = MaterialTheme.shapes.large,
+            ),
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -156,7 +157,7 @@ private fun SearchNotFound(onAddNewExercise: () -> Unit, modifier: Modifier = Mo
                 onClick = onAddNewExercise,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.onErrorContainer,
-                    contentColor = MaterialTheme.colorScheme.errorContainer
+                    contentColor = MaterialTheme.colorScheme.errorContainer,
                 ),
             ) {
                 Icon(painter = KenkoIcons.Add, contentDescription = null)
@@ -208,7 +209,7 @@ private fun AddExerciseHeader(
         modifier = modifier,
         text = stringResource(R.string.label_add_exercise_header),
         style = MaterialTheme.typography.displayMedium,
-        color = MaterialTheme.colorScheme.tertiary
+        color = MaterialTheme.colorScheme.tertiary,
     )
 }
 

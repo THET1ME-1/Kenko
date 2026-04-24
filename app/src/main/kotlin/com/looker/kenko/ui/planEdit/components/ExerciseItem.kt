@@ -35,7 +35,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -52,23 +51,22 @@ import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 fun ExerciseItem(
     exercise: Exercise,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    content: @Composable () -> Unit = {},
+    leadingIcon: @Composable () -> Unit = {},
 ) {
-    Surface(
-        modifier = modifier,
-        color = Color.Transparent,
-        onClick = onClick,
-        shape = MaterialTheme.shapes.large,
-    ) {
+    Surface(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(24.dp)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            CompositionLocalProvider(
+                LocalTextStyle provides MaterialTheme.typography.headlineSmall,
+                LocalContentColor provides MaterialTheme.colorScheme.primary,
+                content = leadingIcon,
+            )
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.SpaceAround,
@@ -85,11 +83,6 @@ fun ExerciseItem(
                     color = MaterialTheme.colorScheme.outline,
                 )
             }
-            CompositionLocalProvider(
-                LocalTextStyle provides MaterialTheme.typography.headlineSmall,
-                LocalContentColor provides MaterialTheme.colorScheme.primary,
-                content = content,
-            )
         }
     }
 }
