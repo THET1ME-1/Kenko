@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -95,6 +95,16 @@ class AddSetViewModel @AssistedInject constructor(
 
     private inline val weightFloat: Float
         get() = weights.text.toString().toFloatOrNull() ?: 0F
+
+    init {
+        viewModelScope.launch {
+            sessionRepo.getLastSetByExerciseId(id)?.let { set ->
+                addRep(set.repsOrDuration - repInt)
+                addWeight(set.weight - weightFloat)
+                setSetType(set.type)
+            }
+        }
+    }
 
     @AssistedFactory
     interface AddSetViewModelFactory {

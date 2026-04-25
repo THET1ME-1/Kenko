@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,8 +30,10 @@ import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.utils.toLocalEpochDays
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 
 class LocalSessionRepo @Inject constructor(
@@ -109,6 +111,11 @@ class LocalSessionRepo @Inject constructor(
 
     override suspend fun getSets(sessionId: Int): List<Set> =
         setsDao.getSetsBySessionId(sessionId).toExternal()
+
+    override suspend fun getLastSetByExerciseId(exerciseId: Int): Set? = withContext(Dispatchers.IO) {
+        val exercise = exerciseDao.get(exerciseId) ?: return@withContext null
+        setsDao.getLastSetByExerciseId(exerciseId)?.toExternal(exercise.toExternal())
+    }
 
     private suspend fun List<SetEntity>.toExternal(): List<Set> = mapNotNull {
         val exercise = exerciseDao.get(it.exerciseId) ?: return@mapNotNull null

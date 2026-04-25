@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,6 +32,18 @@ interface SetsDao {
         """,
     )
     fun setsBySessionId(sessionId: Int): Flow<List<SetEntity>>
+
+    @Query(
+        """
+        SELECT sets.*
+        FROM sets
+        INNER JOIN sessions ON sets.sessionId = sessions.id
+        WHERE sets.exerciseId = :exerciseId
+        ORDER BY sessions.date DESC
+        LIMIT 1
+        """
+    )
+    fun getLastSetByExerciseId(exerciseId: Int): SetEntity?
 
     @Query(
         """
