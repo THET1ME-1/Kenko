@@ -216,7 +216,7 @@ class PlanEditViewModel @AssistedInject constructor(
                     val exerciseId = item.exercise.id ?: continue
                     val setsCount = rand.nextInt(1, 4)
                     repeat(setsCount) {
-                        val weight = rand.nextInt(10, 80) + rand.nextFloat()
+                        val weight = rand.nextInt(10, 80).toFloat()
                         val reps = rand.nextInt(5, 15)
                         sessionRepo.addSet(
                             sessionId = sessionId,
