@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 LooKeR & Contributors
+ * Copyright (C) 2026 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -337,7 +337,7 @@ private fun setTypeColor(type: SetType): Color = when (type) {
     SetType.RestPause -> Color(0xFFFF7043) // Red/Orange (Deep Orange)
 }
 
-private fun setTypeLabel(type: SetType): String = when (type) {
+fun setTypeLabel(type: SetType): String = when (type) {
     SetType.Standard -> "Standard"
     SetType.Drop -> "Drop"
     SetType.RestPause -> "Rest-Pause"

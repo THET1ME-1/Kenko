@@ -24,16 +24,25 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -43,6 +52,8 @@ import com.looker.kenko.data.model.ExercisesPreviewParameter
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.repDurationStringRes
+import com.looker.kenko.ui.addSet.setTypeLabel
+import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
 import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
@@ -92,6 +103,65 @@ fun SetItem(
 }
 
 @Composable
+fun SuggestedSetItem(
+    modifier: Modifier = Modifier,
+    repCount: Int = 10,
+    weight: Float = 100F,
+    type: SetType = SetType.Standard,
+    color: Color = MaterialTheme.colorScheme.surfaceVariant,
+    onAccept: () -> Unit = {},
+    textStyle: TextStyle = LocalTextStyle.current,
+) {
+    Surface(
+        color = color,
+        modifier = modifier,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 12.dp),
+        ) {
+            val typeLabel = remember(type) { setTypeLabel(type) }
+            Text(
+                text = typeLabel,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(Modifier.width(12.dp))
+            val spanStyle1 = textStyle
+                .copy(fontWeight = FontWeight.Bold)
+                .toSpanStyle()
+            val spanStyle2 = textStyle
+                .copy(color = MaterialTheme.colorScheme.onSurface)
+                .toSpanStyle()
+
+            val annotatedString = remember {
+                buildAnnotatedString {
+                    withStyle(spanStyle1) {
+                        append(repCount.toString())
+                    }
+                    withStyle(spanStyle2) {
+                        append("@")
+                    }
+                    withStyle(spanStyle1) {
+                        append(weight.toString())
+                    }
+                    withStyle(spanStyle2) {
+                        append("KG")
+                    }
+                }
+            }
+            Text(annotatedString)
+            Spacer(modifier = Modifier.weight(1F))
+            FilledIconButton(onClick = onAccept) {
+                Icon(
+                    painter = KenkoIcons.Done,
+                    contentDescription = null,
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun PerformedItem(
     title: String,
     performance: String,
@@ -122,5 +192,15 @@ private fun SetItemPreview(
         ) {
             Text(text = "01")
         }
+    }
+}
+
+@Preview
+@Composable
+private fun SuggestionPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
+        SuggestedSetItem()
     }
 }
