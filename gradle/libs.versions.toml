@@ -1,7 +1,7 @@
 [versions]
 activity = "1.13.0"
 documentfile = "1.1.0"
-agp = "9.1.0"
+agp = "9.1.1"
 coil = "2.7.0"
 composeBom = "2026.03.01"
 core = "1.18.0"
