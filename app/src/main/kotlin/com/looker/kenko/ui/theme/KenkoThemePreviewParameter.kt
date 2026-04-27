@@ -38,4 +38,16 @@ class KenkoThemePreviewParameter : PreviewParameterProvider<KenkoThemeConfig> {
         KenkoThemeConfig(twilightColorSchemes, Theme.Light),
         KenkoThemeConfig(twilightColorSchemes, Theme.Dark),
     )
+
+    override fun getDisplayName(index: Int): String? = when (index) {
+        0 -> "Zestful Light"
+        1 -> "Zestful Dark"
+        2 -> "Default Light"
+        3 -> "Default Dark"
+        4 -> "Serene Light"
+        5 -> "Serene Dark"
+        6 -> "Twilight Light"
+        7 -> "Twilight Dark"
+        else -> null
+    }
 }
