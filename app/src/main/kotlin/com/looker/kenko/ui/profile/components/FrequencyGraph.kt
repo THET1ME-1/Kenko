@@ -15,14 +15,11 @@
 package com.looker.kenko.ui.profile.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,7 +30,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.time.Clock
@@ -42,9 +39,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
 private val CellSize: Dp = 12.dp
-private val CellGap: Dp = 2.dp
-private val CellShape = RoundedCornerShape(3.dp)
-private val DayLabelWidth: Dp = 10.dp
+private val DayLabelWidth: Dp = 12.dp
 
 @Immutable
 private data class FrequencyCell(
@@ -71,11 +66,7 @@ fun FrequencyGraph(
             verticalAlignment = Alignment.Top,
         ) {
             DayLabels()
-            Spacer(Modifier.width(4.dp))
-            LazyRow(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(CellGap),
-            ) {
+            LazyRow(modifier = Modifier.weight(1f)) {
                 items(weeks) { week ->
                     WeekColumn(week)
                 }
@@ -90,22 +81,15 @@ private fun DayLabels() {
     val labelStyle = MaterialTheme.typography.labelSmall
     val labelColor = MaterialTheme.colorScheme.outline
     val labels = listOf("M", "T", "W", "T", "F", "S", "S")
-    Column(
-        verticalArrangement = Arrangement.spacedBy(CellGap),
-    ) {
+    Column() {
         labels.forEach { label ->
-            Box(
+            Text(
+                text = label,
+                style = labelStyle,
+                color = labelColor,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.size(width = DayLabelWidth, height = CellSize),
-                contentAlignment = Alignment.CenterStart,
-            ) {
-                if (label.isNotEmpty()) {
-                    Text(
-                        text = label,
-                        style = labelStyle,
-                        color = labelColor,
-                    )
-                }
-            }
+            )
         }
     }
 }
@@ -115,7 +99,7 @@ private fun WeekColumn(week: List<FrequencyCell>) {
     val emptyColor = MaterialTheme.colorScheme.surfaceContainerHighest
     val sessionColor = MaterialTheme.colorScheme.primary
 
-    Column(verticalArrangement = Arrangement.spacedBy(CellGap)) {
+    Column {
         week.forEach { cell ->
             val color = if (!cell.hasSession || cell.isFuture) {
                 emptyColor
@@ -125,7 +109,6 @@ private fun WeekColumn(week: List<FrequencyCell>) {
             Box(
                 modifier = Modifier
                     .size(CellSize)
-                    .clip(CellShape)
                     .background(color),
             )
         }
