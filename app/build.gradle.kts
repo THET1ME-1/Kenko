@@ -29,12 +29,12 @@ plugins {
 
 android {
     namespace = "com.looker.kenko"
-    compileSdk { version = release(36) }
+    compileSdk { version = release(37) }
 
     defaultConfig {
         applicationId = "com.looker.kenko"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionName = "1.3.3"
         versionCode = versionCodeFor(versionName)
 
