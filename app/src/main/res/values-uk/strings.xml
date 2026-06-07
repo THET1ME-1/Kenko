@@ -11,48 +11,44 @@
   ~ GNU General Public License for more details.
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<resources>
+  --><resources>
     <string name="label_kenko_meaning">○ здоровий</string>
-    <string name="label_kenko_meaning_ALT">○ strong</string>
-    <string name="label_lets_go">Почніть</string>
+    <string name="label_kenko_meaning_ALT">○ сильний</string>
+    <string name="label_lets_go">Початок</string>
     <string name="label_continue_session">Продовжити</string>
     <string name="label_start_session">Почати</string>
-    <string name="label_explore_exercises">Досліджуйте\nВправи</string>
-    <string name="label_session_history_home">Історія тренувань</string>
+    <string name="label_explore_exercises">Досліджуйте\nвправи</string>
+    <string name="label_session_history_home">Історія\nтренувань</string>
     <string name="label_sessions_title">Тренування</string>
     <string name="label_nothing_today">Нічого сьогодні</string>
     <string name="label_missed_day">Ви пропустили день?</string>
     <string name="label_plans_title">Плани</string>
     <string name="label_edit_plan">Редагувати план</string>
-    <string name="no_exercises_yet">Поки що немає вправ.</string>
-    <string name="label_clean_up">Прибрати</string>
+    <string name="no_exercises_yet">Вправ ще немає</string>
+    <string name="label_clean_up">Очистити</string>
     <string name="label_clean_up_plans">Очистити порожні плани?</string>
     <string name="heading_select_plan_name">Виберіть назву плану</string>
     <string name="heading_select_plan_items">Виберіть вправи</string>
-    <string name="desc_select_plan_name">Назва плану повинна бути легкою для запам\&#39;ятовування та не надто довгою. В ідеалі, вона має бути унікальною та не містити спеціальних символів.\n
-  Наприклад: Push Pull Leg, Strength Cycle тощо.</string>
+    <string name="desc_select_plan_name">Назва плану повинна бути легкою для запам’ятовування та не надто довгою. В ідеалі вона має бути унікальною та не містити спеціальних символів.\n Наприклад: Жим тяга ноги, Силовий цикл тощо.</string>
     <string name="label_select_plan">Виберіть програму</string>
     <string name="label_select_plan_one">Виберіть програму</string>
     <string name="label_current_plan_FORMAT">Поточне: %s</string>
     <string name="label_lifts">Підйоми</string>
-    <string name="label_plan_description">\n
-        \n</string>
+    <string name="label_plan_description"><ul>%1$s вправ</ul>\n <ul>%2$s днів</ul>\n <ul>%3$s днів відпочинку</ul></string>
     <string name="label_browse_exercises">Переглянути вправи</string>
-    <string name="label_all_muscle_groups">Все</string>
+    <string name="label_all_muscle_groups">Усі</string>
     <string name="label_create_exercise">Створити</string>
     <string name="label_new_exercise">Додати вправу</string>
     <string name="label_edit_exercise">Редагувати</string>
-    <string name="label_target">Ця стрічка з програми для відстеження фізичної активності, призначеної для тренувань у залі.</string>
+    <string name="label_target">Мета</string>
     <string name="label_is_isometric">Ізометричні</string>
-    <string name="label_reference">Рекомендації</string>
-    <string name="label_is_isometric_DESC">Вправи вимагають статичних утримань.</string>
-    <string name="label_reference_optional">необов\&#39;язково*</string>
+    <string name="label_reference">Посилання</string>
+    <string name="label_is_isometric_DESC">Вправи вимагають статичних утримань</string>
+    <string name="label_reference_optional">необов’язково*</string>
     <string name="label_exercise_exists">Вправа вже існує</string>
     <string name="label_add_exercise_header">Додати вправу</string>
     <string name="label_search_exercise">Пошук вправ</string>
-    <string name="label_no_exercise_today">Сьогодні немає запланованих тренувань.</string>
+    <string name="label_no_exercise_today">Сьогодні немає запланованих тренувань</string>
     <string name="label_add_set_for">Додати підхід</string>
     <string name="label_plus_int">+%s</string>
     <string name="label_minus_int">-%s</string>
@@ -62,27 +58,27 @@
     <string name="label_save">Зберегти</string>
     <string name="label_yes">Так</string>
     <string name="label_no">Ні</string>
-    <string name="label_session">Сеанс</string>
+    <string name="label_session">Тренування</string>
     <string name="label_exercise">Вправа</string>
-    <string name="label_reps">.reps</string>
+    <string name="label_reps">повтори</string>
     <string name="label_duration">тривалість</string>
     <string name="label_weight">вага</string>
     <string name="label_profile">Ви</string>
     <string name="label_activity">Активність</string>
     <string name="error_not_enough_activity">Почніть рухатися...</string>
-    <string name="error_invalid_reference_format">Невірний формат посилання</string>
-    <string name="error_invalid_url">Невірний URL</string>
+    <string name="error_invalid_reference_format">Неправильний формат посилання</string>
+    <string name="error_invalid_url">Неправильний URL</string>
     <string name="error_unknown">Невідома помилка</string>
-    <string name="error_plan_name_empty">Введіть назву плану</string>
+    <string name="error_plan_name_empty">Уведіть назву плану</string>
     <string name="error_plan_name_exists">Назва плану вже використовується</string>
-    <string name="error_exercise_name_empty">Введіть назву вправи</string>
-    <string name="error_plan_empty_prompt">Скасувати план?. Натисніть кнопку &#34;Назад&#34; ще раз, щоб повернутися.</string>
-    <string name="error_cant_find_session">Не вдалося знайти сеанс.</string>
-    <string name="error_cant_find_exercise">Не вдалося знайти вправу.</string>
+    <string name="error_exercise_name_empty">Уведіть назву вправи</string>
+    <string name="error_plan_empty_prompt">Скасувати план? Натисніть кнопку «Назад» ще раз, щоб повернутися.</string>
+    <string name="error_cant_find_session">Не вдалося знайти тренування</string>
+    <string name="error_cant_find_exercise">Не вдалося знайти вправу</string>
     <string name="label_theme">Тема</string>
-    <string name="label_theme_system">Система</string>
-    <string name="label_theme_light">Світло</string>
-    <string name="label_theme_dark">Темно</string>
+    <string name="label_theme_system">Як у системі</string>
+    <string name="label_theme_light">Світла</string>
+    <string name="label_theme_dark">Темна</string>
     <string name="label_color_palettes">Палітри кольорів</string>
     <string name="label_color_scheme_default">За замовчуванням</string>
     <string name="label_color_scheme_dynamic">Динамічний</string>
@@ -90,13 +86,13 @@
     <string name="label_color_scheme_zestful">Енергійний</string>
     <string name="label_color_scheme_twilight">Сутінки</string>
     <string name="label_backup">Резервне копіювання та відновлення</string>
-    <string name="label_backup_location">Місцезнаходження резервної копії</string>
+    <string name="label_backup_location">Розташування резервних копій</string>
     <string name="label_backup_interval">Частота резервного копіювання</string>
     <string name="label_backup_off">Вимкнено</string>
-    <string name="label_backup_daily">Щоденно</string>
-    <string name="label_backup_weekly">Щотижневий</string>
+    <string name="label_backup_daily">Щодня</string>
+    <string name="label_backup_weekly">Щотижня</string>
     <string name="label_backup_monthly">Щомісяця</string>
-    <string name="label_backup_now">Зробити резервну копію зараз</string>
+    <string name="label_backup_now">Створити резервну копію</string>
     <string name="label_restore">Відновити</string>
     <string name="label_last_backup">Останнє резервне копіювання: %s</string>
     <string name="label_backup_in_progress">Резервне копіювання…</string>
@@ -105,39 +101,39 @@
     <string name="label_restore_success">Відновлення завершено. Будь ласка, перезапустіть додаток.</string>
     <string name="error_backup_failed">Резервне копіювання не вдалося</string>
     <string name="error_restore_failed">Відновлення не вдалося</string>
-    <string name="label_restore_warning">Це замінить усі поточні дані. Продовжити?</string>
-    <string name="label_select_backup_location">Виберіть папку для резервного копіювання.</string>
+    <string name="label_restore_warning">Усі поточні дані буде перезаписано. Продовжити?</string>
+    <string name="label_select_backup_location">Виберіть папку для резервних копій</string>
     <string name="label_muscle_biceps">Біцепс</string>
     <string name="label_muscle_triceps">Трицепс</string>
-    <string name="label_muscle_back">Назад</string>
-    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_back">Спина</string>
+    <string name="label_muscle_lats">Найширші м’язи</string>
     <string name="label_muscle_traps">Трапеції</string>
     <string name="label_muscle_chest">Груди</string>
-    <string name="label_muscle_core">Основне</string>
+    <string name="label_muscle_core">Тулуб</string>
     <string name="label_muscle_glutes">Сідниці</string>
-    <string name="label_muscle_calves">Ікри</string>
+    <string name="label_muscle_calves">Литки</string>
     <string name="label_muscle_hamstrings">Біцепс стегна</string>
     <string name="label_muscle_quads">Квадрицепси</string>
     <string name="label_muscle_shoulders">Плечі</string>
     <string name="label_select_a_plan">Виберіть програму</string>
-    <string name="label_selecting_a_plan">Почніть з вибору програми.</string>
-    <string name="label_start_first_session">Почніть ваше перше тренування</string>
+    <string name="label_selecting_a_plan">Почніть із вибору програми</string>
+    <string name="label_start_first_session">Почніть своє перше тренування</string>
     <string name="label_start_session_heading">Почніть сьогоднішнє тренування</string>
     <string name="label_continue_session_heading">Продовжити сьогоднішнє тренування</string>
     <string name="label_next">Далі</string>
     <string name="label_boarding_quote">Ваша наступна трансформація починається тут.</string>
-    <string name="label_no_sessions">Не було проведено жодних тренувань.</string>
+    <string name="label_no_sessions">Не було проведено жодних тренувань</string>
     <string-array name="label_features">
         <item>Відстеження прогресу</item>
         <item>Поступове збільшення навантаження</item>
         <item>Статистика</item>
         <item>Управління планами</item>
-        <item>Швидкий зворотний зв\&#39;язок</item>
+        <item>Швидкий зворотний зв\'язок</item>
     </string-array>
     <string-array name="label_health_quotes">
         <item>ви можете це зробити</item>
-        <item>здоров\&#39;я у ваших руках</item>
-        <item>здоров\&#39;я – це багатство</item>
+        <item>здоров\'я у ваших руках</item>
+        <item>здоров\'я – це багатство</item>
         <item>тренування – це також моя терапія</item>
         <item>тренування – це також моя терапія</item>
     </string-array>
@@ -153,7 +149,7 @@
         <item>.вівторок</item>
         <item>.середа</item>
         <item>.четвер</item>
-        <item>.п\&#39;ятниця</item>
+        <item>.п\'ятниця</item>
         <item>.субота</item>
         <item>.неділя</item>
     </string-array>
@@ -162,7 +158,7 @@
         <item>Вівторок</item>
         <item>Середа</item>
         <item>Четвер</item>
-        <item>П\&#39;ятниця</item>
+        <item>П\'ятниця</item>
         <item>Субота</item>
         <item>Неділя</item>
     </string-array>

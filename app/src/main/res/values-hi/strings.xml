@@ -11,9 +11,7 @@
   ~ GNU General Public License for more details.
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<resources>
+  --><resources>
     <string name="label_kenko_meaning">○ स्वस्थ</string>
     <string name="label_kenko_meaning_ALT">○ मजबूत</string>
     <string name="label_lets_go">शुरू करें</string>
@@ -28,20 +26,17 @@
     <string name="label_missed_day">क्या आपने उस दिन की कसरत छोड़ दी?</string>
     <string name="label_plans_title">योजनाएं</string>
     <string name="label_edit_plan">योजना संपादित करें</string>
-    <string name="no_exercises_yet">अभी तक कोई व्यायाम नहीं.</string>
+    <string name="no_exercises_yet">अभी तक कोई व्यायाम नहीं</string>
     <string name="label_clean_up">साफ़ करें</string>
     <string name="label_clean_up_plans">क्या आप खाली योजनाओं को हटाना चाहते हैं?</string>
     <string name="heading_select_plan_name">एक योजना का नाम चुनें</string>
     <string name="heading_select_plan_items">अभ्यास चुनें</string>
-    <string name="desc_select_plan_name">प्लान का नाम याद रखने में आसान और बहुत लंबा नहीं होना चाहिए। आदर्श रूप से, यह अद्वितीय होना चाहिए और इसमें कोई विशेष प्रतीक नहीं होना चाहिए।
-उदाहरण: पुश पुल लेग, स्ट्रेंथ साइकिल, आदि।</string>
+    <string name="desc_select_plan_name">प्लान का नाम याद रखने में आसान और बहुत लंबा नहीं होना चाहिए। आदर्श रूप से, यह अद्वितीय होना चाहिए और इसमें कोई विशेष प्रतीक नहीं होना चाहिए।\nउदाहरण: पुश पुल लेग, स्ट्रेंथ साइकिल, आदि।</string>
     <string name="label_select_plan">योजना चुनें</string>
     <string name="label_select_plan_one">योजना चुनें</string>
     <string name="label_current_plan_FORMAT">वर्तमान: %s</string>
-    <string name="label_lifts">Lifts</string>
-    <string name="label_plan_description">खाली दी गई सामग्री का अनुवाद करें:
-\n
-      \n</string>
+    <string name="label_lifts">लिफ्ट्स</string>
+    <string name="label_plan_description"><ul>%1$s कसरतें</ul>\n<ul>%2$s दिन</ul>\n<ul>%3$s विश्राम के दिन</ul></string>
     <string name="label_browse_exercises">अभ्यासों को ब्राउज़ करें</string>
     <string name="label_all_muscle_groups">सब</string>
     <string name="label_create_exercise">बनाएं</string>
@@ -67,9 +62,9 @@
     <string name="label_no">नहीं</string>
     <string name="label_session">सेशन</string>
     <string name="label_exercise">व्यायाम</string>
-    <string name="label_reps">.reps</string>
+    <string name="label_reps">.दोहराव</string>
     <string name="label_duration">अवधि</string>
-    <string name="label_weight">.weight</string>
+    <string name="label_weight">.वजन</string>
     <string name="label_profile">आप</string>
     <string name="label_activity">गतिविधि</string>
     <string name="error_not_enough_activity">चल पड़ो...</string>
@@ -113,7 +108,7 @@
     <string name="label_muscle_biceps">बाइसेप्स</string>
     <string name="label_muscle_triceps">ट्राइसेप्स</string>
     <string name="label_muscle_back">वापस</string>
-    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_lats">लैट्स</string>
     <string name="label_muscle_traps">ट्रैप्स</string>
     <string name="label_muscle_chest">छाती</string>
     <string name="label_muscle_core">कोर</string>
@@ -123,7 +118,7 @@
     <string name="label_muscle_quads">क्वाड्स</string>
     <string name="label_muscle_shoulders">शोल्डर्स</string>
     <string name="label_select_a_plan">एक योजना चुनें</string>
-    <string name="label_selecting_a_plan">सबसे पहले, एक योजना चुनें।</string>
+    <string name="label_selecting_a_plan">योजना चुनकर शुरुआत करें</string>
     <string name="label_start_first_session">अपने पहले सत्र को शुरू करें</string>
     <string name="label_start_session_heading">आज की कसरत शुरू करें</string>
     <string name="label_continue_session_heading">आज के सत्र को जारी रखें</string>
