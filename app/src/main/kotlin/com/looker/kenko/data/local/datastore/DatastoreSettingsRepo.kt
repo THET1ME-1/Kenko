@@ -21,7 +21,6 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.looker.kenko.BuildConfig
 import com.looker.kenko.data.model.settings.BackupInterval
 import com.looker.kenko.data.model.settings.ColorPalettes
 import com.looker.kenko.data.model.settings.Settings
@@ -47,9 +46,7 @@ class DatastoreSettingsRepo @Inject constructor(
     }
 
     override suspend fun setOnboardingDone() {
-        if (!BuildConfig.DEBUG) {
-            ONBOARDING_DONE.update(true)
-        }
+        ONBOARDING_DONE.update(true)
     }
 
     override suspend fun setColorPalette(colorPalette: ColorPalettes) {
