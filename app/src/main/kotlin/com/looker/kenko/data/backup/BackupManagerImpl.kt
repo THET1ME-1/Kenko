@@ -16,7 +16,7 @@ package com.looker.kenko.data.backup
 
 import android.content.Context
 import android.net.Uri
-import androidx.documentfile.provider.DocumentFile
+import android.provider.DocumentsContract
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -156,19 +156,51 @@ class BackupManagerImpl @Inject constructor(
 
         val treeUri = destinationUri.toTreeUri()
 
-        val treeDoc = DocumentFile.fromTreeUri(context, treeUri)
-            ?: error("Cannot access directory: $treeUri")
-
         val fileName = backupFileName(localDate)
-        val backupFile = treeDoc.findFile(fileName)
-            ?: treeDoc.createFile("application/zip", fileName)
+        val backupFileUri = findChildFile(treeUri, fileName)
+            ?: createChildFile(treeUri, fileName)
             ?: error("Cannot create backup file in: $treeUri")
 
-        context.contentResolver.openOutputStream(backupFile.uri)?.use { output ->
+        context.contentResolver.openOutputStream(backupFileUri)?.use { output ->
             inputStream().use { input ->
                 input.copyTo(output)
             }
-        } ?: error("Cannot open output stream for URI: ${backupFile.uri}")
+        } ?: error("Cannot open output stream for URI: $backupFileUri")
+    }
+
+    private fun findChildFile(treeUri: Uri, displayName: String): Uri? {
+        val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(
+            treeUri,
+            DocumentsContract.getTreeDocumentId(treeUri),
+        )
+        val tables = arrayOf(
+            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+        )
+        context.contentResolver.query(childrenUri, tables, null, null, null)?.use { cursor ->
+            while (cursor.moveToNext()) {
+                if (cursor.getString(1) == displayName) {
+                    return DocumentsContract.buildDocumentUriUsingTree(
+                        treeUri,
+                        cursor.getString(0),
+                    )
+                }
+            }
+        }
+        return null
+    }
+
+    private fun createChildFile(treeUri: Uri, displayName: String): Uri? {
+        val parentUri = DocumentsContract.buildDocumentUriUsingTree(
+            treeUri,
+            DocumentsContract.getTreeDocumentId(treeUri),
+        )
+        return DocumentsContract.createDocument(
+            context.contentResolver,
+            parentUri,
+            "application/zip",
+            displayName,
+        )
     }
 
     /**

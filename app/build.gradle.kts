@@ -137,8 +137,6 @@ dependencies {
     implementation(libs.bundles.lifecycle)
     implementation(libs.activity.compose)
 
-    implementation(libs.savedstate)
-
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.bundles.coroutines)
@@ -152,7 +150,6 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation(libs.datastore)
-    implementation(libs.documentfile)
 
     implementation(libs.bundles.work)
 

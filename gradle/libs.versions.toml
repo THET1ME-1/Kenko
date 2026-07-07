@@ -1,8 +1,6 @@
 [versions]
 activity = "1.13.0"
-documentfile = "1.1.0"
 agp = "9.2.1"
-coil = "2.7.0"
 composeBom = "2026.05.01"
 core = "1.18.0"
 core-test = "1.7.0"
@@ -10,7 +8,6 @@ test-runner = "1.7.0"
 coroutines = "1.11.0"
 datastore = "1.2.1"
 dateTime = "0.8.0"
-espresso = "3.7.0"
 hilt = "2.59.2"
 junit5 = "6.1.0"
 robolectric = "4.16.1"
@@ -22,25 +19,18 @@ ksp = "2.3.6"
 lifecycle = "2.10.0"
 navigation3 = "1.1.2"
 room = "2.8.4"
-savedstate = "1.5.0"
 serialization = "1.11.0"
-shapes = "1.1.0"
 work = "2.11.2"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core" }
 datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "documentfile" }
-androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
-androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "shapes" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "hiltNavigation" }
 junit-ext = { module = "androidx.test.ext:junit", version.ref = "jUnitExt" }
 lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle" }
-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
 navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
@@ -51,7 +41,6 @@ test-core = { module = "androidx.test:core", version.ref = "core-test" }
 test-core-ktx = { module = "androidx.test:core-ktx", version.ref = "core-test" }
 test-runner = { module = "androidx.test:runner", version.ref = "test-runner" }
 test-rules = { module = "androidx.test:rules", version.ref = "core-test" }
-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 compose-bom = { module = "androidx.compose:compose-bom-alpha", version.ref = "composeBom" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-runtime = { module = "androidx.compose.runtime:runtime" }
@@ -61,7 +50,6 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 compose-ui-material3 = { module = "androidx.compose.material3:material3" }
-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 hilt-test = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
@@ -73,7 +61,6 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
-savedstate = { module = "androidx.savedstate:savedstate", version.ref = "savedstate" }
 work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 work-testing = { module = "androidx.work:work-testing", version.ref = "work" }
 
@@ -86,13 +73,11 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 [bundles]
-coil = ["coil-compose"]
 room = ["room-ktx", "room-runtime"]
 coroutines = ["kotlinx-coroutines-core", "kotlinx-coroutines-android"]
-lifecycle = ["lifecycle-runtime-compose", "lifecycle-runtime-ktx", "lifecycle-viewmodel-compose", "lifecycle-viewmodel-ktx"]
+lifecycle = ["lifecycle-runtime-compose", "lifecycle-viewmodel-compose"]
 navigation3 = ["lifecycle-viewmodel-navigation3", "navigation3-runtime", "navigation3-ui"]
 compose = ["compose-foundation", "compose-ui", "compose-ui-graphics", "compose-ui-material3", "compose-ui-tooling-preview", "compose-runtime"]
 compose-debug = ["compose-ui-tooling", "compose-ui-test-manifest"]
-test = ["kotlinx-coroutines-test", "test-core", "test-core-ktx", "test-runner", "test-rules"]
 instrumented-test = ["kotlinx-coroutines-test", "test-core", "test-core-ktx", "test-runner", "test-rules", "junit-ext"]
 work = ["work-runtime", "hilt-work"]
