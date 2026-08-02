@@ -13,7 +13,6 @@
  */
 
 import com.android.utils.text.dropPrefix
-import java.io.FileInputStream
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
@@ -25,6 +24,13 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
     alias(libs.plugins.hilt)
+}
+
+val keystoreProperties = Properties().apply {
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use(::load)
+    }
 }
 
 android {
@@ -41,25 +47,16 @@ android {
         testInstrumentationRunner = "com.looker.kenko.KenkoTestRunner"
     }
 
-    room {
-        generateKotlin = true
-        schemaDirectory("$projectDir/schemas")
-    }
-
     dependenciesInfo.includeInApk = false
 
     signingConfigs {
-        create("release") {
-            val propertiesFile = rootProject.file("local.properties")
-            if (!propertiesFile.exists()) return@create
-            val localProperties = Properties()
-            localProperties.load(FileInputStream(propertiesFile))
-
-            val keystore = localProperties.getProperty("keystore.path") ?: return@create
-            storeFile = file(keystore)
-            storePassword = localProperties.getProperty("keystore.pass")
-            keyAlias = localProperties.getProperty("keystore.alias")
-            keyPassword = localProperties.getProperty("key.pass")
+        if (keystoreProperties.isNotEmpty()) {
+            create("release") {
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
         }
     }
 
@@ -84,25 +81,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-        compilerOptions {
-            freeCompilerArgs.add("-Xcontext-parameters")
-
-            optIn.addAll(
-                "kotlin.RequiresOptIn",
-                "kotlin.time.ExperimentalTime",
-            )
-        }
-    }
-
     buildFeatures {
         compose = true
         buildConfig = true
-    }
-
-    composeCompiler {
-        metricsDestination = file("$projectDir/reports/metrics")
-        reportsDestination = file("$projectDir/reports")
     }
 
     packaging {
@@ -119,6 +100,27 @@ android {
         }
     }
     lint.disable += "MissingTranslation"
+}
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+
+        optIn.addAll(
+            "kotlin.RequiresOptIn",
+            "kotlin.time.ExperimentalTime",
+        )
+    }
+}
+
+composeCompiler {
+    metricsDestination = file("$projectDir/reports/metrics")
+    reportsDestination = file("$projectDir/reports")
+}
+
+room {
+    generateKotlin = true
+    schemaDirectory("$projectDir/schemas")
 }
 
 tasks.matching { it.name == "mergeDebugAssets" }.configureEach {

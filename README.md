@@ -2,8 +2,7 @@
 
 <img width="" src="metadata/en-US/images/featureGraphic.png" alt="Kenko" align="center">
 
-Kenko is a workout journal which will provide you with appropriate progressive-overload and well
-thought-out plans
+Kenko is a workout journal which will provide you with appropriate progressive-overload and well-thought-out plans
 
 </div>
 
