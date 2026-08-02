@@ -93,7 +93,7 @@ private val surfaceContainerDark = Color(0xFF20201D)
 private val surfaceContainerHighDark = Color(0xFF2A2A27)
 private val surfaceContainerHighestDark = Color(0xFF353532)
 
-private val JapanRed = Color(0xFFE03523)
+val JapanRed = Color(0xFFE03523)
 
 private val defaultLightScheme = lightColorScheme(
     primary = primaryLight,

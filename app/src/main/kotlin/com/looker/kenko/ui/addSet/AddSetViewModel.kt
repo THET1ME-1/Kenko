@@ -19,7 +19,9 @@ import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.runtime.IntState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,7 +46,7 @@ class AddSetViewModel @AssistedInject constructor(
     @Assisted private val id: Int,
 ) : ViewModel() {
 
-    val reps: TextFieldState = TextFieldState("12")
+    var reps by mutableIntStateOf(12)
     val weights: TextFieldState = TextFieldState("20.0")
 
     var selectedSetType by mutableStateOf(SetType.Standard)
@@ -55,7 +57,7 @@ class AddSetViewModel @AssistedInject constructor(
     }
 
     fun addRep(value: Int) {
-        reps.setTextAndPlaceCursorAtEnd((repInt + value).toString())
+        reps += value
     }
 
     fun addWeight(value: Float) {
@@ -83,15 +85,12 @@ class AddSetViewModel @AssistedInject constructor(
                 sessionId = sessionId,
                 exerciseId = id,
                 weight = weightFloat,
-                reps = repInt,
+                reps = reps,
                 setType = selectedSetType,
                 rir = RepsInReserve(2),
             )
         }
     }
-
-    private inline val repInt: Int
-        get() = reps.text.toString().toIntOrNull() ?: 0
 
     private inline val weightFloat: Float
         get() = weights.text.toString().toFloatOrNull() ?: 0F
@@ -99,7 +98,7 @@ class AddSetViewModel @AssistedInject constructor(
     init {
         viewModelScope.launch {
             sessionRepo.getLastSetByExerciseId(id)?.let { set ->
-                addRep(set.repsOrDuration - repInt)
+                reps = set.repsOrDuration
                 addWeight(set.weight - weightFloat)
                 setSetType(set.type)
             }

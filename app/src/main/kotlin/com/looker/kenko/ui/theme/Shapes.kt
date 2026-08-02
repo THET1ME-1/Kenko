@@ -41,6 +41,18 @@ fun CornerBasedShape.start(
 ): CornerBasedShape =
     copy(bottomStart = CornerSize(bottomStart), topStart = CornerSize(topStart))
 
+fun CornerBasedShape.top(
+    topStart: Dp = 0.dp,
+    topEnd: Dp = topStart,
+): CornerBasedShape =
+    copy(topStart = CornerSize(topStart), topEnd = CornerSize(topEnd))
+
+fun CornerBasedShape.bottom(
+    bottomStart: Dp = 0.dp,
+    bottomEnd: Dp = bottomStart,
+): CornerBasedShape =
+    copy(bottomStart = CornerSize(bottomStart), bottomEnd = CornerSize(bottomEnd))
+
 fun CornerBasedShape.end(
     end: CornerBasedShape,
 ): CornerBasedShape =
@@ -50,3 +62,13 @@ fun CornerBasedShape.start(
     start: CornerBasedShape,
 ): CornerBasedShape =
     copy(bottomStart = start.bottomStart, topStart = start.topStart)
+
+fun CornerBasedShape.top(
+    top: CornerBasedShape,
+): CornerBasedShape =
+    copy(topStart = top.topStart, topEnd = top.topEnd)
+
+fun CornerBasedShape.bottom(
+    bottom: CornerBasedShape,
+): CornerBasedShape =
+    copy(bottomStart = bottom.bottomStart, bottomEnd = bottom.bottomEnd)

@@ -21,15 +21,14 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -40,7 +39,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.toPath
 import androidx.compose.runtime.Composable
@@ -55,31 +53,32 @@ import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.RoundedPolygon
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.looker.kenko.R
 import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.Exercise
-import com.looker.kenko.data.model.repDurationStringRes
-import com.looker.kenko.ui.addSet.AddSetViewModel.FloatTransformation
-import com.looker.kenko.ui.addSet.AddSetViewModel.IntTransformation
-import com.looker.kenko.ui.addSet.components.DraggableTextField
-import com.looker.kenko.ui.addSet.components.rememberDraggableTextFieldState
+import com.looker.kenko.ui.addSet.components.ITEMS
+import com.looker.kenko.ui.addSet.components.ItemSize
+import com.looker.kenko.ui.addSet.components.VerticalSelector
+import com.looker.kenko.ui.addSet.components.WeightStepper
+import com.looker.kenko.ui.addSet.components.WeightTextField
 import com.looker.kenko.ui.theme.KenkoIcons
+import com.looker.kenko.ui.theme.KenkoTheme
+import com.looker.kenko.ui.theme.KenkoThemeConfig
+import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
+import com.looker.kenko.ui.theme.colorSchemes.JapanRed
 import kotlinx.coroutines.launch
-
-private val incrementButtonModifier = Modifier
-    .height(48.dp)
-    .zIndex(0f)
-
-private val zIndexModifier = Modifier.zIndex(1F)
 
 @Composable
 fun AddSet(exercise: Exercise, onDone: () -> Unit) {
@@ -87,6 +86,33 @@ fun AddSet(exercise: Exercise, onDone: () -> Unit) {
         hiltViewModel<AddSetViewModel, AddSetViewModel.AddSetViewModelFactory>(key = exercise.name) {
             it.create(exercise.id!!)
         }
+    AddSetContent(
+        exerciseName = exercise.name,
+        weights = viewModel.weights,
+        reps = viewModel.reps,
+        selectedSetType = viewModel.selectedSetType,
+        onSelectSetType = viewModel::setSetType,
+        onAddWeight = viewModel::addWeight,
+        onRepsChanged = { viewModel.reps = it },
+        onDoneClick = {
+            viewModel.addSet()
+            onDone()
+        },
+    )
+}
+
+@Composable
+private fun AddSetContent(
+    exerciseName: String,
+    weights: TextFieldState,
+    reps: Int,
+    selectedSetType: SetType,
+    onSelectSetType: (SetType) -> Unit,
+    onAddWeight: (Float) -> Unit,
+    onRepsChanged: (Int) -> Unit,
+    onDoneClick: () -> Unit,
+) {
+    val haptic = LocalHapticFeedback.current
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -95,85 +121,51 @@ fun AddSet(exercise: Exercise, onDone: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
         AddSetHeader(
             modifier = Modifier.fillMaxWidth(),
-            exerciseName = exercise.name,
-            onClick = {
-                viewModel.addSet()
-                onDone()
-            },
+            exerciseName = exerciseName,
+            onClick = onDoneClick,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         SetTypeSelector(
             modifier = Modifier.align(CenterHorizontally),
-            selected = viewModel.selectedSetType,
-            onSelect = viewModel::setSetType,
+            selected = selectedSetType,
+            onSelect = onSelectSetType,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        SwipeableTextField(
-            modifier = Modifier.align(CenterHorizontally),
-        ) {
-            TextButton(
-                modifier = incrementButtonModifier,
-                onClick = { viewModel.addRep(-1) },
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                modifier = Modifier
+                    .weight(1F)
+                    .height(ItemSize * ITEMS),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Text(text = stringResource(R.string.label_minus_int, 1))
+                WeightTextField(
+                    state = weights,
+                    modifier = Modifier
+                        .weight(3F)
+                        .fillMaxWidth(),
+                )
+                WeightStepper(
+                    onStep = { step ->
+                        onAddWeight(step)
+                        haptic.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
+                    },
+                    modifier = Modifier
+                        .weight(2F)
+                        .fillMaxWidth(),
+                )
             }
-            val reps = rememberDraggableTextFieldState(viewModel.repsBoundReached)
-            DraggableTextField(
-                dragState = reps,
-                textFieldState = viewModel.reps,
-                inputTransformation = IntTransformation,
-                supportingText = stringResource(exercise.repDurationStringRes),
-                modifier = zIndexModifier,
+            VerticalSelector(
+                label = stringResource(R.string.label_reps),
+                value = reps,
+                onChanged = onRepsChanged,
+                onChange = { haptic.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick) },
             )
-            TextButton(
-                modifier = incrementButtonModifier,
-                onClick = { viewModel.addRep(1) },
-            ) {
-                Text(text = stringResource(R.string.label_plus_int, 1))
-            }
-            TextButton(
-                modifier = incrementButtonModifier,
-                onClick = { viewModel.addRep(5) },
-            ) {
-                Text(text = stringResource(R.string.label_plus_int, 5))
-            }
         }
         Spacer(modifier = Modifier.height(24.dp))
-        SwipeableTextField(
-            modifier = Modifier.align(CenterHorizontally),
-        ) {
-            TextButton(
-                modifier = incrementButtonModifier,
-                onClick = { viewModel.addWeight(-1F) },
-            ) {
-                Text(text = stringResource(R.string.label_minus_int, 1F))
-            }
-            val weights = rememberDraggableTextFieldState(viewModel.weightsBoundReached)
-            DraggableTextField(
-                dragState = weights,
-                textFieldState = viewModel.weights,
-                supportingText = stringResource(R.string.label_weight),
-                inputTransformation = FloatTransformation,
-                modifier = zIndexModifier,
-            )
-            TextButton(
-                modifier = incrementButtonModifier,
-                onClick = { viewModel.addWeight(1F) },
-            ) {
-                Text(text = stringResource(R.string.label_plus_int, 1F))
-            }
-            TextButton(
-                modifier = incrementButtonModifier,
-                onClick = { viewModel.addWeight(5F) },
-            ) {
-                Text(text = stringResource(R.string.label_plus_int, 5F))
-            }
-        }
-        Spacer(modifier = Modifier.height(36.dp))
     }
 }
 
@@ -209,23 +201,6 @@ private fun AddSetHeader(
     }
 }
 
-@Composable
-private fun SwipeableTextField(
-    modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit,
-) {
-    Surface(
-        modifier = modifier.requiredHeight(48.dp),
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            content = content,
-        )
-    }
-}
-
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SetTypeSelector(
@@ -251,12 +226,11 @@ private fun SetTypeSelector(
                     checkedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     checkedContentColor = MaterialTheme.colorScheme.onSurface,
                 ),
-                shapes =
-                    when (index) {
-                        0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                        options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                        else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                    },
+                shapes = when (index) {
+                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                    options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                },
             ) {
                 SetTypeIndicator(
                     selected = checked,
@@ -294,9 +268,10 @@ private fun SetTypeIndicator(
         }
     }
 
+    val color = setTypeColor(type)
     Canvas(modifier) {
         drawPath(
-            color = setTypeColor(type),
+            color = color,
             path = processPath(
                 path = morph.toPath(progress = morphAnimatable.value, path = path),
                 size = size,
@@ -331,14 +306,36 @@ private fun setTypeShape(type: SetType): RoundedPolygon = when (type) {
     SetType.RestPause -> MaterialShapes.Bun
 }
 
+@Composable
 private fun setTypeColor(type: SetType): Color = when (type) {
-    SetType.Standard -> Color(0xFF2196F3) // Blue
-    SetType.Drop -> Color(0xFFFFC107) // Amber/Yellow
-    SetType.RestPause -> Color(0xFFFF7043) // Red/Orange (Deep Orange)
+    SetType.Standard -> MaterialTheme.colorScheme.primary
+    SetType.Drop -> MaterialTheme.colorScheme.tertiary
+    SetType.RestPause -> JapanRed
 }
 
 fun setTypeLabel(type: SetType): String = when (type) {
     SetType.Standard -> "Standard"
     SetType.Drop -> "Drop"
     SetType.RestPause -> "Rest-Pause"
+}
+
+@Preview
+@Composable
+private fun AddSetPreview(
+    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
+) {
+    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
+        Surface {
+            AddSetContent(
+                exerciseName = "Bench Press",
+                weights = rememberTextFieldState("40.0"),
+                reps = 12,
+                selectedSetType = SetType.Standard,
+                onSelectSetType = {},
+                onAddWeight = {},
+                onRepsChanged = {},
+                onDoneClick = {},
+            )
+        }
+    }
 }
