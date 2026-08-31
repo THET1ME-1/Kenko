@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
                 theme = theme,
                 colorSchemes = colorScheme,
             ) {
-                val backStack = rememberNavBackStack(Routes.GetStarted(viewModel.isOnboardingDone))
+                val backStack = rememberNavBackStack(Routes.GetStarted(true))
                 Kenko {
                     KenkoNavHost(backStack = backStack)
                 }

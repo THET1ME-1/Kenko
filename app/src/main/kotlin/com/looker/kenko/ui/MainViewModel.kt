@@ -27,10 +27,8 @@ import com.looker.kenko.utils.asStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -45,8 +43,6 @@ class MainViewModel @Inject constructor(
     val colorScheme: StateFlow<ColorSchemes> = repo.stream
         .map { it.colorPalette.scheme ?: dynamicColorSchemes(context) ?: zestfulColorSchemes }
         .asStateFlow(zestfulColorSchemes)
-
-    val isOnboardingDone: Boolean = runBlocking { repo.stream.first().isOnboardingDone }
 
     init {
         viewModelScope.launch {
