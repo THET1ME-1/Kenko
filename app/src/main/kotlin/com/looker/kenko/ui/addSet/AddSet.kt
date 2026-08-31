@@ -37,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedToggleButton
+import androidx.compose.material3.OutlinedToggleButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButtonDefaults
@@ -222,7 +223,7 @@ private fun SetTypeSelector(
                 interactionSource = interactionSource,
                 modifier = Modifier.semantics { role = Role.RadioButton },
                 border = if (checked) ButtonDefaults.outlinedButtonBorder(true) else null,
-                colors = ToggleButtonDefaults.outlinedToggleButtonColors(
+                colors = OutlinedToggleButtonDefaults.colors(
                     checkedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     checkedContentColor = MaterialTheme.colorScheme.onSurface,
                 ),
