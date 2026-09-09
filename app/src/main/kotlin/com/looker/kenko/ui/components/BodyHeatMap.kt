@@ -51,6 +51,8 @@ import com.looker.kenko.ui.components.body.BODY_VIEW_WIDTH
 import com.looker.kenko.ui.components.body.BodyRegion
 import com.looker.kenko.ui.components.body.bodyBack
 import com.looker.kenko.ui.components.body.bodyFront
+import com.looker.kenko.ui.components.body.bodySilhouetteBack
+import com.looker.kenko.ui.components.body.bodySilhouetteFront
 
 /**
  * Which way the body is turned. Some muscles only show on one of the two.
@@ -137,6 +139,10 @@ private fun BodyFigure(
             )
         }
     }
+    val silhouette = remember(side) {
+        val data = if (side == BodySide.Front) bodySilhouetteFront else bodySilhouetteBack
+        PathParser().parsePathString(data).toPath()
+    }
 
     Box(
         modifier = modifier
@@ -165,7 +171,13 @@ private fun BodyFigure(
             translate(left = inset) {
                 scale(scale = scale, pivot = Offset.Zero) {
                     translate(left = -shift) {
-                    // Тело сначала, мышцы поверх: так силуэт держит форму, а тепло читается на нём.
+                        // Силуэт, потом тело, потом мышцы: тепло читается на цельной фигуре.
+                        drawPath(path = silhouette, color = neutral)
+                        drawPath(
+                            path = silhouette,
+                            color = outline,
+                            style = Stroke(width = OUTLINE_WIDTH * 1.6F),
+                        )
                         regions.filter { it.region.muscle == null }.forEach { drawn ->
                             drawPath(path = drawn.path, color = neutral)
                             drawPath(
@@ -203,7 +215,7 @@ private fun BodyFigure(
 /**
  * Stroke inside the drawing's own coordinates: the whole body is 35 units wide.
  */
-private const val OUTLINE_WIDTH = 0.12F
+private const val OUTLINE_WIDTH = 1.8F
 
 private fun heatOf(
     intensity: Float,
