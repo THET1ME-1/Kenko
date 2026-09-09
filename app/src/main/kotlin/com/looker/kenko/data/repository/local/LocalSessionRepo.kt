@@ -22,6 +22,7 @@ import com.looker.kenko.data.local.dao.SetsDao
 import com.looker.kenko.data.local.model.SessionDataEntity
 import com.looker.kenko.data.local.model.SetEntity
 import com.looker.kenko.data.local.model.SetType
+import com.looker.kenko.data.local.model.WeightNote
 import com.looker.kenko.data.local.model.toEntity
 import com.looker.kenko.data.local.model.toExternal
 import com.looker.kenko.data.model.MAX_DROP_COUNT
@@ -79,6 +80,7 @@ class LocalSessionRepo @Inject constructor(
         dropCount: Int,
         dropPercent: Int,
         gripId: Int?,
+        weightNote: WeightNote?,
     ) {
         setsDao.insert(
             SetEntity(
@@ -96,6 +98,7 @@ class LocalSessionRepo @Inject constructor(
                 dropCount = dropCount,
                 dropPercent = dropPercent,
                 gripId = gripId,
+                weightNote = weightNote,
             ),
         )
     }

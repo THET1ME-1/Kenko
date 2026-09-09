@@ -41,6 +41,7 @@ interface SetsDao {
         INNER JOIN sessions ON sets.sessionId = sessions.id
         WHERE sets.exerciseId = :exerciseId
         AND sets.parentSetId IS NULL
+        AND sets.type != 'Warmup'
         ORDER BY sessions.date DESC, sets.`order` DESC
         LIMIT 1
         """

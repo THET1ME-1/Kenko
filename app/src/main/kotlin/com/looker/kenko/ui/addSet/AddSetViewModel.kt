@@ -29,6 +29,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.looker.kenko.data.local.model.SetType
+import com.looker.kenko.data.local.model.WeightNote
 import com.looker.kenko.data.model.Grip
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.Set
@@ -100,12 +101,17 @@ class AddSetViewModel @AssistedInject constructor(
         repsInReserve = value.coerceIn(0, 4)
     }
 
-    fun cycleSetType() {
-        selectedSetType = when (selectedSetType) {
-            SetType.Standard -> SetType.Drop
-            SetType.Drop -> SetType.RestPause
-            SetType.RestPause -> SetType.Standard
-        }
+    /**
+     * How this set was performed, when the weight alone does not say it.
+     */
+    var weightNote: WeightNote? by mutableStateOf(null)
+        private set
+
+    /**
+     * Tapping the same note again takes it off.
+     */
+    fun toggleWeightNote(note: WeightNote?) {
+        weightNote = if (weightNote == note) null else note
     }
 
     fun setWeight(value: Float) {
@@ -156,6 +162,7 @@ class AddSetViewModel @AssistedInject constructor(
                 },
                 dropPercent = target.dropPercent,
                 gripId = selectedGripId,
+                weightNote = weightNote,
             )
         }
     }

@@ -221,6 +221,8 @@ fun List<Session>.summarize(period: StatsPeriod): StatsSummary {
 
     inPeriod.forEach { session ->
         session.sets.forEach { set ->
+            // Разминка двигает суставы, а не числа: в тоннаж и подходы она не идёт.
+            if (!set.countsAsWork) return@forEach
             val exercise = set.exercise
             val volume = set.volume
             totalSets++
@@ -298,7 +300,7 @@ fun List<Session>.summarize(period: StatsPeriod): StatsSummary {
 
     return StatsSummary(
         period = period,
-        sessions = inPeriod.count { it.sets.isNotEmpty() },
+        sessions = inPeriod.count { session -> session.sets.any { it.countsAsWork } },
         exercises = exerciseByName.size,
         sets = totalSets,
         reps = totalReps,
@@ -320,6 +322,7 @@ fun List<Session>.setsOfMuscle(
     .sortedByDescending { it.date }
     .flatMap { session ->
         session.sets
+            .filter { it.countsAsWork }
             .filter { it.exercise.target == muscle || muscle in it.exercise.secondaryTargets }
             .map { session.date to it }
     }

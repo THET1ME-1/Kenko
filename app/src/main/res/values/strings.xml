@@ -471,4 +471,14 @@
     <string name="label_gym_shift">this gym runs %1$d%% against the last one</string>
     <string name="label_gym_shift_named">%1$s runs %2$d%% against the last gym</string>
     <string name="label_gym_shift_take">take %1$s</string>
+    <string name="label_set_type_warmup">warm-up</string>
+    <string name="label_set_type_cluster">cluster</string>
+    <string name="label_set_type_amrap">all out</string>
+    <string name="label_set_kind">kind of set</string>
+    <string name="label_weight_note">weight with a note</string>
+    <string name="label_weight_note_hint">such a set counts in tonnage, but not in records</string>
+    <string name="label_weight_note_partials">partials</string>
+    <string name="label_weight_note_negatives">negatives</string>
+    <string name="label_weight_note_assisted">assisted</string>
+    <string name="label_weight_note_paused">paused</string>
 </resources>

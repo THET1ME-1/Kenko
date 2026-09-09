@@ -45,12 +45,14 @@ data class Ghost(
  */
 fun List<Session>.ghostOf(exerciseName: String, before: LocalDate): Ghost? = this
     .filter { it.date < before }
-    .filter { session -> session.sets.any { it.exercise.name == exerciseName } }
+    .filter { session ->
+        session.sets.any { it.exercise.name == exerciseName && it.countsAsWork }
+    }
     .maxByOrNull { it.date }
     ?.let { session ->
         Ghost(
             date = session.date,
-            sets = session.sets.filter { it.exercise.name == exerciseName },
+            sets = session.sets.filter { it.exercise.name == exerciseName && it.countsAsWork },
         )
     }
 
@@ -87,6 +89,8 @@ fun List<Session>.records(): List<Record> {
     val byExercise = mutableMapOf<String, MutableList<Pair<LocalDate, Set>>>()
     forEach { session ->
         session.sets.forEach { set ->
+            // Рекорд ставит только чистый рабочий подход: разминка и вес с оговоркой мимо.
+            if (!set.countsAsClean) return@forEach
             byExercise.getOrPut(set.exercise.name) { mutableListOf() }.add(session.date to set)
         }
     }
@@ -126,7 +130,7 @@ fun List<Session>.records(): List<Record> {
  * The receiver is the journal as it stood before the set landed.
  */
 fun List<Session>.beatsRecord(set: Set, date: LocalDate): Record? {
-    if (set.weight <= 0F) return null
+    if (set.weight <= 0F || !set.countsAsClean) return null
     val standing = records().firstOrNull { it.exercise.name == set.exercise.name }
     val worth = oneRepMax(set.weight, set.repsOrDuration)
     if (standing != null && worth <= standing.estimatedMax) return null
@@ -219,7 +223,7 @@ private fun List<Session>.topWeights(
     .sortedByDescending { it.date }
     .mapNotNull { session ->
         session.sets
-            .filter { isTheExercise(it) && it.parentSetId == null }
+            .filter { isTheExercise(it) && it.parentSetId == null && it.countsAsClean }
             .maxOfOrNull { it.weight }
             ?.takeIf { it > 0F }
     }
@@ -229,7 +233,9 @@ private fun List<Session>.topWeights(
  * Gym of the last session this exercise was done in.
  */
 fun List<Session>.lastGymOf(exerciseId: Int): Int? = this
-    .filter { session -> session.sets.any { it.exercise.id == exerciseId } }
+    .filter { session ->
+        session.sets.any { it.exercise.id == exerciseId && it.countsAsClean }
+    }
     .maxByOrNull { it.date }
     ?.gymId
 

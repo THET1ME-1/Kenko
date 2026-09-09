@@ -54,7 +54,9 @@ import com.looker.kenko.data.model.ExercisesPreviewParameter
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.repDurationStringRes
+import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.ui.addSet.setTypeLabel
+import com.looker.kenko.ui.addSet.weightNoteLabel
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -98,10 +100,37 @@ fun SetItem(
             )
             PerformedItem(
                 title = stringResource(R.string.label_weight),
-                performance = "${set.weight} KG",
+                performance = "${formatWeight(set.weight)} ${stringResource(R.string.label_kg)}",
             )
         }
     }
+}
+
+/**
+ * What kind of set this was, when it was not a plain one: a warm-up, an all-out set, a partner
+ * on the bar.
+ *
+ * A plain working set says nothing — the line only appears when there is something to say.
+ */
+@Composable
+fun SetKindLine(set: Set, modifier: Modifier = Modifier) {
+    val parts = buildList {
+        if (set.type != SetType.Standard && set.type != SetType.Drop) {
+            add(setTypeLabel(set.type))
+        }
+        set.weightNote?.let { add(weightNoteLabel(it)) }
+    }
+    if (parts.isEmpty()) return
+    Text(
+        modifier = modifier.padding(start = 52.dp, top = 2.dp),
+        text = parts.joinToString(" · "),
+        style = MaterialTheme.typography.labelSmall,
+        color = if (set.type == SetType.Warmup) {
+            MaterialTheme.colorScheme.outline
+        } else {
+            MaterialTheme.colorScheme.tertiary
+        },
+    )
 }
 
 @Composable

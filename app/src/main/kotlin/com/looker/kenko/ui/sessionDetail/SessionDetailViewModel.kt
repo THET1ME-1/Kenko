@@ -32,6 +32,7 @@ import com.looker.kenko.data.model.Ghost
 import com.looker.kenko.data.model.Record
 import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.beatsRecord
+import com.looker.kenko.data.model.countsAsWork
 import com.looker.kenko.data.model.SessionBlock
 import com.looker.kenko.data.model.ghostOf
 import com.looker.kenko.data.model.SetChain
@@ -485,7 +486,7 @@ data class SessionUiData(
                 is SessionBlock.Superset -> block.rounds.flatMap { it.chains }
             }
         }
-        .filter { it.set.exercise.name == exerciseName }
+        .filter { it.set.exercise.name == exerciseName && it.set.countsAsWork }
         .sumOf { it.volume.toDouble() }
         .toFloat()
 }

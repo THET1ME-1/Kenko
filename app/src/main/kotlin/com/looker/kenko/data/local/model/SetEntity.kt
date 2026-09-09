@@ -60,6 +60,11 @@ data class SetEntity(
     val sessionId: Int,
     val exerciseId: Int,
     val rir: Int = 2,
+    /**
+     * Set apart from a clean one: partial reps, negatives, help, a pause.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val weightNote: WeightNote? = null,
     @ColumnInfo(defaultValue = "NULL")
     val parentSetId: Int? = null,
     @ColumnInfo(defaultValue = "0")
@@ -84,6 +89,7 @@ fun SetEntity.toExternal(exercise: Exercise): Set = Set(
     type = type,
     exercise = exercise,
     rir = RepsInReserve(rir),
+    weightNote = weightNote,
     parentSetId = parentSetId,
     dropIndex = dropIndex,
     supersetId = supersetId,
@@ -103,6 +109,7 @@ fun Set.toEntity(sessionId: Int, order: Int): SetEntity = SetEntity(
     sessionId = sessionId,
     exerciseId = requireNotNull(exercise.id),
     rir = rir.value,
+    weightNote = weightNote,
     parentSetId = parentSetId,
     dropIndex = dropIndex,
     supersetId = supersetId,

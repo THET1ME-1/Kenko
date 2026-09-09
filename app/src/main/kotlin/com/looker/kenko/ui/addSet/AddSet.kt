@@ -22,6 +22,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -56,6 +58,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.local.model.SetType
+import com.looker.kenko.data.local.model.WeightNote
 import com.looker.kenko.data.model.Grip
 import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.WEIGHT_STEP
@@ -118,7 +121,9 @@ fun AddSet(
         onSelectGrip = viewModel::selectGrip,
         onWeightChange = viewModel::setWeight,
         onRepsChanged = { viewModel.reps = it },
-        onCycleType = viewModel::cycleSetType,
+        onSelectType = viewModel::setSetType,
+        weightNote = viewModel.weightNote,
+        onSelectWeightNote = viewModel::toggleWeightNote,
         onCycleReserve = viewModel::cycleReserve,
         onFailure = { viewModel.setReserve(0) },
         gymHint = viewModel.gymHint,
@@ -186,7 +191,7 @@ private fun AddSetContent(
     setType: SetType,
     onWeightChange: (Float) -> Unit,
     onRepsChanged: (Int) -> Unit,
-    onCycleType: () -> Unit,
+    onSelectType: (SetType) -> Unit,
     onCycleReserve: () -> Unit,
     onFailure: () -> Unit,
     onOpenPlates: () -> Unit,
@@ -196,6 +201,8 @@ private fun AddSetContent(
     dropIndex: Int = 0,
     setNumber: Int = 1,
     lastSet: Set? = null,
+    weightNote: WeightNote? = null,
+    onSelectWeightNote: (WeightNote?) -> Unit = {},
     gymHint: GymHint? = null,
     onApplyGymHint: () -> Unit = {},
     onDismissGymHint: () -> Unit = {},
@@ -203,6 +210,7 @@ private fun AddSetContent(
     selectedGripId: Int? = null,
     onSelectGrip: (Int?) -> Unit = {},
 ) {
+    var typesOpen by rememberSaveable { mutableStateOf(false) }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -364,8 +372,8 @@ private fun AddSetContent(
                 OutlineKey(
                     modifier = Modifier.weight(1F),
                     label = setTypeLabel(setType),
-                    accent = setType != SetType.Standard,
-                    onClick = onCycleType,
+                    accent = setType != SetType.Standard || weightNote != null,
+                    onClick = { typesOpen = !typesOpen },
                 )
             }
             OutlineKey(
@@ -379,8 +387,124 @@ private fun AddSetContent(
             )
         }
 
+        if (typesOpen && !isDrop) {
+            Spacer(Modifier.height(12.dp))
+            SetTypePicker(
+                selected = setType,
+                note = weightNote,
+                onSelectType = onSelectType,
+                onSelectNote = onSelectWeightNote,
+            )
+        }
+
         Spacer(Modifier.height(24.dp))
     }
+}
+
+/**
+ * What kind of set this was, and — separately — why its weight may not be comparable.
+ *
+ * Drop sets are missing on purpose: a set becomes one by getting cuts under it, not by a tap.
+ */
+@Composable
+private fun SetTypePicker(
+    selected: SetType,
+    note: WeightNote?,
+    onSelectType: (SetType) -> Unit,
+    onSelectNote: (WeightNote?) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.label_set_kind).uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        Spacer(Modifier.height(8.dp))
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            SELECTABLE_TYPES.forEach { type ->
+                PickerChip(
+                    label = setTypeLabel(type),
+                    selected = type == selected,
+                    onClick = { onSelectType(type) },
+                )
+            }
+        }
+
+        Spacer(Modifier.height(14.dp))
+
+        Text(
+            text = stringResource(R.string.label_weight_note).uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        Text(
+            text = stringResource(R.string.label_weight_note_hint),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        Spacer(Modifier.height(8.dp))
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            WeightNote.entries.forEach { entry ->
+                PickerChip(
+                    label = weightNoteLabel(entry),
+                    selected = entry == note,
+                    onClick = { onSelectNote(entry) },
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Types a lifter picks by hand. A drop set is made by its cuts, not by this list.
+ */
+private val SELECTABLE_TYPES = listOf(
+    SetType.Warmup,
+    SetType.Standard,
+    SetType.RestPause,
+    SetType.Cluster,
+    SetType.Amrap,
+)
+
+@Composable
+private fun PickerChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Text(
+        text = label,
+        style = MaterialTheme.typography.labelLarge,
+        color = if (selected) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(
+                if (selected) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else {
+                    MaterialTheme.colorScheme.surfaceContainerHighest
+                },
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 9.dp),
+    )
 }
 
 /**
@@ -590,9 +714,22 @@ private fun GripChip(
 @Composable
 fun setTypeLabel(type: SetType): String = stringResource(
     when (type) {
+        SetType.Warmup -> R.string.label_set_type_warmup
         SetType.Standard -> R.string.label_set_type_standard
         SetType.Drop -> R.string.label_set_type_drop
         SetType.RestPause -> R.string.label_set_type_rest_pause
+        SetType.Cluster -> R.string.label_set_type_cluster
+        SetType.Amrap -> R.string.label_set_type_amrap
+    },
+)
+
+@Composable
+fun weightNoteLabel(note: WeightNote): String = stringResource(
+    when (note) {
+        WeightNote.Partials -> R.string.label_weight_note_partials
+        WeightNote.Negatives -> R.string.label_weight_note_negatives
+        WeightNote.Assisted -> R.string.label_weight_note_assisted
+        WeightNote.Paused -> R.string.label_weight_note_paused
     },
 )
 
@@ -613,7 +750,7 @@ private fun AddSetPreview(
                 setType = SetType.Standard,
                 onWeightChange = { weight = it },
                 onRepsChanged = { reps = it },
-                onCycleType = {},
+                onSelectType = {},
                 onCycleReserve = {},
                 onFailure = {},
                 onOpenPlates = {},

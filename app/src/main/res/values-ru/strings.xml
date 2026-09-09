@@ -433,4 +433,14 @@
     <string name="label_gym_shift">этот зал идёт на %1$d%% против прошлого</string>
     <string name="label_gym_shift_named">%1$s идёт на %2$d%% против прошлого зала</string>
     <string name="label_gym_shift_take">взять %1$s</string>
+    <string name="label_set_type_warmup">разминка</string>
+    <string name="label_set_type_cluster">кластер</string>
+    <string name="label_set_type_amrap">до отказа</string>
+    <string name="label_set_kind">какой это подход</string>
+    <string name="label_weight_note">вес с оговоркой</string>
+    <string name="label_weight_note_hint">такой подход идёт в тоннаж, но не в рекорды</string>
+    <string name="label_weight_note_partials">частичные</string>
+    <string name="label_weight_note_negatives">негативы</string>
+    <string name="label_weight_note_assisted">с помощью</string>
+    <string name="label_weight_note_paused">с паузой</string>
 </resources>

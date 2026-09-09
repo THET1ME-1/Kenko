@@ -15,6 +15,7 @@
 package com.looker.kenko.data.model
 
 import com.looker.kenko.data.local.model.SetType
+import com.looker.kenko.data.local.model.WeightNote
 import kotlinx.datetime.LocalDate
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -31,12 +32,15 @@ private fun set(
     exercise: Exercise = press,
     parentSetId: Int? = null,
     id: Int? = null,
+    type: SetType = SetType.Standard,
+    weightNote: WeightNote? = null,
 ) = Set(
     repsOrDuration = reps,
     weight = weight,
-    type = SetType.Standard,
+    type = type,
     exercise = exercise,
     rir = RepsInReserve(2),
+    weightNote = weightNote,
     parentSetId = parentSetId,
     id = id,
 )
@@ -77,6 +81,16 @@ class GhostTest {
         val ghost = sessions.ghostOf(press.name, before = friday)
 
         assertEquals(monday, ghost?.date)
+    }
+
+    @Test
+    fun `a session of nothing but warm-ups is not a ghost`() {
+        val sessions = listOf(
+            session(monday, set(50F, 10)),
+            session(wednesday, set(20F, 10, type = SetType.Warmup)),
+        )
+
+        assertEquals(monday, sessions.ghostOf(press.name, before = friday)?.date)
     }
 
     @Test
@@ -162,6 +176,29 @@ class RecordTest {
     }
 
     @Test
+    fun `a warm-up never claims a record`() {
+        val sessions = listOf(session(monday, set(80F, 5, type = SetType.Warmup)))
+
+        assertTrue(sessions.records().isEmpty())
+        assertNull(
+            sessions.beatsRecord(set(80F, 5, type = SetType.Warmup), date = wednesday),
+        )
+    }
+
+    @Test
+    fun `a weight with a note never claims a record`() {
+        val history = listOf(session(monday, set(50F, 10)))
+        val helped = set(70F, 10, weightNote = WeightNote.Assisted)
+
+        assertNull(history.beatsRecord(helped, date = wednesday))
+        assertEquals(
+            50F,
+            listOf(session(monday, set(50F, 10), helped)).records().single().weight,
+            0.01F,
+        )
+    }
+
+    @Test
     fun `bodyweight sets stay out of the records`() {
         val sessions = listOf(session(monday, set(0F, 20)))
 
@@ -214,6 +251,20 @@ class GymShiftTest {
         )
 
         assertTrue(sessions.gymShift(press.name, from = 1, to = 2)?.isMeaningful == false)
+    }
+
+    @Test
+    fun `warm-ups do not set the correction between gyms`() {
+        val sessions = listOf(
+            session(day1, set(60F, 8), gymId = 1),
+            session(day2, set(60F, 8), gymId = 1),
+            session(day3, set(20F, 10, type = SetType.Warmup), set(50F, 8), gymId = 2),
+            session(day4, set(20F, 10, type = SetType.Warmup), set(50F, 8), gymId = 2),
+        )
+
+        val shift = sessions.gymShift(press.name, from = 1, to = 2)
+
+        assertEquals(50F / 60F, shift?.factor ?: 0F, 0.01F)
     }
 
     @Test

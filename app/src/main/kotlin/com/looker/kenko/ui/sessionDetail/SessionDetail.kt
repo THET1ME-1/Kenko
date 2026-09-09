@@ -112,6 +112,7 @@ import com.looker.kenko.ui.selectExercise.SelectExercise
 import com.looker.kenko.ui.sessionDetail.components.DropSetCard
 import com.looker.kenko.ui.sessionDetail.components.DropSetRow
 import com.looker.kenko.ui.sessionDetail.components.SetItem
+import com.looker.kenko.ui.sessionDetail.components.SetKindLine
 import com.looker.kenko.ui.sessionDetail.components.SupersetCard
 import com.looker.kenko.ui.sessionDetail.components.SupersetRow
 import com.looker.kenko.ui.theme.KenkoIcons
@@ -719,6 +720,7 @@ private fun ChainItem(
                 set = chain.set,
                 title = { Text(text = normalizeInt(number)) },
             )
+            SetKindLine(set = chain.set)
             if (ghost != null) {
                 GhostLine(set = ghost)
             }

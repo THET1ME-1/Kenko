@@ -34,10 +34,15 @@ private val curl = Exercise(
     id = 2,
 )
 
-private fun set(weight: Float, reps: Int, exercise: Exercise) = Set(
+private fun set(
+    weight: Float,
+    reps: Int,
+    exercise: Exercise,
+    type: SetType = SetType.Standard,
+) = Set(
     repsOrDuration = reps,
     weight = weight,
-    type = SetType.Standard,
+    type = type,
     exercise = exercise,
     rir = RepsInReserve(2),
 )
@@ -103,6 +108,29 @@ class StatsTest {
 
         assertEquals(1, summary.sessions)
         assertEquals(500F, summary.volume, 0.01F)
+    }
+
+    @Test
+    fun `warm-ups stay out of the tonnage and the set count`() {
+        val summary = listOf(
+            session(
+                wednesday,
+                set(20F, 10, bench, type = SetType.Warmup),
+                set(50F, 10, bench),
+            ),
+        ).summarize(StatsPeriod.of(StatsRange.Week, wednesday))
+
+        assertEquals(500F, summary.volume, 0.01F)
+        assertEquals(1, summary.sets)
+    }
+
+    @Test
+    fun `a session of nothing but warm-ups is not a session`() {
+        val summary = listOf(session(wednesday, set(20F, 10, bench, type = SetType.Warmup)))
+            .summarize(StatsPeriod.of(StatsRange.Week, wednesday))
+
+        assertEquals(0, summary.sessions)
+        assertTrue(summary.isEmpty)
     }
 
     @Test

@@ -455,3 +455,16 @@ val MIGRATION_11_12 = object : Migration(11, 12) {
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_sessions_gymId` ON `sessions` (`gymId`)")
     }
 }
+
+/**
+ * Sets learn what kind of work they were: warm-up, cluster, all-out — and whether their weight
+ * can be compared with a clean one at all.
+ */
+val MIGRATION_12_13 = object : Migration(12, 13) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE sets ADD COLUMN weightNote TEXT DEFAULT NULL")
+        db.execSQL("INSERT OR REPLACE INTO set_type (type, modifier) VALUES ('Warmup', 0.0)")
+        db.execSQL("INSERT OR REPLACE INTO set_type (type, modifier) VALUES ('Cluster', 1.25)")
+        db.execSQL("INSERT OR REPLACE INTO set_type (type, modifier) VALUES ('Amrap', 1.15)")
+    }
+}

@@ -16,6 +16,7 @@ package com.looker.kenko.data.model
 
 import androidx.compose.runtime.Immutable
 import com.looker.kenko.data.local.model.SetType
+import com.looker.kenko.data.local.model.WeightNote
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -26,6 +27,10 @@ data class Set(
     val type: SetType,
     val exercise: Exercise,
     val rir: RepsInReserve,
+    /**
+     * Why this weight is not comparable with a clean set, when it is not.
+     */
+    val weightNote: WeightNote? = null,
     /**
      * Set this to the id of the parent set to make this set a drop of that set.
      */
@@ -59,6 +64,24 @@ data class Set(
 
 val Set.isDrop: Boolean
     get() = parentSetId != null
+
+/**
+ * Warm-ups move the joints, not the numbers: they stay out of tonnage, records and suggestions.
+ */
+val Set.isWarmup: Boolean
+    get() = type == SetType.Warmup
+
+/**
+ * Sets that add up to the work of the day.
+ */
+val Set.countsAsWork: Boolean
+    get() = !isWarmup
+
+/**
+ * Sets whose weight can be compared with any other: no warm-up, no help, no half a rep.
+ */
+val Set.countsAsClean: Boolean
+    get() = countsAsWork && weightNote == null
 
 val Set.rating: Rating
     get() = Rating(repsOrDuration * weight * type.ratingModifier * rir.modifier)

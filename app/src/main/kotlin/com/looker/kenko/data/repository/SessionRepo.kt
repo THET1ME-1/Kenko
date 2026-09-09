@@ -15,6 +15,7 @@
 package com.looker.kenko.data.repository
 
 import com.looker.kenko.data.local.model.SetType
+import com.looker.kenko.data.local.model.WeightNote
 import com.looker.kenko.data.model.DEFAULT_DROP_PERCENT
 import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.RepsInReserve
@@ -44,6 +45,7 @@ interface SessionRepo {
         dropCount: Int = 0,
         dropPercent: Int = DEFAULT_DROP_PERCENT,
         gripId: Int? = null,
+        weightNote: WeightNote? = null,
     )
 
     /**
