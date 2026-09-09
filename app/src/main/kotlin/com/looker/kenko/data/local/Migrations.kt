@@ -482,3 +482,17 @@ val MIGRATION_13_14 = object : Migration(13, 14) {
         db.execSQL("ALTER TABLE sessions ADD COLUMN finishedAt INTEGER DEFAULT NULL")
     }
 }
+
+/**
+ * Exercises learn their Russian name and where their illustration lives.
+ *
+ * The pictures themselves stay out of the app: they are fetched from the free-exercise-db CDN
+ * the first time an exercise is shown.
+ */
+val MIGRATION_14_15 = object : Migration(14, 15) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE exercises ADD COLUMN nameRu TEXT DEFAULT NULL")
+        db.execSQL("ALTER TABLE exercises ADD COLUMN illustration TEXT DEFAULT NULL")
+        db.execSQL("ALTER TABLE exercises ADD COLUMN frames INTEGER NOT NULL DEFAULT 0")
+    }
+}

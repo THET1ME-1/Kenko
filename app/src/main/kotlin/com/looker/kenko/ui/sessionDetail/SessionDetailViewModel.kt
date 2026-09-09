@@ -140,6 +140,7 @@ class SessionDetailViewModel @AssistedInject constructor(
                     emit(
                         RestUiState(
                             exerciseName = timer.exerciseName,
+                            exerciseNameRu = timer.exerciseNameRu,
                             secondsLeft = timer.secondsLeft(now),
                             totalSeconds = timer.totalSeconds,
                         ),
@@ -157,11 +158,12 @@ class SessionDetailViewModel @AssistedInject constructor(
         plannedItems.firstOrNull { it.exercise.id == exercise?.id }?.restSeconds
             ?: DEFAULT_REST_SECONDS
 
-    private suspend fun startRest(exerciseName: String, seconds: Int) {
+    private suspend fun startRest(exercise: Exercise?, seconds: Int) {
         if (seconds <= 0) return
         _restTimer.emit(
             RestTimer(
-                exerciseName = exerciseName,
+                exerciseName = exercise?.name.orEmpty(),
+                exerciseNameRu = exercise?.nameRu,
                 totalSeconds = seconds,
                 endsAt = Clock.System.now() + seconds.seconds,
             ),
@@ -201,7 +203,7 @@ class SessionDetailViewModel @AssistedInject constructor(
                     // Внутри группы и круга отдыха нет: таймер стартует, когда группа закрыта.
                     if (last.parentSetId != null || last.supersetId != null) return@collect
                     if (last.dropCount > 0) return@collect
-                    startRest(last.exercise.name, restSecondsFor(last.exercise))
+                    startRest(last.exercise, restSecondsFor(last.exercise))
                 }
         }
     }
@@ -294,6 +296,7 @@ class SessionDetailViewModel @AssistedInject constructor(
             _sheetTarget.emit(
                 SetSheetTarget(
                     exerciseName = exercise.name,
+                    exerciseNameRu = exercise.nameRu,
                     setNumber = performedSets(exerciseId) + 1,
                     target = AddSetTarget(
                         exerciseId = exerciseId,
@@ -342,6 +345,7 @@ class SessionDetailViewModel @AssistedInject constructor(
             _sheetTarget.emit(
                 SetSheetTarget(
                     exerciseName = chain.set.exercise.name,
+                    exerciseNameRu = chain.set.exercise.nameRu,
                     target = AddSetTarget(
                         exerciseId = exerciseId,
                         parentSetId = parentId,
@@ -382,7 +386,7 @@ class SessionDetailViewModel @AssistedInject constructor(
         val id = chain.set.id ?: return
         viewModelScope.launch {
             repo.markWholeDropGroup(id)
-            startRest(chain.set.exercise.name, restSecondsFor(chain.set.exercise))
+            startRest(chain.set.exercise, restSecondsFor(chain.set.exercise))
         }
     }
 
@@ -398,7 +402,7 @@ class SessionDetailViewModel @AssistedInject constructor(
             val sessionId = repo.getSessionIdOrCreate(sessionDate)
             repo.closeSupersetRound(sessionId, block.id, block.plan)
             startRest(
-                exerciseName = block.exercises.firstOrNull()?.name.orEmpty(),
+                exercise = block.exercises.firstOrNull(),
                 seconds = block.plan.maxOfOrNull { it.restSeconds } ?: DEFAULT_REST_SECONDS,
             )
         }
@@ -445,6 +449,7 @@ private const val TICK = 250L
 @Immutable
 data class RestUiState(
     val exerciseName: String,
+    val exerciseNameRu: String? = null,
     val secondsLeft: Int,
     val totalSeconds: Int,
 ) {
@@ -457,6 +462,7 @@ data class RestUiState(
 @Immutable
 data class SetSheetTarget(
     val exerciseName: String,
+    val exerciseNameRu: String? = null,
     val target: AddSetTarget,
     val setNumber: Int = 1,
 )

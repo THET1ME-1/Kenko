@@ -15,6 +15,7 @@
 package com.looker.kenko.ui.exercises
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.looker.kenko.R
 import com.looker.kenko.data.model.Exercise
@@ -64,8 +65,19 @@ private val builtInNames: Map<String, Int> = mapOf(
     "calve raises" to R.string.exercise_calf_raises,
 )
 
+/**
+ * How the exercise is written on screen.
+ *
+ * The three dozen names Kenko was born with are translated by resource. The rest of the
+ * catalogue carries its Russian name in the row itself — nine hundred strings have no business
+ * in `strings.xml`. Everything a lifter names themselves stays as they wrote it.
+ */
 @Composable
-fun Exercise.displayName(): String = localizedExerciseName(name)
+fun Exercise.displayName(): String = localizedExerciseName(name, nameRu)
+
+@Composable
+private fun speaksRussian(): Boolean =
+    LocalContext.current.resources.configuration.locales[0].language == "ru"
 
 /**
  * The string resource of a built-in name, for places that have a context but no composition —
@@ -74,10 +86,13 @@ fun Exercise.displayName(): String = localizedExerciseName(name)
 fun exerciseNameRes(name: String): Int? = builtInNames[name.trim().lowercase()]
 
 /**
- * The same translation for a name that travels alone, without its exercise.
+ * The same translation for a name that travels alone, without its exercise — the rest timer and
+ * the set sheet carry the Russian name beside it, because they never see the exercise itself.
  */
 @Composable
-fun localizedExerciseName(name: String): String {
-    val resource = builtInNames[name.trim().lowercase()] ?: return name
-    return stringResource(resource)
+fun localizedExerciseName(name: String, russian: String? = null): String {
+    val resource = builtInNames[name.trim().lowercase()]
+    if (resource != null) return stringResource(resource)
+    if (russian != null && speaksRussian()) return russian
+    return name
 }

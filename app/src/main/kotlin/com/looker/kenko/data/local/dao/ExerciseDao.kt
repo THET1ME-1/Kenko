@@ -69,4 +69,7 @@ interface ExerciseDao {
         """,
     )
     suspend fun exists(name: String): Boolean
+
+    @Query("SELECT * FROM exercises")
+    suspend fun all(): List<ExerciseEntity>
 }

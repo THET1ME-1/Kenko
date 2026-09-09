@@ -16,3 +16,6 @@ local.properties
 # личная память
 CLAUDE.md
 CLAUDE.local.md
+
+# исходный набор упражнений, 105 МБ — в репозиторий не едет
+/exercise-db-src

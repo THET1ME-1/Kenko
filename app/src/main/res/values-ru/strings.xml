@@ -465,4 +465,10 @@
         <item quantity="many">%d минут</item>
         <item quantity="other">%d минут</item>
     </plurals>
+    <string name="label_illustrations">Иллюстрации</string>
+    <string name="label_illustrations_hint">Картинки движений не лежат в приложении. Они приходят, когда открываешь упражнение, и остаются на телефоне.</string>
+    <string name="label_illustrations_size">На телефоне: %1$s МБ</string>
+    <string name="label_download_illustrations">Скачать все</string>
+    <string name="label_downloading_illustrations">Качаю: %1$d из %2$d</string>
+    <string name="label_clear_illustrations">Очистить</string>
 </resources>

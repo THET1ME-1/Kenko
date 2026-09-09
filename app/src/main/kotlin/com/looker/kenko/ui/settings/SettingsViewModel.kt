@@ -19,20 +19,25 @@ import androidx.compose.runtime.Stable
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.looker.kenko.data.Frame
+import com.looker.kenko.data.IllustrationStore
 import com.looker.kenko.data.backup.BackupManager
 import com.looker.kenko.data.backup.BackupResult
 import com.looker.kenko.data.model.settings.BackupInterval
 import com.looker.kenko.data.model.settings.ColorPalettes
 import com.looker.kenko.data.model.settings.Theme
+import com.looker.kenko.data.repository.ExerciseRepo
 import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.utils.asStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -41,9 +46,57 @@ class SettingsViewModel @Inject constructor(
     private val repo: SettingsRepo,
     gymRepo: com.looker.kenko.data.repository.GymRepo,
     private val backupManager: BackupManager,
+    private val exerciseRepo: ExerciseRepo,
+    private val illustrationStore: IllustrationStore,
 ) : ViewModel() {
 
     private val _backupState = MutableStateFlow(BackupState())
+
+    private val _illustrations = MutableStateFlow(IllustrationsUiData())
+
+    /**
+     * How much of the catalogue's pictures the phone already holds.
+     */
+    val illustrations: StateFlow<IllustrationsUiData> = _illustrations
+
+    init {
+        measureIllustrations()
+    }
+
+    /**
+     * Pulls every picture of the catalogue, so a gym without signal still shows the movements.
+     */
+    fun downloadIllustrations() {
+        if (_illustrations.value.isDownloading) return
+        viewModelScope.launch {
+            _illustrations.update { it.copy(isDownloading = true, done = 0, total = 0) }
+            val wanted = exerciseRepo.stream.first()
+                .flatMap { exercise ->
+                    val illustration = exercise.illustration ?: return@flatMap emptyList()
+                    (0 until exercise.frames).map { Frame(illustration, it) }
+                }
+            _illustrations.update { it.copy(total = wanted.size) }
+            illustrationStore.prefetch(wanted) { done, total ->
+                _illustrations.update { it.copy(done = done, total = total) }
+            }
+            _illustrations.update { it.copy(isDownloading = false) }
+            measureIllustrations()
+        }
+    }
+
+    fun clearIllustrations() {
+        viewModelScope.launch {
+            illustrationStore.clear()
+            measureIllustrations()
+        }
+    }
+
+    private fun measureIllustrations() {
+        viewModelScope.launch {
+            val bytes = illustrationStore.size()
+            _illustrations.update { it.copy(bytes = bytes) }
+        }
+    }
 
     val state: StateFlow<SettingsUiData> = combine(
         repo.stream,
@@ -188,3 +241,17 @@ data class SettingsUiData(
     val isRestoring: Boolean,
     val backupMessage: BackupMessage?,
 )
+
+/**
+ * The picture cache as the settings screen sees it.
+ */
+@Stable
+data class IllustrationsUiData(
+    val bytes: Long = 0,
+    val done: Int = 0,
+    val total: Int = 0,
+    val isDownloading: Boolean = false,
+) {
+    val megabytes: String
+        get() = String.format(Locale.getDefault(), "%.1f", bytes / 1_048_576F)
+}

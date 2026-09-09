@@ -19,6 +19,7 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import com.looker.kenko.R
+import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.StatsPeriod
 import com.looker.kenko.data.model.StatsSummary
@@ -122,7 +123,7 @@ class ReportWriter(private val context: Context) {
                 )
                 summary.exerciseLoads.forEach { load ->
                     row(
-                        exerciseName(load.exercise.name),
+                        exerciseName(load.exercise),
                         context.getString(load.exercise.target.stringRes),
                         formatWeight(load.volume),
                         load.sets.toString(),
@@ -152,7 +153,7 @@ class ReportWriter(private val context: Context) {
                         session.sets.forEach { set ->
                             row(
                                 session.date.toString(),
-                                exerciseName(set.exercise.name),
+                                exerciseName(set.exercise),
                                 context.getString(set.exercise.target.stringRes),
                                 formatWeight(set.weight),
                                 set.repsOrDuration.toString(),
@@ -225,7 +226,7 @@ class ReportWriter(private val context: Context) {
                 page.tableRow(
                     EXERCISE_COLUMNS,
                     listOf(
-                        exerciseName(load.exercise.name),
+                        exerciseName(load.exercise),
                         formatWeight(load.volume),
                         load.sets.toString(),
                         load.reps.toString(),
@@ -246,7 +247,7 @@ class ReportWriter(private val context: Context) {
                             SET_COLUMNS,
                             listOf(
                                 shortDate(session.date),
-                                exerciseName(set.exercise.name),
+                                exerciseName(set.exercise),
                                 formatWeight(set.weight),
                                 set.repsOrDuration.toString(),
                                 formatWeight(set.volume),
@@ -285,8 +286,13 @@ class ReportWriter(private val context: Context) {
         context.getString(R.string.label_total_volume),
     )
 
-    private fun exerciseName(name: String): String =
-        exerciseNameRes(name)?.let(context::getString) ?: name
+    private fun exerciseName(exercise: Exercise): String {
+        exerciseNameRes(exercise.name)?.let { return context.getString(it) }
+        val russian = exercise.nameRu
+        val speaksRussian =
+            context.resources.configuration.locales[0].language == "ru"
+        return if (russian != null && speaksRussian) russian else exercise.name
+    }
 
     private fun shortDate(date: LocalDate): String =
         "${date.day.toString().padStart(2, '0')}.${date.monthNumber.toString().padStart(2, '0')}"

@@ -501,4 +501,10 @@
         <item quantity="one">%d minute</item>
         <item quantity="other">%d minutes</item>
     </plurals>
+    <string name="label_illustrations">Illustrations</string>
+    <string name="label_illustrations_hint">Pictures of the movements are not shipped with the app. They arrive as you open exercises and stay on the phone.</string>
+    <string name="label_illustrations_size">On the phone: %1$s MB</string>
+    <string name="label_download_illustrations">Download all</string>
+    <string name="label_downloading_illustrations">Downloading: %1$d of %2$d</string>
+    <string name="label_clear_illustrations">Clear</string>
 </resources>

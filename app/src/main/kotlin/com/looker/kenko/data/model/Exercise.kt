@@ -50,6 +50,15 @@ data class Exercise(
      * Muscles that work along with [target].
      */
     val secondaryTargets: List<MuscleGroups> = emptyList(),
+    /**
+     * Name in the lifter's language, for the exercises the app ships with.
+     */
+    val nameRu: String? = null,
+    /**
+     * Illustration of the movement: the folder it lives in and how many frames it has.
+     */
+    val illustration: String? = null,
+    val frames: Int = 0,
     val id: Int? = null,
 )
 

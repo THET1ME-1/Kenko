@@ -389,7 +389,7 @@ private fun RestBar(
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(
-                text = localizedExerciseName(rest.exerciseName),
+                text = localizedExerciseName(rest.exerciseName, rest.exerciseNameRu),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.outline,
             )
@@ -1040,7 +1040,7 @@ private fun AddSetSheet(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         AddSet(
-            exerciseName = localizedExerciseName(sheet.exerciseName),
+            exerciseName = localizedExerciseName(sheet.exerciseName, sheet.exerciseNameRu),
             setNumber = sheet.setNumber,
             target = sheet.target,
             onDone = {

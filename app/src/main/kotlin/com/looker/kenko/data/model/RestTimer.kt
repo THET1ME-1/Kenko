@@ -27,6 +27,7 @@ import kotlin.time.Instant
 @Immutable
 data class RestTimer(
     val exerciseName: String,
+    val exerciseNameRu: String? = null,
     val totalSeconds: Int,
     val endsAt: Instant,
 ) {

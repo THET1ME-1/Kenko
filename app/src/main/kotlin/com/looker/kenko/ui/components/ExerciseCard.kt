@@ -89,15 +89,22 @@ fun ExerciseCard(
 }
 
 /**
- * The picture, or the initials of the exercise while there is none.
+ * The picture of the movement: the lifter's own snapshot first, then the one from the catalogue,
+ * and the muscle on a little body while neither has arrived.
  */
 @Composable
 fun ExercisePhoto(
     exercise: Exercise,
     modifier: Modifier = Modifier,
     size: Dp = 64.dp,
+    animate: Boolean = false,
 ) {
     val photo = rememberPhoto(exercise.photoUri)
+    val drawing = rememberIllustration(
+        illustration = exercise.illustration.takeIf { photo == null },
+        frames = exercise.frames,
+        animate = animate,
+    )
     Box(
         modifier = modifier
             .size(size)
@@ -105,16 +112,23 @@ fun ExercisePhoto(
             .background(MaterialTheme.colorScheme.surfaceContainerHigh),
         contentAlignment = Alignment.Center,
     ) {
-        if (photo != null) {
-            Image(
+        when {
+            photo != null -> Image(
                 bitmap = photo,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(size),
             )
-        } else {
-            // Без снимка карточка показывает мышцу: движение так узнаётся быстрее, чем по буквам.
-            MuscleIcon(
+
+            drawing != null -> Image(
+                bitmap = drawing,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(size),
+            )
+
+            // Пока картинки нет, карточка показывает мышцу: так движение узнаётся быстрее букв.
+            else -> MuscleIcon(
                 muscle = exercise.target,
                 height = size * 0.86F,
                 tint = MaterialTheme.colorScheme.primary,

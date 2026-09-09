@@ -76,6 +76,12 @@ class AddEditExerciseViewModel @AssistedInject constructor(
 
     private val photoUri = MutableStateFlow<String?>(null)
 
+    /**
+     * The exercise as it lies in the library. An edit must not lose what the screen never shows —
+     * the Russian name and the illustration come from the catalogue and belong to the row.
+     */
+    private val original = MutableStateFlow<Exercise?>(null)
+
     private val isReadOnly: Boolean = exerciseId != null
 
     val snackbarState = SnackbarHostState()
@@ -95,18 +101,18 @@ class AddEditExerciseViewModel @AssistedInject constructor(
         .mapLatest { repo.isExerciseAvailable(it) && !isReadOnly }
 
     val state = combine(
-        combine(targetMuscle, secondaryMuscles, photoUri) { target, secondary, photo ->
-            Triple(target, secondary, photo)
-        },
+        combine(targetMuscle, secondaryMuscles, photoUri, original, ::Basics),
         isIsometric,
         flowOf(isReadOnly),
         exerciseAlreadyExistError,
         isReferenceInvalid,
-    ) { muscles, isometric, readOnly, alreadyExist, referenceInvalid ->
+    ) { basics, isometric, readOnly, alreadyExist, referenceInvalid ->
         AddEditExerciseUiState(
-            targetMuscle = muscles.first,
-            secondaryMuscles = muscles.second,
-            photoUri = muscles.third,
+            targetMuscle = basics.target,
+            secondaryMuscles = basics.secondary,
+            photoUri = basics.photo,
+            illustration = basics.exercise?.illustration,
+            frames = basics.exercise?.frames ?: 0,
             isIsometric = isometric,
             isReadOnly = readOnly,
             isError = alreadyExist,
@@ -117,6 +123,8 @@ class AddEditExerciseViewModel @AssistedInject constructor(
             targetMuscle = MuscleGroups.Chest,
             secondaryMuscles = emptySet(),
             photoUri = null,
+            illustration = null,
+            frames = 0,
             isIsometric = false,
             isError = false,
             isReadOnly = false,
@@ -239,6 +247,9 @@ class AddEditExerciseViewModel @AssistedInject constructor(
                     isIsometric = isIsometric.value,
                     photoUri = photoUri.value,
                     secondaryTargets = secondaryMuscles.value.toList(),
+                    nameRu = original.value?.nameRu,
+                    illustration = original.value?.illustration,
+                    frames = original.value?.frames ?: 0,
                     id = exerciseId,
                 ),
             )
@@ -251,6 +262,7 @@ class AddEditExerciseViewModel @AssistedInject constructor(
             if (exerciseId != null) {
                 val exercise = repo.get(exerciseId)
                 exercise?.let {
+                    original.emit(it)
                     setName(it.name)
                     addReference(it.reference ?: "")
                     setIsometric(it.isIsometric)
@@ -266,11 +278,23 @@ class AddEditExerciseViewModel @AssistedInject constructor(
     }
 }
 
+/**
+ * What the four independent pieces of the form add up to before the rest of the state joins them.
+ */
+private data class Basics(
+    val target: MuscleGroups,
+    val secondary: Set<MuscleGroups>,
+    val photo: String?,
+    val exercise: Exercise?,
+)
+
 @Stable
 data class AddEditExerciseUiState(
     val targetMuscle: MuscleGroups,
     val secondaryMuscles: Set<MuscleGroups>,
     val photoUri: String?,
+    val illustration: String?,
+    val frames: Int,
     val isIsometric: Boolean,
     val isError: Boolean,
     val isReadOnly: Boolean,

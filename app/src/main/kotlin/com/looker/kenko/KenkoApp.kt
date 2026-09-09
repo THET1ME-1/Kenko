@@ -17,14 +17,33 @@ package com.looker.kenko
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.looker.kenko.data.ExerciseSeeder
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 @HiltAndroidApp
 class KenkoApp : Application(), Configuration.Provider {
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
+
+    @Inject
+    lateinit var exerciseSeeder: ExerciseSeeder
+
+    /**
+     * The shipped exercise catalogue is topped up in the background: nothing on screen waits
+     * for it, and a lifter's own exercises are never touched.
+     */
+    override fun onCreate() {
+        super.onCreate()
+        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
+            exerciseSeeder.seed()
+        }
+    }
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()

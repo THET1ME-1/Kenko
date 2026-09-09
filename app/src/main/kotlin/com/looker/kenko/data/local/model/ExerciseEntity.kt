@@ -40,12 +40,28 @@ data class ExerciseEntity(
      */
     @ColumnInfo(defaultValue = "''")
     val secondaryTargets: String = "",
+    /**
+     * Name in the lifter's language, when the app ships one.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val nameRu: String? = null,
+    /**
+     * Folder of the illustration in the free-exercise-db set. Pictures are fetched on demand,
+     * so the app itself stays small.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val illustration: String? = null,
+    @ColumnInfo(defaultValue = "0")
+    val frames: Int = 0,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0
 )
 fun ExerciseEntity.toExternal(): Exercise = Exercise(
     id = id,
     name = name,
+    nameRu = nameRu,
+    illustration = illustration,
+    frames = frames,
     target = target,
     reference = reference,
     isIsometric = isIsometric,
@@ -56,6 +72,9 @@ fun ExerciseEntity.toExternal(): Exercise = Exercise(
 fun Exercise.toEntity(): ExerciseEntity = ExerciseEntity(
     id = id ?: 0,
     name = name,
+    nameRu = nameRu,
+    illustration = illustration,
+    frames = frames,
     target = target,
     reference = reference,
     isIsometric = isIsometric,

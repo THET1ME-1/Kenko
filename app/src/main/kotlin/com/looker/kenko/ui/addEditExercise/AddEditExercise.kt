@@ -70,6 +70,7 @@ import com.looker.kenko.ui.components.ErrorSnackbar
 import com.looker.kenko.ui.components.KenkoButton
 import com.looker.kenko.ui.components.BodyPicker
 import com.looker.kenko.ui.components.kenkoTextFieldColor
+import com.looker.kenko.ui.components.rememberIllustration
 import com.looker.kenko.ui.components.rememberPhoto
 import com.looker.kenko.ui.exercises.string
 import com.looker.kenko.ui.theme.KenkoIcons
@@ -152,6 +153,8 @@ private fun AddEditExercise(
         ) {
             PhotoBlock(
                 photoUri = state.photoUri,
+                illustration = state.illustration,
+                frames = state.frames,
                 onPick = onPhotoChange,
             )
 
@@ -248,13 +251,16 @@ private fun AddEditExercise(
 }
 
 /**
- * The picture of the movement: an empty slot until one is picked, then the photo itself.
+ * The picture of the movement: the lifter's own photo if they took one, otherwise the two shots
+ * from the catalogue taking turns, and an empty slot when the exercise has neither.
  */
 @Composable
 private fun PhotoBlock(
     photoUri: String?,
     onPick: (Uri?) -> Unit,
     modifier: Modifier = Modifier,
+    illustration: String? = null,
+    frames: Int = 0,
 ) {
     val picker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -264,10 +270,16 @@ private fun PhotoBlock(
         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
     }
     val photo = rememberPhoto(photoUri)
+    val drawing = rememberIllustration(
+        illustration = illustration.takeIf { photo == null },
+        frames = frames,
+        animate = true,
+    )
+    val shown = photo ?: drawing
     Column(modifier = modifier.fillMaxWidth()) {
-        if (photo != null) {
+        if (shown != null) {
             Image(
-                bitmap = photo,
+                bitmap = shown,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -278,10 +290,18 @@ private fun PhotoBlock(
             )
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 TextButton(onClick = { picker.launch(request) }) {
-                    Text(text = stringResource(R.string.label_replace_photo))
+                    Text(
+                        text = if (photo == null) {
+                            stringResource(R.string.label_add_photo)
+                        } else {
+                            stringResource(R.string.label_replace_photo)
+                        },
+                    )
                 }
-                TextButton(onClick = { onPick(null) }) {
-                    Text(text = stringResource(R.string.label_remove_photo))
+                if (photo != null) {
+                    TextButton(onClick = { onPick(null) }) {
+                        Text(text = stringResource(R.string.label_remove_photo))
+                    }
                 }
             }
         } else {
@@ -502,6 +522,8 @@ private fun AddEditExercisePreview(
                 targetMuscle = MuscleGroups.Chest,
                 secondaryMuscles = setOf(MuscleGroups.Triceps, MuscleGroups.Shoulders),
                 photoUri = null,
+                illustration = null,
+                frames = 0,
                 isIsometric = false,
                 isError = false,
                 isReadOnly = false,

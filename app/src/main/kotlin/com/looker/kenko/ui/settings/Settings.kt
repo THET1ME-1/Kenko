@@ -106,8 +106,12 @@ fun Settings(
     onBackPress: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val illustrations by viewModel.illustrations.collectAsStateWithLifecycle()
     Settings(
         state = state,
+        illustrations = illustrations,
+        onDownloadIllustrations = viewModel::downloadIllustrations,
+        onClearIllustrations = viewModel::clearIllustrations,
         onGymsClick = onGymsClick,
         onWeekModeChange = viewModel::updateWeekMode,
         onSelectTheme = viewModel::updateTheme,
@@ -125,6 +129,9 @@ fun Settings(
 @Composable
 private fun Settings(
     state: SettingsUiData,
+    illustrations: IllustrationsUiData = IllustrationsUiData(),
+    onDownloadIllustrations: () -> Unit = {},
+    onClearIllustrations: () -> Unit = {},
     onGymsClick: () -> Unit = {},
     onWeekModeChange: (Boolean) -> Unit,
     onSelectTheme: (Theme) -> Unit,
@@ -235,6 +242,14 @@ private fun Settings(
                 onClickPalette = onSelectColorPalette,
             )
             Spacer(modifier = Modifier.height(24.dp))
+            CategoryHeader(title = stringResource(R.string.label_illustrations))
+            Spacer(modifier = Modifier.height(8.dp))
+            IllustrationsSection(
+                state = illustrations,
+                onDownload = onDownloadIllustrations,
+                onClear = onClearIllustrations,
+            )
+            Spacer(modifier = Modifier.height(24.dp))
             CategoryHeader(title = stringResource(R.string.label_backup))
             Spacer(modifier = Modifier.height(8.dp))
             BackupSection(
@@ -250,6 +265,53 @@ private fun Settings(
             )
             Spacer(modifier = Modifier.weight(1F))
             HealthQuotes(Modifier.align(CenterHorizontally))
+        }
+    }
+}
+
+/**
+ * The picture cache: how much of it is on the phone, and the two things a lifter can do to it.
+ */
+@Composable
+private fun IllustrationsSection(
+    state: IllustrationsUiData,
+    onDownload: () -> Unit,
+    onClear: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.padding(horizontal = 20.dp)) {
+        Text(
+            text = stringResource(R.string.label_illustrations_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = if (state.isDownloading) {
+                stringResource(
+                    R.string.label_downloading_illustrations,
+                    state.done,
+                    state.total,
+                )
+            } else {
+                stringResource(R.string.label_illustrations_size, state.megabytes)
+            },
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TextButton(
+                onClick = onDownload,
+                enabled = !state.isDownloading,
+            ) {
+                Text(text = stringResource(R.string.label_download_illustrations))
+            }
+            TextButton(
+                onClick = onClear,
+                enabled = !state.isDownloading && state.bytes > 0,
+            ) {
+                Text(text = stringResource(R.string.label_clear_illustrations))
+            }
         }
     }
 }
