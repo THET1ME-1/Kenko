@@ -89,7 +89,10 @@ fun SwipeToDeleteBox(
     Box(
         modifier = modifier
             .height(IntrinsicSize.Min)
-            .drawBehind { drawRect(background) },
+            // Подложка появляется только на время свайпа: в покое строка ничем не закрашена.
+            .drawBehind {
+                if (state.requireOffset() > 0.5F) drawRect(background)
+            },
     ) {
         Box(
             modifier = Modifier

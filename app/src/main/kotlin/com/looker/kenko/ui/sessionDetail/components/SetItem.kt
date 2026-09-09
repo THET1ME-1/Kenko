@@ -75,7 +75,6 @@ fun SetItem(
         modifier = Modifier
             .heightIn(64.dp)
             .widthIn(240.dp, 420.dp)
-            .background(MaterialTheme.colorScheme.surface)
             .then(modifier),
         verticalAlignment = Alignment.CenterVertically,
     ) {
