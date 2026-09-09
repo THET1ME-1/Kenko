@@ -91,6 +91,7 @@ import com.looker.kenko.data.model.SetChain
 import com.looker.kenko.data.model.formatSeconds
 import com.looker.kenko.ui.addSet.AddSet
 import com.looker.kenko.ui.components.BackButton
+import com.looker.kenko.ui.components.DashedAddButton
 import com.looker.kenko.ui.components.OnSurfaceVariantBorder
 import com.looker.kenko.ui.components.PrimaryBorder
 import com.looker.kenko.ui.components.SwipeToDeleteBox
@@ -98,6 +99,7 @@ import com.looker.kenko.ui.components.TypingText
 import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
+import com.looker.kenko.ui.selectExercise.SelectExercise
 import com.looker.kenko.ui.sessionDetail.components.AddDropRow
 import com.looker.kenko.ui.sessionDetail.components.DropRow
 import com.looker.kenko.ui.sessionDetail.components.DropSetCard
@@ -148,8 +150,21 @@ fun SessionDetails(
             onUndoRound = viewModel::undoSupersetRound,
         ),
         onAddDropClick = viewModel::showAddDropSheet,
+        onAddExerciseClick = viewModel::showExercisePicker,
         onHistoryClick = { onHistoryClick(viewModel.previousSessionDate) },
     )
+    val pickerVisible by viewModel.exercisePickerVisible.collectAsStateWithLifecycle()
+    if (pickerVisible) {
+        SelectExercise(
+            modifier = Modifier.fillMaxSize(),
+            onBackPress = viewModel::hideExercisePicker,
+            onRequestNewExercise = { _, _ -> },
+            onDone = { exercise ->
+                viewModel.hideExercisePicker()
+                viewModel.showAddSetSheet(exercise)
+            },
+        )
+    }
     val sheetTarget by viewModel.sheetTarget.collectAsStateWithLifecycle()
     sheetTarget?.let { sheet ->
         AddSetSheet(
@@ -172,6 +187,7 @@ private fun SessionDetail(
     onReferenceClick: (String) -> Unit = {},
     onAddSetClick: (Exercise, Int?) -> Unit = { _, _ -> },
     onAddDropClick: (SetChain) -> Unit = {},
+    onAddExerciseClick: () -> Unit = {},
     onHistoryClick: () -> Unit = {},
     groupActions: GroupActions = GroupActions(),
 ) {
@@ -224,6 +240,7 @@ private fun SessionDetail(
                 onReferenceClick = onReferenceClick,
                 onAddSetClick = onAddSetClick,
                 onAddDropClick = onAddDropClick,
+                onAddExerciseClick = onAddExerciseClick,
                 onHistoryClick = onHistoryClick,
                 groupActions = groupActions,
             )
@@ -327,6 +344,7 @@ private fun SetsList(
     onReferenceClick: (String) -> Unit,
     onAddSetClick: (Exercise, Int?) -> Unit,
     onAddDropClick: (SetChain) -> Unit,
+    onAddExerciseClick: () -> Unit,
     onHistoryClick: () -> Unit,
     groupActions: GroupActions,
 ) {
@@ -337,6 +355,7 @@ private fun SetsList(
         contentPadding = WindowInsets.navigationBars.asPaddingValues(LocalDensity.current) +
                 PaddingValues(bottom = 12.dp),
     ) {
+
         item(
             span = { GridItemSpan(maxLineSpan) },
         ) {
@@ -363,6 +382,16 @@ private fun SetsList(
                 },
             )
         }
+        if (isEditable && blocks.isEmpty()) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
+                    text = stringResource(R.string.label_free_session_hint),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+            }
+        }
         blocks.forEachIndexed { blockIndex, block ->
             when (block) {
                 is SessionBlock.SingleExercise -> singleExerciseBlock(
@@ -382,6 +411,16 @@ private fun SetsList(
                     expanded = expanded,
                     onAddSetClick = onAddSetClick,
                     groupActions = groupActions,
+                )
+            }
+        }
+        if (isEditable) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                DashedAddButton(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    label = stringResource(R.string.label_add_exercise_short),
+                    onClick = onAddExerciseClick,
+                    accent = true,
                 )
             }
         }

@@ -285,15 +285,9 @@ class PlanEditViewModel @AssistedInject constructor(
                 onBackPress()
                 return@launch
             }
-            if (_isBackAlreadyPressedOnce.value) {
-                repo.deletePlan(planIdStream.value)
-                onBackPress()
-                return@launch
-            }
+            // Пустая программа не держит человека на экране: уходим и убираем её за собой.
             if (repo.getPlanItems(planIdStream.value).isEmpty()) {
-                _isBackAlreadyPressedOnce.emit(true)
-                snackbarState.showSnackbar(stringHandler.getString(R.string.error_plan_empty_prompt))
-                return@launch
+                repo.deletePlan(planIdStream.value)
             }
             onBackPress()
         }

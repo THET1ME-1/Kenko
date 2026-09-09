@@ -46,6 +46,7 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -70,6 +71,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.ui.components.KenkoBorderWidth
+import com.looker.kenko.ui.components.KenkoButton
 import com.looker.kenko.ui.components.LiftingQuotes
 import com.looker.kenko.ui.components.TertiaryKenkoButton
 import com.looker.kenko.ui.components.TickerText
@@ -161,18 +163,29 @@ private fun Home(
                 }
             }
             HorizontalDivider(thickness = KenkoBorderWidth)
-            if (state.isPlanSelected) {
+            run {
                 StartSession(
-                    onStartSessionClick = {
-                        if (state.isTodayEmpty) {
-                            onCurrentPlanClick(state.currentPlanId!!)
-                        } else {
-                            onStartSessionClick()
+                    onStartSessionClick = onStartSessionClick,
+                    secondary = {
+                        if (!state.isPlanSelected) {
+                            TextButton(onClick = onSelectPlanClick) {
+                                Text(text = stringResource(R.string.label_select_plan_one))
+                            }
+                        } else if (state.isTodayEmpty && state.currentPlanId != null) {
+                            TextButton(onClick = { onCurrentPlanClick(state.currentPlanId) }) {
+                                Text(text = stringResource(R.string.label_edit_plan))
+                            }
                         }
                     },
                     content = {
-                        val heading = remember(state.isSessionStarted, state.isTodayEmpty) {
-                            if (state.isTodayEmpty) {
+                        val heading = remember(
+                            state.isSessionStarted,
+                            state.isTodayEmpty,
+                            state.isPlanSelected,
+                        ) {
+                            if (!state.isPlanSelected) {
+                                R.string.label_free_session_heading
+                            } else if (state.isTodayEmpty) {
                                 R.string.label_nothing_today
                             } else if (state.isSessionStarted) {
                                 R.string.label_continue_session_heading
@@ -197,10 +210,8 @@ private fun Home(
                         )
                     },
                     buttonText = {
-                        val stringRes = remember(state.isSessionStarted, state.isTodayEmpty) {
-                            if (state.isTodayEmpty) {
-                                R.string.label_edit_plan
-                            } else if (state.isSessionStarted) {
+                        val stringRes = remember(state.isSessionStarted) {
+                            if (state.isSessionStarted) {
                                 R.string.label_continue_session
                             } else {
                                 R.string.label_start_session
@@ -209,8 +220,6 @@ private fun Home(
                         Text(text = stringResource(stringRes))
                     },
                 )
-            } else {
-                SelectPlan(onSelectPlanClick = onSelectPlanClick)
             }
             LiftingQuotes(Modifier.align(CenterHorizontally))
         }
@@ -222,11 +231,12 @@ private fun ColumnScope.StartSession(
     onStartSessionClick: () -> Unit,
     content: @Composable () -> Unit,
     buttonText: @Composable () -> Unit,
+    secondary: @Composable () -> Unit = {},
 ) {
     Spacer(modifier = Modifier.weight(1F))
     content()
     Spacer(modifier = Modifier.weight(1F))
-    TertiaryKenkoButton(
+    KenkoButton(
         modifier = Modifier.align(CenterHorizontally),
         onClick = onStartSessionClick,
         label = buttonText,
@@ -238,6 +248,9 @@ private fun ColumnScope.StartSession(
             )
         },
     )
+    Box(modifier = Modifier.align(CenterHorizontally)) {
+        secondary()
+    }
 }
 
 @Composable

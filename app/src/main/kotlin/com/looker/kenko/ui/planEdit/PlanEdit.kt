@@ -183,9 +183,10 @@ fun PlanEdit(
 
     val editedItem by viewModel.editedItem.collectAsStateWithLifecycle()
     editedItem?.let { item ->
-        TargetsSheet(
+        TargetsScreen(
+            modifier = Modifier.fillMaxSize(),
             item = item,
-            onDismiss = { viewModel.editTargets(null) },
+            onBackPress = { viewModel.editTargets(null) },
             onSave = { sets, reps, rest, drops, percent ->
                 viewModel.saveTargets(item, sets, reps, rest, drops, percent)
             },
@@ -690,127 +691,6 @@ private fun formatRest(seconds: Int): String = when {
     seconds < 60 -> "$seconds ${stringResource(R.string.label_seconds_short)}"
     seconds % 60 == 0 -> "${seconds / 60} ${stringResource(R.string.label_minutes_short)}"
     else -> "${seconds / 60}:${(seconds % 60).toString().padStart(2, '0')}"
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TargetsSheet(
-    item: PlanItem,
-    onDismiss: () -> Unit,
-    onSave: (sets: Int, reps: Int, restSeconds: Int, dropCount: Int, dropPercent: Int) -> Unit,
-) {
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var sets by remember(item.id) { mutableIntStateOf(item.targetSets) }
-    var reps by remember(item.id) { mutableIntStateOf(item.targetReps) }
-    var rest by remember(item.id) { mutableIntStateOf(item.restSeconds) }
-    var drops by remember(item.id) { mutableIntStateOf(item.dropCount) }
-    var dropPercent by remember(item.id) { mutableIntStateOf(item.dropPercent) }
-    ModalBottomSheet(
-        sheetState = state,
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-    ) {
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp),
-        ) {
-            Text(
-                text = stringResource(R.string.label_edit_targets).uppercase(),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.outline,
-            )
-            Text(
-                text = item.exercise.name,
-                style = MaterialTheme.typography.displaySmall,
-                color = MaterialTheme.colorScheme.tertiary,
-            )
-            Spacer(Modifier.height(16.dp))
-            StepperRow(
-                label = stringResource(R.string.label_sets),
-                value = normalizeInt(sets),
-                onDecrease = { sets = (sets - 1).coerceAtLeast(1) },
-                onIncrease = { sets = (sets + 1).coerceAtMost(20) },
-            )
-            StepperRow(
-                label = stringResource(R.string.label_reps),
-                value = normalizeInt(reps),
-                onDecrease = { reps = (reps - 1).coerceAtLeast(1) },
-                onIncrease = { reps = (reps + 1).coerceAtMost(100) },
-            )
-            StepperRow(
-                label = stringResource(R.string.label_rest),
-                value = formatRest(rest),
-                onDecrease = { rest = (rest - REST_STEP_SECONDS).coerceAtLeast(0) },
-                onIncrease = { rest = (rest + REST_STEP_SECONDS).coerceAtMost(600) },
-            )
-            StepperRow(
-                label = stringResource(R.string.label_drop_in_plan),
-                value = if (drops == 0) "—" else "×$drops",
-                onDecrease = { drops = (drops - 1).coerceAtLeast(0) },
-                onIncrease = { drops = (drops + 1).coerceAtMost(MAX_DROP_COUNT) },
-            )
-            if (drops > 0) {
-                StepperRow(
-                    label = stringResource(R.string.label_drop_step),
-                    value = "−$dropPercent%",
-                    onDecrease = {
-                        dropPercent = (dropPercent - DROP_PERCENT_STEP).coerceAtLeast(MIN_DROP_PERCENT)
-                    },
-                    onIncrease = {
-                        dropPercent = (dropPercent + DROP_PERCENT_STEP).coerceAtMost(MAX_DROP_PERCENT)
-                    },
-                )
-            }
-            Spacer(Modifier.height(16.dp))
-            KenkoButton(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                onClick = { onSave(sets, reps, rest, drops, dropPercent) },
-                label = { Text(stringResource(R.string.label_save)) },
-                icon = {
-                    Icon(
-                        modifier = Modifier.size(18.dp),
-                        painter = KenkoIcons.Done,
-                        contentDescription = null,
-                    )
-                },
-            )
-            Spacer(Modifier.height(24.dp))
-        }
-    }
-}
-
-private const val REST_STEP_SECONDS = 15
-
-@Composable
-private fun StepperRow(
-    label: String,
-    value: String,
-    onDecrease: () -> Unit,
-    onIncrease: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.weight(1F),
-        )
-        FilledTonalIconButton(onClick = onDecrease) {
-            Icon(painter = KenkoIcons.Remove, contentDescription = null)
-        }
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleMedium.numbers(),
-            modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        FilledTonalIconButton(onClick = onIncrease) {
-            Icon(painter = KenkoIcons.Add, contentDescription = null)
-        }
-    }
 }
 
 @Preview

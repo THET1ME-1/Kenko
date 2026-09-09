@@ -225,7 +225,8 @@ class LocalSessionRepo @Inject constructor(
     }
 
     override suspend fun getSessionIdOrCreate(date: LocalDate): Int {
-        val currentPlanId = requireNotNull(historyDao.getCurrentId()) { "No plan active" }
+        // Тренироваться можно и без программы: тогда сессия просто ни к чему не привязана.
+        val currentPlanId = historyDao.getCurrentId()
         val existingId = dao.getSessionId(date.toLocalEpochDays())
         if (existingId != null) {
             return existingId

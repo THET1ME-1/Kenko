@@ -242,4 +242,10 @@
     <string name="label_days_in_plan">дней в программе: %1$d</string>
     <string name="label_week_mode">Дни недели</string>
     <string name="label_week_mode_desc">Выключено — программа идёт день за днём, когда бы вы ни пришли.</string>
+    <string name="label_free_session_heading">Тренировка без программы</string>
+    <string name="label_free_session_hint">Плана нет. Добавь упражнение и вперёд.</string>
+    <string name="label_no_drops">без сбросов</string>
+    <string name="label_drop_ladder">веса: %1$s %%</string>
+    <string name="label_in_this_day">в этом дне</string>
+    <string name="label_sets_and_time">%1$d подходов по %2$d · ~%3$d мин</string>
 </resources>

@@ -112,6 +112,9 @@ class SessionDetailViewModel @AssistedInject constructor(
     private val _sheetTarget: MutableStateFlow<SetSheetTarget?> = MutableStateFlow(null)
     val sheetTarget: StateFlow<SetSheetTarget?> = _sheetTarget
 
+    private val _exercisePickerVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val exercisePickerVisible: StateFlow<Boolean> = _exercisePickerVisible
+
     private val _restTimer: MutableStateFlow<RestTimer?> = MutableStateFlow(null)
 
     /**
@@ -206,10 +209,6 @@ class SessionDetailViewModel @AssistedInject constructor(
         ) { session, planned, previousSession, activePlan ->
             if (session == null && epochDays != null) {
                 return@combine SessionDetailState.Error.InvalidSession
-            }
-
-            if (planned.isEmpty() && sessionDate.isToday) {
-                return@combine SessionDetailState.Error.EmptyPlan
             }
 
             val currentSession = session ?: Session(-1, emptyList())
@@ -319,6 +318,18 @@ class SessionDetailViewModel @AssistedInject constructor(
         viewModelScope.launch {
             val sessionId = repo.getSessionIdOrCreate(sessionDate)
             repo.clearLastSupersetRound(sessionId, block.id)
+        }
+    }
+
+    fun showExercisePicker() {
+        viewModelScope.launch {
+            _exercisePickerVisible.emit(true)
+        }
+    }
+
+    fun hideExercisePicker() {
+        viewModelScope.launch {
+            _exercisePickerVisible.emit(false)
         }
     }
 

@@ -293,4 +293,10 @@
     <string name="label_days_in_plan">%1$d days in the plan</string>
     <string name="label_week_mode">Days of the week</string>
     <string name="label_week_mode_desc">Off — the plan runs day after day, whenever you train.</string>
+    <string name="label_free_session_heading">Train as you like</string>
+    <string name="label_free_session_hint">Nothing planned. Add an exercise and go.</string>
+    <string name="label_no_drops">no drops</string>
+    <string name="label_drop_ladder">weights: %1$s %%</string>
+    <string name="label_in_this_day">in this day</string>
+    <string name="label_sets_and_time">%1$d sets of %2$d · ~%3$d min</string>
 </resources>
