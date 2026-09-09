@@ -90,6 +90,10 @@ GEAR = {
 }
 
 
+# Слова, по которым видно, что снаряд уже назван: второй раз его дописывать не надо.
+GEAR_WORDS = ("блок", "смит", "тренажёр", "штанг", "гантел", "гир", "резин", "ролик", "мяч", "медбол")
+
+
 def translate(name, equipment):
     """Русское название, когда движение узнаётся. Иначе английское остаётся как есть."""
     low = name.lower().replace("/", " ")
@@ -98,10 +102,17 @@ def translate(name, equipment):
         return None
     parts = [move]
     for word, russian in POSITION:
-        if word in low and russian not in parts and russian.lower() not in move.lower():
-            parts.append(russian)
+        if word not in low or russian in parts:
+            continue
+        if russian.lower() in " ".join(parts).lower():
+            continue
+        # «Жим на плечи над головой» — над головой их и жмут.
+        if russian == "над головой" and "плеч" in move.lower():
+            continue
+        parts.append(russian)
     gear = GEAR.get(equipment, "")
-    if gear and gear not in parts:
+    said = " ".join(parts).lower()
+    if gear and not any(word in said for word in GEAR_WORDS):
         parts.append(gear)
     return " ".join(parts[:4])
 
