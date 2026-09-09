@@ -44,12 +44,24 @@ data class SessionEntity(
             childColumns = ["planId"],
             onDelete = ForeignKey.SET_NULL,
         ),
+        ForeignKey(
+            entity = GymEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["gymId"],
+            onDelete = ForeignKey.SET_NULL,
+        ),
     ],
 )
 data class SessionDataEntity(
     val date: EpochDays,
     @ColumnInfo(index = true)
     val planId: Int?,
+    /**
+     * Gym the session happened in. Weights of the same exercise differ from gym to gym, and the
+     * app can only tell them apart if it knows where the set was written.
+     */
+    @ColumnInfo(index = true, defaultValue = "NULL")
+    val gymId: Int? = null,
     /**
      * Day of the plan this session went through, so the next one knows what follows.
      */
@@ -62,6 +74,7 @@ data class SessionDataEntity(
 fun Session.data(): SessionDataEntity = SessionDataEntity(
     date = EpochDays(date.toEpochDays().toInt()),
     planId = planId,
+    gymId = gymId,
     dayIndex = dayIndex,
     id = id ?: 0,
 )
@@ -75,5 +88,6 @@ fun SessionEntity.toExternal(
     date = LocalDate.fromEpochDays(data.date.value),
     sets = setsMap,
     dayIndex = data.dayIndex,
+    gymId = data.gymId,
     id = data.id,
 )

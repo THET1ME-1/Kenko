@@ -121,6 +121,9 @@ fun AddSet(
         onCycleType = viewModel::cycleSetType,
         onCycleReserve = viewModel::cycleReserve,
         onFailure = { viewModel.setReserve(0) },
+        gymHint = viewModel.gymHint,
+        onApplyGymHint = viewModel::applyGymHint,
+        onDismissGymHint = viewModel::dismissGymHint,
         onOpenPlates = { loadout = loadoutFor(weight) },
         onDoneClick = {
             viewModel.addSet()
@@ -193,6 +196,9 @@ private fun AddSetContent(
     dropIndex: Int = 0,
     setNumber: Int = 1,
     lastSet: Set? = null,
+    gymHint: GymHint? = null,
+    onApplyGymHint: () -> Unit = {},
+    onDismissGymHint: () -> Unit = {},
     grips: List<Grip> = emptyList(),
     selectedGripId: Int? = null,
     onSelectGrip: (Int?) -> Unit = {},
@@ -227,6 +233,15 @@ private fun AddSetContent(
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.outline,
         )
+
+        if (gymHint != null) {
+            Spacer(Modifier.height(10.dp))
+            GymHintRow(
+                hint = gymHint,
+                onApply = onApplyGymHint,
+                onDismiss = onDismissGymHint,
+            )
+        }
 
         if (grips.isNotEmpty()) {
             Spacer(Modifier.height(10.dp))
@@ -365,6 +380,55 @@ private fun AddSetContent(
         }
 
         Spacer(Modifier.height(24.dp))
+    }
+}
+
+/**
+ * The same exercise weighs differently from gym to gym. The sheet says so and offers the
+ * corrected weight instead of silently changing it.
+ */
+@Composable
+private fun GymHintRow(
+    hint: GymHint,
+    onApply: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .clickable(onClick = onApply)
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1F)) {
+            Text(
+                text = hint.gymName?.let {
+                    stringResource(R.string.label_gym_shift_named, it, hint.percent)
+                } ?: stringResource(R.string.label_gym_shift, hint.percent),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = stringResource(
+                    R.string.label_gym_shift_take,
+                    formatWeight(hint.suggested),
+                ),
+                style = MaterialTheme.typography.titleMedium.numbers(),
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+        Text(
+            modifier = Modifier
+                .clip(MaterialTheme.shapes.extraLarge)
+                .clickable(onClick = onDismiss)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            text = stringResource(R.string.label_no),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.outline,
+        )
     }
 }
 

@@ -422,4 +422,15 @@
     <string name="label_period_from">с</string>
     <string name="label_period_to">по</string>
     <string name="label_stats_card_hint">мышцы, тоннаж, отчёт</string>
+    <string name="label_against_last_time">к прошлому разу</string>
+    <string name="label_ghost_last">прошлый раз %1$s</string>
+    <string name="title_records">рекорды</string>
+    <string name="label_no_records">рекордов пока нет — запиши подход с весом</string>
+    <string name="label_record_standing">держится %1$s · с %2$s</string>
+    <string name="label_new_record">рекорд: %1$s</string>
+    <string name="label_record_beaten">прежний держался %1$s</string>
+    <string name="label_records_card_hint">лучший подход в каждом упражнении</string>
+    <string name="label_gym_shift">этот зал идёт на %1$d%% против прошлого</string>
+    <string name="label_gym_shift_named">%1$s идёт на %2$d%% против прошлого зала</string>
+    <string name="label_gym_shift_take">взять %1$s</string>
 </resources>

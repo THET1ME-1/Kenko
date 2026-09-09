@@ -79,6 +79,7 @@ fun Profile(
     viewModel: ProfileViewModel,
     onBackPress: () -> Unit,
     onStatsClick: () -> Unit,
+    onRecordsClick: () -> Unit,
     onExercisesClick: () -> Unit,
     onAddExerciseClick: () -> Unit,
     onPlanClick: () -> Unit,
@@ -90,6 +91,7 @@ fun Profile(
         state = state,
         onBackPress = onBackPress,
         onStatsClick = onStatsClick,
+        onRecordsClick = onRecordsClick,
         onSettingsClick = onSettingsClick,
         onPlanEdit = onPlanEdit,
         onPlanClick = onPlanClick,
@@ -104,6 +106,7 @@ private fun Profile(
     state: ProfileUiState,
     onBackPress: () -> Unit,
     onStatsClick: () -> Unit = {},
+    onRecordsClick: () -> Unit = {},
     onSettingsClick: () -> Unit,
     onPlanClick: () -> Unit,
     onPlanEdit: (Int) -> Unit,
@@ -150,6 +153,12 @@ private fun Profile(
             )
             Spacer(modifier = Modifier.height(12.dp))
             StatsCard(onClick = onStatsClick)
+            Spacer(modifier = Modifier.height(12.dp))
+            LinkCard(
+                title = stringResource(R.string.title_records),
+                hint = stringResource(R.string.label_records_card_hint),
+                onClick = onRecordsClick,
+            )
             if (state.totalLifts > 0) {
                 Spacer(modifier = Modifier.height(12.dp))
                 LiftsCard(state.totalLifts)
@@ -295,6 +304,24 @@ private fun ExerciseCard(
  */
 @Composable
 private fun StatsCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    LinkCard(
+        title = stringResource(R.string.title_stats),
+        hint = stringResource(R.string.label_stats_card_hint),
+        onClick = onClick,
+        modifier = modifier,
+    )
+}
+
+/**
+ * A row that only leads somewhere: name, one line about it, an arrow.
+ */
+@Composable
+private fun LinkCard(
+    title: String,
+    hint: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
@@ -309,11 +336,11 @@ private fun StatsCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
         ) {
             Column(modifier = Modifier.weight(1F)) {
                 Text(
-                    text = stringResource(R.string.title_stats),
+                    text = title,
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
-                    text = stringResource(R.string.label_stats_card_hint),
+                    text = hint,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline,
                 )

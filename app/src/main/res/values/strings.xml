@@ -460,4 +460,15 @@
     <string name="label_period_from">from</string>
     <string name="label_period_to">to</string>
     <string name="label_stats_card_hint">muscles, tonnage, report</string>
+    <string name="label_against_last_time">against last time</string>
+    <string name="label_ghost_last">last time %1$s</string>
+    <string name="title_records">records</string>
+    <string name="label_no_records">no records yet — write down a set with weight</string>
+    <string name="label_record_standing">standing %1$s · since %2$s</string>
+    <string name="label_new_record">new record: %1$s</string>
+    <string name="label_record_beaten">the old one stood %1$s</string>
+    <string name="label_records_card_hint">best set of every exercise</string>
+    <string name="label_gym_shift">this gym runs %1$d%% against the last one</string>
+    <string name="label_gym_shift_named">%1$s runs %2$d%% against the last gym</string>
+    <string name="label_gym_shift_take">take %1$s</string>
 </resources>

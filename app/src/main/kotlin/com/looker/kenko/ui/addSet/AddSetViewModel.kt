@@ -35,18 +35,25 @@ import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.GripRepo
+import com.looker.kenko.data.model.gymShift
+import com.looker.kenko.data.model.lastGymOf
+import com.looker.kenko.data.repository.GymRepo
 import com.looker.kenko.data.repository.SessionRepo
+import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.utils.asStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = AddSetViewModel.AddSetViewModelFactory::class)
 class AddSetViewModel @AssistedInject constructor(
     private val sessionRepo: SessionRepo,
+    private val settingsRepo: SettingsRepo,
+    private val gymRepo: GymRepo,
     gripRepo: GripRepo,
     @Assisted private val target: AddSetTarget,
 ) : ViewModel() {
@@ -71,6 +78,12 @@ class AddSetViewModel @AssistedInject constructor(
      * What this exercise looked like last time, shown under the title.
      */
     var lastSet: Set? by mutableStateOf(null)
+        private set
+
+    /**
+     * What the same exercise weighs in this gym compared to where it was last done.
+     */
+    var gymHint: GymHint? by mutableStateOf(null)
         private set
 
     /**
@@ -167,12 +180,41 @@ class AddSetViewModel @AssistedInject constructor(
                     reps = last.repsOrDuration
                     addWeight(last.weight - weightFloat)
                     setSetType(last.type)
+                    checkGym(last)
                 } else {
                     if (target.planReps > 0) reps = target.planReps
                     if (target.planWeight > 0F) addWeight(target.planWeight - weightFloat)
                 }
             }
         }
+    }
+
+    /**
+     * Plates and machines differ from gym to gym: a weight brought from another place needs
+     * correcting, and the lifter should see why.
+     */
+    private suspend fun checkGym(last: Set) {
+        val sessions = sessionRepo.stream.first()
+        val currentGym = settingsRepo.stream.first().currentGymId
+        val lastGym = sessions.lastGymOf(id)
+        val shift = sessions.gymShift(exerciseId = id, from = lastGym, to = currentGym)
+            ?.takeIf { it.isMeaningful } ?: return
+        val gymName = gymRepo.gyms.first().firstOrNull { it.id == currentGym }?.name
+        gymHint = GymHint(
+            suggested = shift.applyTo(last.weight),
+            usual = shift.toWeight,
+            factor = shift.factor,
+            gymName = gymName,
+        )
+    }
+
+    fun applyGymHint() {
+        gymHint?.let { setWeight(it.suggested) }
+        gymHint = null
+    }
+
+    fun dismissGymHint() {
+        gymHint = null
     }
 
     @AssistedFactory
@@ -195,4 +237,20 @@ class AddSetViewModel @AssistedInject constructor(
             toString().toFloatOrNull() ?: revertAllChanges()
         }
     }
+}
+
+/**
+ * A working weight brought from another gym, corrected for the machines of this one.
+ */
+@androidx.compose.runtime.Immutable
+data class GymHint(
+    val suggested: Float,
+    val usual: Float,
+    val factor: Float,
+    val gymName: String?,
+) {
+    /**
+     * How far this gym runs from the other one, in percent.
+     */
+    val percent: Int get() = ((factor - 1F) * 100).toInt()
 }

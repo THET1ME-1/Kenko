@@ -14,6 +14,7 @@
 
 package com.looker.kenko.ui.sessionDetail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -62,7 +63,10 @@ import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,9 +87,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlin.math.abs
 import com.looker.kenko.R
 import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.model.Ghost
+import com.looker.kenko.data.model.Record
 import com.looker.kenko.data.model.SessionBlock
 import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.SetChain
@@ -121,6 +128,7 @@ import com.looker.kenko.utils.formatDate
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -176,6 +184,72 @@ fun SessionDetails(
             sheet = sheet,
             onDismiss = viewModel::hideSheet,
         )
+    }
+
+    var record by remember { mutableStateOf<Record?>(null) }
+    LaunchedEffect(Unit) {
+        viewModel.record.collect { beaten ->
+            record = beaten
+            delay(RECORD_BANNER_MILLIS)
+            record = null
+        }
+    }
+    record?.let { RecordBanner(record = it, onDismiss = { record = null }) }
+}
+
+/**
+ * How long the record stays on screen before it steps aside.
+ */
+private const val RECORD_BANNER_MILLIS = 6000L
+
+/**
+ * A record is worth a moment: the set that beat it, and how long the old one held.
+ */
+@Composable
+private fun RecordBanner(
+    record: Record,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(16.dp),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        Row(
+            modifier = Modifier
+                .widthIn(max = 420.dp)
+                .clip(MaterialTheme.shapes.extraLarge)
+                .background(MaterialTheme.colorScheme.primary)
+                .clickable(onClick = onDismiss)
+                .padding(horizontal = 18.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1F)) {
+                Text(
+                    text = stringResource(
+                        R.string.label_new_record,
+                        "${record.reps} × ${formatWeight(record.weight)}",
+                    ),
+                    style = MaterialTheme.typography.titleMedium.numbers(),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                )
+                Text(
+                    text = record.exercise.displayName(),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
+            if (record.previous > 0F) {
+                Text(
+                    text = "+${formatWeight(record.gain)}",
+                    style = MaterialTheme.typography.titleMedium.numbers(),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
+        }
     }
 }
 
@@ -237,6 +311,8 @@ private fun SessionDetail(
                 date = data.date,
                 dayIndex = data.dayIndex,
                 blocks = data.blocks,
+                ghosts = data.ghosts,
+                ghostDelta = if (data.hasGhost) data.ghostDelta else null,
                 planId = data.planId,
                 isEditable = data.isToday,
                 hasPreviousSession = data.hasPreviousSession,
@@ -342,6 +418,8 @@ private fun SetsList(
     date: LocalDate,
     dayIndex: Int?,
     blocks: List<SessionBlock>,
+    ghosts: Map<String, Ghost>,
+    ghostDelta: Float?,
     planId: Int?,
     isEditable: Boolean,
     hasPreviousSession: Boolean,
@@ -390,6 +468,11 @@ private fun SetsList(
                 },
             )
         }
+        if (ghostDelta != null) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                GhostScore(delta = ghostDelta)
+            }
+        }
         if (isEditable && blocks.isEmpty()) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
@@ -404,6 +487,7 @@ private fun SetsList(
             when (block) {
                 is SessionBlock.SingleExercise -> singleExerciseBlock(
                     block = block,
+                    ghost = ghosts[block.exercise.name],
                     isEditable = isEditable,
                     expanded = expanded,
                     onRemoveSet = onRemoveSet,
@@ -462,6 +546,7 @@ private val expandedSaver = listSaver<SnapshotStateMap<String, Boolean>, String>
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 private fun LazyGridScope.singleExerciseBlock(
     block: SessionBlock.SingleExercise,
+    ghost: Ghost?,
     isEditable: Boolean,
     expanded: SnapshotStateMap<String, Boolean>,
     onRemoveSet: (Int?) -> Unit,
@@ -485,6 +570,12 @@ private fun LazyGridScope.singleExerciseBlock(
                         plan.repsLabel,
                     )
                 }
+            },
+            note = ghost?.let {
+                stringResource(
+                    R.string.label_ghost_last,
+                    "${formatWeight(it.volume)} ${stringResource(R.string.label_kg)}",
+                )
             },
         ) {
             if (!exercise.reference.isNullOrBlank()) {
@@ -539,6 +630,7 @@ private fun LazyGridScope.singleExerciseBlock(
             ChainItem(
                 chain = chain,
                 number = number,
+                ghost = ghost?.setAt(index),
                 onRemoveSet = onRemoveSet,
                 modifier = Modifier.animateItem(),
             )
@@ -666,17 +758,41 @@ private fun ChainItem(
     number: Int,
     onRemoveSet: (Int?) -> Unit,
     modifier: Modifier = Modifier,
+    ghost: com.looker.kenko.data.model.Set? = null,
 ) {
     SwipeToDeleteBox(
         modifier = modifier,
         onDismiss = { onRemoveSet(chain.set.id) },
     ) {
-        SetItem(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-            set = chain.set,
-            title = { Text(text = normalizeInt(number)) },
-        )
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
+            SetItem(
+                set = chain.set,
+                title = { Text(text = normalizeInt(number)) },
+            )
+            if (ghost != null) {
+                GhostLine(set = ghost)
+            }
+        }
     }
+}
+
+/**
+ * The same set as it went last time, drawn quietly under the live one.
+ */
+@Composable
+private fun GhostLine(
+    set: com.looker.kenko.data.model.Set,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        modifier = modifier.padding(start = 52.dp, top = 2.dp),
+        text = stringResource(
+            R.string.label_ghost_last,
+            "${set.repsOrDuration} × ${formatWeight(set.weight)}",
+        ),
+        style = MaterialTheme.typography.labelSmall.numbers(),
+        color = MaterialTheme.colorScheme.outline,
+    )
 }
 
 /**
@@ -776,10 +892,57 @@ private fun Header(
     )
 }
 
+/**
+ * The race against the last time: how many kilograms this session is ahead or behind.
+ *
+ * Only exercises that were done before count — a new movement has nothing to race.
+ */
+@Composable
+private fun GhostScore(delta: Float, modifier: Modifier = Modifier) {
+    val ahead = delta >= 0F
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clip(MaterialTheme.shapes.large)
+            .background(
+                if (ahead) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else {
+                    MaterialTheme.colorScheme.surfaceContainerHigh
+                },
+            )
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = (if (ahead) "+" else "−") + formatWeight(abs(delta)) + " " +
+                stringResource(R.string.label_kg),
+            style = MaterialTheme.typography.titleMedium.numbers(),
+            color = if (ahead) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
+        )
+        Spacer(Modifier.width(10.dp))
+        Text(
+            text = stringResource(R.string.label_against_last_time),
+            style = MaterialTheme.typography.labelMedium,
+            color = if (ahead) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.outline
+            },
+        )
+    }
+}
+
 @Composable
 private fun StickyHeader(
     name: String,
     subtitle: String? = null,
+    note: String? = null,
     actions: (@Composable RowScope.() -> Unit)? = null,
 ) {
     Surface(
@@ -802,6 +965,13 @@ private fun StickyHeader(
                     Text(
                         text = subtitle,
                         style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline,
+                    )
+                }
+                if (note != null) {
+                    Text(
+                        text = note,
+                        style = MaterialTheme.typography.labelSmall.numbers(),
                         color = MaterialTheme.colorScheme.outline,
                     )
                 }

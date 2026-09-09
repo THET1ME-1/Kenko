@@ -422,3 +422,36 @@ val MIGRATION_10_11 = object : Migration(10, 11) {
         db.execSQL("ALTER TABLE plan_day ADD COLUMN gripId INTEGER DEFAULT NULL")
     }
 }
+
+/**
+ * Sessions remember the gym they happened in: the same exercise weighs differently from gym to
+ * gym, and the app can only correct for that if the set knows where it was written.
+ *
+ * The table is rebuilt instead of altered — SQLite cannot add a foreign key in place.
+ */
+val MIGRATION_11_12 = object : Migration(11, 12) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `sessions_new` (
+            `date` INTEGER NOT NULL,
+            `planId` INTEGER,
+            `gymId` INTEGER DEFAULT NULL,
+            `dayIndex` INTEGER DEFAULT NULL,
+            `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            FOREIGN KEY(`planId`) REFERENCES `plans`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL,
+            FOREIGN KEY(`gymId`) REFERENCES `gyms`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL)
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            INSERT INTO `sessions_new` (`date`, `planId`, `gymId`, `dayIndex`, `id`)
+            SELECT `date`, `planId`, NULL, `dayIndex`, `id` FROM `sessions`
+            """.trimIndent(),
+        )
+        db.execSQL("DROP TABLE `sessions`")
+        db.execSQL("ALTER TABLE `sessions_new` RENAME TO `sessions`")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_sessions_planId` ON `sessions` (`planId`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_sessions_gymId` ON `sessions` (`gymId`)")
+    }
+}

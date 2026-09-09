@@ -55,6 +55,9 @@ sealed interface Routes : NavKey {
     data object Stats : Routes
 
     @Serializable
+    data object Records : Routes
+
+    @Serializable
     data class MuscleStats(
         val muscle: String,
         val from: Int,

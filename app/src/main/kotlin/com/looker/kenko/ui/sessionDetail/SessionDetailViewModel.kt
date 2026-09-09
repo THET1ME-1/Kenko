@@ -28,7 +28,12 @@ import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.RestTimer
 import com.looker.kenko.data.model.Session
+import com.looker.kenko.data.model.Ghost
+import com.looker.kenko.data.model.Record
+import com.looker.kenko.data.model.Set
+import com.looker.kenko.data.model.beatsRecord
 import com.looker.kenko.data.model.SessionBlock
+import com.looker.kenko.data.model.ghostOf
 import com.looker.kenko.data.model.SetChain
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.model.toSessionBlocks
@@ -49,11 +54,14 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -188,6 +196,7 @@ class SessionDetailViewModel @AssistedInject constructor(
                         return@collect
                     }
                     val last = sets.maxByOrNull { it.id ?: 0 } ?: return@collect
+                    announceRecord(last)
                     // Внутри группы и круга отдыха нет: таймер стартует, когда группа закрыта.
                     if (last.parentSetId != null || last.supersetId != null) return@collect
                     if (last.dropCount > 0) return@collect
@@ -196,17 +205,35 @@ class SessionDetailViewModel @AssistedInject constructor(
         }
     }
 
+    private val _record: MutableSharedFlow<Record> = MutableSharedFlow()
+
+    /**
+     * Fires the moment a set beats everything that exercise had before.
+     */
+    val record: SharedFlow<Record> = _record
+
+    /**
+     * Compares the set against the journal as it stood without it.
+     */
+    private suspend fun announceRecord(set: Set) {
+        if (set.parentSetId != null) return
+        val history = repo.stream.first().map { session ->
+            session.copy(sets = session.sets.filter { it.id != set.id })
+        }
+        history.beatsRecord(set, sessionDate)?.let { _record.emit(it) }
+    }
+
     init {
         watchSetsForRest()
     }
 
     val state: StateFlow<SessionDetailState> =
         combine(
-            sessionStream,
+            combine(sessionStream, repo.stream) { session, all -> session to all },
             plannedToday,
             previousSessionExists,
             planRepo.current,
-        ) { session, planned, previousSession, activePlan ->
+        ) { (session, allSessions), planned, previousSession, activePlan ->
             if (session == null && epochDays != null) {
                 return@combine SessionDetailState.Error.InvalidSession
             }
@@ -214,6 +241,15 @@ class SessionDetailViewModel @AssistedInject constructor(
             val currentSession = session ?: Session(-1, emptyList())
 
             val blocks = currentSession.sets.toSessionBlocks(plannedItems = planned)
+
+            val ghosts = blocks
+                .flatMap { it.exercises }
+                .distinctBy { it.name }
+                .mapNotNull { exercise ->
+                    allSessions.ghostOf(exercise.name, before = currentSession.date)
+                        ?.let { exercise.name to it }
+                }
+                .toMap()
 
             val planId = session?.planId ?: if (sessionDate.isToday) activePlan?.id else null
 
@@ -225,6 +261,7 @@ class SessionDetailViewModel @AssistedInject constructor(
                     isToday = currentSession.date.isToday,
                     planId = planId,
                     hasPreviousSession = previousSession,
+                    ghosts = ghosts,
                 ),
             )
         }.onStart { emit(SessionDetailState.Loading) }
@@ -419,7 +456,39 @@ data class SessionUiData(
     val isToday: Boolean = false,
     val planId: Int? = null,
     val hasPreviousSession: Boolean = false,
-)
+    /**
+     * The same exercises as they went last time, keyed by exercise name.
+     */
+    val ghosts: Map<String, Ghost> = emptyMap(),
+) {
+    /**
+     * Kilograms this session is ahead of the last time the same exercises were done.
+     *
+     * Exercises done for the first time have nothing to compare with and stay out of the count.
+     */
+    val ghostDelta: Float
+        get() = blocks.sumOf { block ->
+            block.exercises.sumOf { exercise ->
+                val ghost = ghosts[exercise.name] ?: return@sumOf 0.0
+                (todayVolume(exercise.name) - ghost.volume).toDouble()
+            }
+        }.toFloat()
+
+    val hasGhost: Boolean get() = blocks.any { block ->
+        block.exercises.any { ghosts.containsKey(it.name) }
+    }
+
+    private fun todayVolume(exerciseName: String): Float = blocks
+        .flatMap { block ->
+            when (block) {
+                is SessionBlock.SingleExercise -> block.chains
+                is SessionBlock.Superset -> block.rounds.flatMap { it.chains }
+            }
+        }
+        .filter { it.set.exercise.name == exerciseName }
+        .sumOf { it.volume.toDouble() }
+        .toFloat()
+}
 
 sealed interface SessionDetailState {
 

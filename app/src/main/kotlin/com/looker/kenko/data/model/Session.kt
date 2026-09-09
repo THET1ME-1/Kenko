@@ -26,6 +26,10 @@ data class Session(
      * Which day of the plan was performed. Null for sessions written before days were numbered.
      */
     val dayIndex: Int? = null,
+    /**
+     * Gym the session was written in, so the same exercise can be told apart between gyms.
+     */
+    val gymId: Int? = null,
     val id: Int? = null,
 ) {
     val performExercises: List<Exercise>

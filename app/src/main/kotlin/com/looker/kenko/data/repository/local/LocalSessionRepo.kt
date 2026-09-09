@@ -34,10 +34,12 @@ import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.buildDropChain
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.SessionRepo
+import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.utils.toLocalEpochDays
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
@@ -48,6 +50,7 @@ class LocalSessionRepo @Inject constructor(
     private val setsDao: SetsDao,
     private val historyDao: PlanHistoryDao,
     private val exerciseDao: ExerciseDao,
+    private val settingsRepo: SettingsRepo,
 ) : SessionRepo {
 
     override val stream: Flow<List<Session>> =
@@ -241,6 +244,7 @@ class LocalSessionRepo @Inject constructor(
             SessionDataEntity(
                 date = date.toLocalEpochDays(),
                 planId = currentPlanId,
+                gymId = settingsRepo.stream.first().currentGymId,
                 dayIndex = day,
             ),
         ).toInt()

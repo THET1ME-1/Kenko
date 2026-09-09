@@ -54,11 +54,16 @@ import com.looker.kenko.ui.profile.Profile
 import com.looker.kenko.ui.sessionDetail.SessionDetailViewModel
 import com.looker.kenko.ui.sessionDetail.SessionDetails
 import com.looker.kenko.ui.sessions.Sessions
+import com.looker.kenko.data.model.StatsPeriod
+import com.looker.kenko.data.model.StatsRange
+import com.looker.kenko.data.model.localDate
 import com.looker.kenko.ui.settings.Settings
 import com.looker.kenko.ui.stats.ExerciseStats
 import com.looker.kenko.ui.stats.ExerciseStatsViewModel
 import com.looker.kenko.ui.stats.MuscleStats
 import com.looker.kenko.ui.stats.MuscleStatsViewModel
+import com.looker.kenko.ui.stats.Records
+import com.looker.kenko.ui.stats.RecordsViewModel
 import com.looker.kenko.ui.stats.Report
 import com.looker.kenko.ui.stats.ReportViewModel
 import com.looker.kenko.ui.stats.Stats
@@ -127,6 +132,19 @@ fun KenkoNavHost(
                         viewModel = hiltViewModel(),
                     )
 
+                    is Routes.Records -> Records(
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        onExerciseClick = { name ->
+                            backStack.add(
+                                exerciseRoute(
+                                    name = name,
+                                    period = StatsPeriod.of(StatsRange.Year, localDate),
+                                ),
+                            )
+                        },
+                        viewModel = hiltViewModel(),
+                    )
+
                     is Routes.MuscleStats -> MuscleStats(
                         onBackPress = { backStack.removeAt(backStack.lastIndex) },
                         onExerciseClick = { name ->
@@ -191,6 +209,7 @@ fun KenkoNavHost(
 
                     is Routes.Profile -> Profile(
                         onStatsClick = { backStack.add(Routes.Stats) },
+                        onRecordsClick = { backStack.add(Routes.Records) },
                         onAddExerciseClick = { backStack.add(Routes.AddEditExercise()) },
                         onExercisesClick = { backStack.add(Routes.Exercises) },
                         onPlanClick = { backStack.add(Routes.Plan) },
