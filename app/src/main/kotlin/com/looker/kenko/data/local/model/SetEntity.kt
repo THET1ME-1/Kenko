@@ -38,9 +38,16 @@ import com.looker.kenko.data.model.Set
             childColumns = ["sessionId"],
             onDelete = ForeignKey.CASCADE,
         ),
+        ForeignKey(
+            entity = SetEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["parentSetId"],
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
     indices = [
         Index("sessionId", "exerciseId"),
+        Index("parentSetId"),
     ],
 )
 data class SetEntity(
@@ -52,6 +59,14 @@ data class SetEntity(
     val sessionId: Int,
     val exerciseId: Int,
     val rir: Int = 2,
+    @ColumnInfo(defaultValue = "NULL")
+    val parentSetId: Int? = null,
+    @ColumnInfo(defaultValue = "0")
+    val dropIndex: Int = 0,
+    @ColumnInfo(defaultValue = "NULL")
+    val supersetId: Int? = null,
+    @ColumnInfo(defaultValue = "NULL")
+    val roundIndex: Int? = null,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 )
@@ -62,6 +77,10 @@ fun SetEntity.toExternal(exercise: Exercise): Set = Set(
     type = type,
     exercise = exercise,
     rir = RepsInReserve(rir),
+    parentSetId = parentSetId,
+    dropIndex = dropIndex,
+    supersetId = supersetId,
+    roundIndex = roundIndex,
     id = id,
 )
 
@@ -74,4 +93,8 @@ fun Set.toEntity(sessionId: Int, order: Int): SetEntity = SetEntity(
     sessionId = sessionId,
     exerciseId = requireNotNull(exercise.id),
     rir = rir.value,
+    parentSetId = parentSetId,
+    dropIndex = dropIndex,
+    supersetId = supersetId,
+    roundIndex = roundIndex,
 )

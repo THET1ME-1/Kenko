@@ -16,6 +16,9 @@ package com.looker.kenko.data.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.looker.kenko.data.local.model.DEFAULT_REST_SECONDS
+import com.looker.kenko.data.local.model.DEFAULT_TARGET_REPS
+import com.looker.kenko.data.local.model.DEFAULT_TARGET_SETS
 import com.looker.kenko.data.model.Labels.Difficulty
 import com.looker.kenko.data.model.Labels.Equipment
 import com.looker.kenko.data.model.Labels.Focus
@@ -44,6 +47,14 @@ data class PlanItem(
     val dayOfWeek: DayOfWeek,
     val exercise: Exercise,
     val planId: Int,
+    /**
+     * Items of one day sharing a [supersetId] are performed as a superset.
+     */
+    val supersetId: Int? = null,
+    val targetSets: Int = DEFAULT_TARGET_SETS,
+    val targetReps: Int = DEFAULT_TARGET_REPS,
+    val restSeconds: Int = DEFAULT_REST_SECONDS,
+    val order: Int = 0,
     val id: Long? = null,
 )
 

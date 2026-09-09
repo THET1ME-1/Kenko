@@ -67,6 +67,18 @@ interface PlanRepo {
 
     suspend fun addItem(planItem: PlanItem)
 
+    suspend fun updateItem(planItem: PlanItem)
+
+    /**
+     * Ties [itemIds] of one day into a superset, or unties them when [supersetId] is `null`.
+     */
+    suspend fun setSuperset(itemIds: List<Long>, supersetId: Int?)
+
+    /**
+     * Superset id nobody in this plan uses yet.
+     */
+    suspend fun nextSupersetId(planId: Int): Int
+
     suspend fun removeItem(id: Long)
 
     suspend fun removeItemById(exerciseId: Int)

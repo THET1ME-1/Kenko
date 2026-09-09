@@ -166,4 +166,24 @@
         <item>Суббота</item>
         <item>Воскресенье</item>
     </string-array>
+    <string name="label_add_drop_for">Сброс для</string>
+    <string name="label_add_drop">Добавить сброс</string>
+    <string name="label_drop_number">Сброс %1$d</string>
+    <string name="label_drops_count">сбросов: %1$d</string>
+    <string name="label_superset">Суперсет</string>
+    <string name="label_round_number">Круг %1$d</string>
+    <string name="error_superset_needs_two">Выберите хотя бы два упражнения</string>
+    <string name="label_make_superset">Связать в суперсет</string>
+    <string name="label_break_superset">Развязать</string>
+    <string name="label_targets">%1$d × %2$d · отдых %3$s</string>
+    <string name="label_rest">Отдых</string>
+    <string name="label_sets">Подходы</string>
+    <string name="label_edit_targets">Подходы и отдых</string>
+    <string name="label_seconds_short">с</string>
+    <string name="label_minutes_short">мин</string>
+    <string name="label_cancel">Отмена</string>
+    <string name="label_sets_left">осталось подходов: %1$d по %2$d</string>
+    <string name="label_rounds_left">осталось кругов: %1$d</string>
+    <string name="label_skip_rest">Пропустить</string>
+    <string name="label_done">Готово</string>
 </resources>

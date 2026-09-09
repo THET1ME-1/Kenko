@@ -14,6 +14,8 @@
 
 package com.looker.kenko.ui.planEdit.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -47,17 +49,39 @@ import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
 import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExerciseItem(
     exercise: Exercise,
     modifier: Modifier = Modifier,
+    subtitle: String? = null,
+    selected: Boolean = false,
+    onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
     leadingIcon: @Composable () -> Unit = {},
+    trailing: @Composable () -> Unit = {},
 ) {
-    Surface(modifier = modifier) {
+    val clickModifier = if (onClick != null || onLongClick != null) {
+        Modifier.combinedClickable(
+            onClick = { onClick?.invoke() },
+            onLongClick = onLongClick,
+        )
+    } else {
+        Modifier
+    }
+    Surface(
+        modifier = modifier,
+        color = if (selected) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(24.dp)
+                .then(clickModifier)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -78,11 +102,12 @@ fun ExerciseItem(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = stringResource(exercise.target.stringRes),
+                    text = subtitle ?: stringResource(exercise.target.stringRes),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline,
                 )
             }
+            trailing()
         }
     }
 }

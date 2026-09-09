@@ -38,6 +38,17 @@ interface SessionRepo {
         reps: Int,
         setType: SetType,
         rir: RepsInReserve,
+        supersetId: Int? = null,
+    )
+
+    /**
+     * Adds a weight cut under [parentSetId], turning that set into a drop set.
+     */
+    suspend fun addDrop(
+        parentSetId: Int,
+        weight: Float,
+        reps: Int,
+        rir: RepsInReserve,
     )
 
     suspend fun removeSet(setId: Int)

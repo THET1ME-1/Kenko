@@ -86,6 +86,11 @@ class PlanEditViewModel @AssistedInject constructor(
 
     private val _fullDaySelection: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
+    private val _selectedItems: MutableStateFlow<Set<Long>> = MutableStateFlow(emptySet())
+
+    private val _editedItem: MutableStateFlow<PlanItem?> = MutableStateFlow(null)
+    val editedItem: StateFlow<PlanItem?> = _editedItem
+
     @OptIn(FlowPreview::class)
     val isNameAlreadyUsed = snapshotFlow { planNameState.text.trim().toString() }
         .debounce(200.milliseconds)
@@ -101,21 +106,82 @@ class PlanEditViewModel @AssistedInject constructor(
         _dayOfWeek,
         _fullDaySelection,
         _isSheetVisible,
-    ) { items, day, daySelection, sheetVisible ->
+        _selectedItems,
+    ) { items, day, daySelection, sheetVisible, selected ->
         PlanEditState(
             currentDay = day,
             selectionMode = daySelection,
             exerciseSheetVisible = sheetVisible,
-            exercises = items.filter { it.dayOfWeek == day }.map(PlanItem::exercise),
+            items = items.filter { it.dayOfWeek == day },
+            selectedItems = selected,
         )
     }.asStateFlow(
         PlanEditState(
             currentDay = localDate.dayOfWeek,
             selectionMode = false,
             exerciseSheetVisible = false,
-            exercises = emptyList(),
+            items = emptyList(),
+            selectedItems = emptySet(),
         ),
     )
+
+    fun toggleSelection(item: PlanItem) {
+        val id = item.id ?: return
+        viewModelScope.launch {
+            _selectedItems.emit(
+                if (id in _selectedItems.value) _selectedItems.value - id else _selectedItems.value + id,
+            )
+        }
+    }
+
+    fun clearSelection() {
+        viewModelScope.launch {
+            _selectedItems.emit(emptySet())
+        }
+    }
+
+    /**
+     * Ties the picked exercises of the day into one superset.
+     */
+    fun makeSuperset() {
+        viewModelScope.launch {
+            val picked = _selectedItems.value.toList()
+            if (picked.size < 2) {
+                snackbarState.showSnackbar(stringHandler.getString(R.string.error_superset_needs_two))
+                return@launch
+            }
+            repo.setSuperset(picked, repo.nextSupersetId(planIdStream.value))
+            _selectedItems.emit(emptySet())
+        }
+    }
+
+    fun breakSuperset(supersetId: Int) {
+        viewModelScope.launch {
+            val ids = repo.getPlanItems(planIdStream.value, _dayOfWeek.value)
+                .filter { it.supersetId == supersetId }
+                .mapNotNull { it.id }
+            repo.setSuperset(ids, null)
+        }
+    }
+
+    fun editTargets(item: PlanItem?) {
+        viewModelScope.launch {
+            _editedItem.emit(item)
+        }
+    }
+
+    fun saveTargets(item: PlanItem, sets: Int, reps: Int, restSeconds: Int) {
+        viewModelScope.launch {
+            repo.updateItem(
+                item.copy(
+                    targetSets = sets,
+                    targetReps = reps,
+                    restSeconds = restSeconds,
+                ),
+            )
+            _editedItem.emit(null)
+        }
+    }
 
     fun saveName() {
         viewModelScope.launch {
@@ -171,9 +237,11 @@ class PlanEditViewModel @AssistedInject constructor(
         }
     }
 
-    fun removeExercise(exercise: Exercise) {
+    fun removeItem(item: PlanItem) {
+        val id = item.id ?: return
         viewModelScope.launch {
-            repo.removeItemById(exercise.id!!)
+            repo.removeItem(id)
+            _selectedItems.emit(_selectedItems.value - id)
         }
     }
 
@@ -246,5 +314,8 @@ data class PlanEditState(
     val currentDay: DayOfWeek,
     val selectionMode: Boolean,
     val exerciseSheetVisible: Boolean,
-    val exercises: List<Exercise>,
-)
+    val items: List<PlanItem>,
+    val selectedItems: Set<Long> = emptySet(),
+) {
+    val exercises: List<Exercise> get() = items.map(PlanItem::exercise)
+}

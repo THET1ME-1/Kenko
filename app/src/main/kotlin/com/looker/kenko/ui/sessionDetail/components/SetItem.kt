@@ -15,6 +15,7 @@
 package com.looker.kenko.ui.sessionDetail.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.FilledIconButton
@@ -158,6 +160,73 @@ fun SuggestedSetItem(
                 )
             }
         }
+    }
+}
+
+private val DropIndent = 64.dp
+
+/**
+ * One weight cut of a drop set, tucked under the set it belongs to.
+ */
+@Composable
+fun DropRow(
+    drop: Set,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = Modifier
+            .widthIn(240.dp, 420.dp)
+            .padding(start = DropIndent, end = 16.dp)
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .padding(vertical = 8.dp, horizontal = 16.dp)
+            .then(modifier),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = stringResource(R.string.label_drop_number, drop.dropIndex).uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        Text(
+            text = "${drop.repsOrDuration} × ${drop.weight} KG",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+/**
+ * Invitation to cut the weight once more, shown under a drop set while the session is open.
+ */
+@Composable
+fun AddDropRow(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = Modifier
+            .widthIn(240.dp, 420.dp)
+            .padding(start = DropIndent, end = 16.dp)
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .clickable(onClick = onClick)
+            .padding(vertical = 8.dp, horizontal = 16.dp)
+            .then(modifier),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = stringResource(R.string.label_add_drop).uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+        Icon(
+            painter = KenkoIcons.Add,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
     }
 }
 

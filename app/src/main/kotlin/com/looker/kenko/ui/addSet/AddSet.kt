@@ -82,13 +82,20 @@ import com.looker.kenko.ui.theme.colorSchemes.JapanRed
 import kotlinx.coroutines.launch
 
 @Composable
-fun AddSet(exercise: Exercise, onDone: () -> Unit) {
+fun AddSet(
+    exerciseName: String,
+    target: AddSetTarget,
+    onDone: () -> Unit,
+) {
     val viewModel: AddSetViewModel =
-        hiltViewModel<AddSetViewModel, AddSetViewModel.AddSetViewModelFactory>(key = exercise.name) {
-            it.create(exercise.id!!)
+        hiltViewModel<AddSetViewModel, AddSetViewModel.AddSetViewModelFactory>(
+            key = "$exerciseName-${target.parentSetId}",
+        ) {
+            it.create(target)
         }
     AddSetContent(
-        exerciseName = exercise.name,
+        exerciseName = exerciseName,
+        isDrop = target.parentSetId != null,
         weights = viewModel.weights,
         reps = viewModel.reps,
         selectedSetType = viewModel.selectedSetType,
@@ -105,6 +112,7 @@ fun AddSet(exercise: Exercise, onDone: () -> Unit) {
 @Composable
 private fun AddSetContent(
     exerciseName: String,
+    isDrop: Boolean = false,
     weights: TextFieldState,
     reps: Int,
     selectedSetType: SetType,
@@ -123,18 +131,21 @@ private fun AddSetContent(
         AddSetHeader(
             modifier = Modifier.fillMaxWidth(),
             exerciseName = exerciseName,
+            isDrop = isDrop,
             onClick = onDoneClick,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        SetTypeSelector(
-            modifier = Modifier.align(CenterHorizontally),
-            selected = selectedSetType,
-            onSelect = onSelectSetType,
-        )
+        if (!isDrop) {
+            SetTypeSelector(
+                modifier = Modifier.align(CenterHorizontally),
+                selected = selectedSetType,
+                onSelect = onSelectSetType,
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Column(
@@ -175,6 +186,7 @@ private fun AddSetHeader(
     exerciseName: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isDrop: Boolean = false,
 ) {
     Row(
         modifier = modifier,
@@ -183,7 +195,9 @@ private fun AddSetHeader(
     ) {
         Column(modifier = Modifier.weight(1F)) {
             Text(
-                text = stringResource(R.string.label_add_set_for).uppercase(),
+                text = stringResource(
+                    if (isDrop) R.string.label_add_drop_for else R.string.label_add_set_for,
+                ).uppercase(),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.outline,
             )

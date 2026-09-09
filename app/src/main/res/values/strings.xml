@@ -219,4 +219,24 @@
         <item>Saturday</item>
         <item>Sunday</item>
     </string-array>
+    <string name="label_add_drop_for">Drop for</string>
+    <string name="label_add_drop">Add drop</string>
+    <string name="label_drop_number">Drop %1$d</string>
+    <string name="label_drops_count">%1$d drops</string>
+    <string name="label_superset">Superset</string>
+    <string name="label_round_number">Round %1$d</string>
+    <string name="error_superset_needs_two">Pick at least two exercises</string>
+    <string name="label_make_superset">Tie into superset</string>
+    <string name="label_break_superset">Untie</string>
+    <string name="label_targets">%1$d × %2$d · rest %3$s</string>
+    <string name="label_rest">Rest</string>
+    <string name="label_sets">Sets</string>
+    <string name="label_edit_targets">Sets and rest</string>
+    <string name="label_seconds_short">s</string>
+    <string name="label_minutes_short">min</string>
+    <string name="label_cancel">Cancel</string>
+    <string name="label_sets_left">%1$d sets of %2$d left</string>
+    <string name="label_rounds_left">%1$d rounds left</string>
+    <string name="label_skip_rest">Skip</string>
+    <string name="label_done">Done</string>
 </resources>

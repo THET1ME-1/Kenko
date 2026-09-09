@@ -1,0 +1,588 @@
+<title>ДНК Kenko</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@600;700&family=Space+Mono:wght@400;700&display=swap">
+<style>
+  :root {
+    --bg: #FDF9F0;
+    --surface: #FDF9F0;
+    --surface-container-low: #F7F3EA;
+    --surface-container: #F2EEE4;
+    --surface-container-high: #ECE8DF;
+    --surface-container-highest: #E6E2D9;
+    --surface-variant: #E7E3D0;
+    --on-surface: #1C1C16;
+    --on-surface-variant: #49473A;
+    --outline: #7A7768;
+    --outline-variant: #CAC7B5;
+    --primary: #63611E;
+    --on-primary: #FFFFFF;
+    --primary-container: #F7F3A1;
+    --on-primary-container: #545210;
+    --secondary-container: #F5F1C6;
+    --tertiary: #70576B;
+    --tertiary-container: #E5C4DC;
+    --error: #BA1A1A;
+    --border: 1.4px;
+    --display: "Darker Grotesque", "Trebuchet MS", sans-serif;
+    --mono: "Space Mono", ui-monospace, "Courier New", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14140E;
+      --surface: #14140E;
+      --surface-container-low: #1C1C16;
+      --surface-container: #20201A;
+      --surface-container-high: #2B2A24;
+      --surface-container-highest: #36352F;
+      --surface-variant: #49473A;
+      --on-surface: #E6E2D9;
+      --on-surface-variant: #CAC7B5;
+      --outline: #949181;
+      --outline-variant: #49473A;
+      --primary: #CECA75;
+      --on-primary: #333200;
+      --primary-container: #DCD888;
+      --on-primary-container: #434100;
+      --secondary-container: #49482C;
+      --tertiary: #FFE4F7;
+      --tertiary-container: #D8B8D0;
+      --error: #FFB4AB;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14140E;
+    --surface: #14140E;
+    --surface-container-low: #1C1C16;
+    --surface-container: #20201A;
+    --surface-container-high: #2B2A24;
+    --surface-container-highest: #36352F;
+    --surface-variant: #49473A;
+    --on-surface: #E6E2D9;
+    --on-surface-variant: #CAC7B5;
+    --outline: #949181;
+    --outline-variant: #49473A;
+    --primary: #CECA75;
+    --on-primary: #333200;
+    --primary-container: #DCD888;
+    --on-primary-container: #434100;
+    --secondary-container: #49482C;
+    --tertiary: #FFE4F7;
+    --tertiary-container: #D8B8D0;
+    --error: #FFB4AB;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--on-surface);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 48px 24px 96px; }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(56px, 12vw, 104px);
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--primary);
+    text-wrap: balance;
+  }
+  .lede { max-width: 62ch; color: var(--on-surface-variant); margin: 20px 0 0; }
+  .lede b { color: var(--on-surface); font-weight: 700; }
+
+  section { margin-top: 72px; }
+  h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 1;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  h2 .num {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--outline);
+    letter-spacing: 0.08em;
+  }
+  h3 {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--outline);
+    margin: 36px 0 12px;
+  }
+  .sub { color: var(--on-surface-variant); max-width: 64ch; margin: 0 0 24px; }
+  p { text-wrap: pretty; }
+  code {
+    font-family: var(--mono);
+    font-size: 0.92em;
+    background: var(--surface-container-high);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  a { color: var(--primary); }
+
+  hr.rule { border: 0; border-top: var(--border) solid var(--outline-variant); margin: 0; }
+
+  .grid { display: grid; gap: 12px; }
+  .cols-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .cols-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .cols-4 { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+
+  .card {
+    border: var(--border) solid var(--outline-variant);
+    border-radius: 20px;
+    padding: 20px;
+    background: var(--surface);
+  }
+  .card .k {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--outline);
+  }
+
+  /* Типографика */
+  .type-row {
+    display: grid;
+    grid-template-columns: minmax(140px, 200px) 1fr;
+    gap: 16px 24px;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: var(--border) solid var(--outline-variant);
+  }
+  .type-row .meta { font-size: 12px; color: var(--outline); }
+  .d-large { font-family: var(--display); font-weight: 700; font-size: 57px; line-height: 1; }
+  .d-medium { font-family: var(--display); font-weight: 700; font-size: 45px; line-height: 1; }
+  .h-large { font-family: var(--display); font-weight: 700; font-size: 32px; }
+  .t-medium { font-family: var(--display); font-weight: 600; font-size: 17px; }
+  .b-large { font-family: var(--mono); font-size: 16px; }
+  .l-small { font-family: var(--mono); font-size: 11px; }
+  .hero-type {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 78px;
+    line-height: 70px;
+    color: var(--primary);
+    margin: 0;
+  }
+
+  /* Цвет */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 8px; }
+  .sw {
+    border-radius: 14px;
+    border: var(--border) solid var(--outline-variant);
+    padding: 12px;
+    min-height: 84px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .sw .hex { font-weight: 700; letter-spacing: 0.02em; }
+  .palette-strip { display: flex; border-radius: 14px; overflow: hidden; border: var(--border) solid var(--outline-variant); height: 56px; }
+  .palette-strip span { flex: 1; }
+
+  /* Формы */
+  .shape-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .shape {
+    width: 104px; height: 104px;
+    background: var(--surface-container-high);
+    border: var(--border) solid var(--outline-variant);
+    display: flex; align-items: flex-end; justify-content: center;
+    padding-bottom: 8px;
+    font-size: 11px;
+    color: var(--on-surface-variant);
+  }
+
+  /* Таблица компонентов */
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  .tablewrap { overflow-x: auto; }
+  th, td { text-align: left; padding: 10px 14px 10px 0; border-bottom: var(--border) solid var(--outline-variant); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--outline); font-weight: 700; }
+  td.file { color: var(--on-surface-variant); white-space: nowrap; }
+
+  /* Правила */
+  ul.rules { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  ul.rules li {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 12px 14px;
+    background: var(--surface-container-low);
+    border-radius: 14px;
+  }
+  ul.rules li .mark { font-weight: 700; color: var(--primary); }
+  ul.rules li.no .mark { color: var(--error); }
+
+  /* Макеты телефона */
+  .phones { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .phone {
+    border: var(--border) solid var(--on-surface);
+    border-radius: 28px;
+    overflow: hidden;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    min-height: 440px;
+  }
+  .phone .bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    border-bottom: var(--border) solid var(--outline-variant);
+  }
+  .phone .body { padding: 14px 16px 20px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .phone-caption { font-size: 12px; color: var(--outline); margin: 10px 2px 0; }
+
+  .set-row { display: flex; align-items: center; gap: 12px; }
+  .set-num {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 34px;
+    color: var(--outline);
+    min-width: 52px;
+  }
+  .set-body {
+    flex: 1;
+    background: var(--surface-container-high);
+    border-radius: 20px;
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .set-body .cell { text-align: center; }
+  .set-body .cell .k { font-family: var(--display); font-weight: 600; font-size: 13px; color: var(--outline); }
+  .set-body .cell .v { font-family: var(--display); font-weight: 600; font-size: 17px; }
+  .drop-chain { display: grid; gap: 6px; padding-left: 64px; }
+  .drop-step {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--surface-container); border-radius: 14px; padding: 8px 16px; font-size: 13px;
+  }
+  .drop-step .tag { font-size: 11px; color: var(--outline); letter-spacing: 0.06em; }
+  .superset {
+    border: var(--border) solid var(--primary);
+    border-radius: 20px;
+    padding: 14px 16px;
+    display: grid;
+    gap: 10px;
+  }
+  .superset .head { display: flex; justify-content: space-between; align-items: center; font-size: 12px; letter-spacing: 0.06em; color: var(--primary); }
+  .superset .leg { display: flex; justify-content: space-between; font-size: 13px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--primary-container); color: var(--on-primary-container);
+    border-radius: 28px; padding: 10px 20px; font-size: 13px; font-weight: 700;
+  }
+  .btn-tertiary {
+    align-self: center;
+    background: var(--tertiary); color: #FFF7FB;
+    border-radius: 28px; padding: 18px 32px; font-size: 14px; font-weight: 700;
+    display: inline-flex; gap: 10px; align-items: center;
+  }
+  :root[data-theme="dark"] .btn-tertiary, :root:not([data-theme="light"]) .btn-tertiary { color: #14140E; }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .btn-tertiary { color: #FFF7FB; } }
+  .timer-dial {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 64px;
+    line-height: 1;
+    text-align: center;
+    color: var(--primary);
+    letter-spacing: -0.02em;
+  }
+  .quote { text-align: center; font-size: 11px; color: var(--outline); }
+  .divider { border-top: var(--border) solid var(--outline-variant); margin: 2px -16px; }
+  .footnote { color: var(--outline); font-size: 12px; margin-top: 12px; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <h1>ДНК Kenko</h1>
+    <p class="lede">Разбор дизайн-системы приложения <b>Kenko</b> (GPL-3.0, LooKeR &amp; Contributors) перед тем, как дописывать в форк программы, суперсеты, дропсеты и таймер. Всё ниже снято с кода ветки <code>main</code>, коммит <code>bdcfd73</code>: цвета из <code>ui/theme/colorSchemes</code>, размеры из <code>Shapes.kt</code> и <code>Type.kt</code>, отступы из вёрстки экранов.</p>
+    <p class="lede">Система держится на трёх решениях: <b>гротеск против моноширинного</b>, <b>линия вместо тени</b> и <b>крупная типографика вместо картинок</b>. Новые экраны должны повторять их, иначе форк расслоится на «их» и «наше».</p>
+  </header>
+
+  <section>
+    <h2><span class="num">01</span> Шрифт</h2>
+    <p class="sub">Два семейства и ни одного больше. Darker Grotesque — плотный гротеск с высокой строчной, работает на крупных кеглях. Space Mono — моноширинный, держит цифры в столбик и задаёт «журнальный» характер интерфейса. Оба лежат в <code>res/font/</code>, за шрифтом в сеть приложение не ходит.</p>
+
+    <div class="type-row">
+      <div class="meta">display Large / header()<br>78sp, интерлиньяж 70sp</div>
+      <div><p class="hero-type">Начать тренировку</p></div>
+    </div>
+    <div class="type-row">
+      <div class="meta">displayLarge · Darker Grotesque Bold</div>
+      <div class="d-large">Push-Pull-Leg</div>
+    </div>
+    <div class="type-row">
+      <div class="meta">displayMedium · номера подходов<br>numbers() подменяет семью на Space Mono Bold</div>
+      <div class="d-medium" style="font-family: var(--mono);">01 02 03</div>
+    </div>
+    <div class="type-row">
+      <div class="meta">headlineLarge · Darker Grotesque Bold</div>
+      <div class="h-large">Суперсет · круг 2 из 4</div>
+    </div>
+    <div class="type-row">
+      <div class="meta">titleMedium · 17sp SemiBold<br>подписи в карточке подхода</div>
+      <div class="t-medium">Жим лёжа</div>
+    </div>
+    <div class="type-row">
+      <div class="meta">bodyLarge · Space Mono Regular<br>весь читаемый текст</div>
+      <div class="b-large">12 повторов, 20.0 KG, в запасе 2</div>
+    </div>
+    <div class="type-row">
+      <div class="meta">labelSmall · Space Mono<br>цитаты и сноски внизу экрана</div>
+      <div class="l-small">workout is my therapy too</div>
+    </div>
+
+    <p class="footnote">Правило деления: заголовки, названия и подписи-ярлыки — Darker Grotesque; всё, что человек читает построчно, и все числа — Space Mono. Числа в карточках всегда прогоняются через <code>TextStyle.numbers()</code>, чтобы разряды не плясали.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span> Цвет</h2>
+    <p class="sub">Полный набор ролей Material 3 в четырёх готовых палитрах плюс динамическая с обоев Android 12+. По умолчанию включена <b>Zestful</b>: оливково-лаймовая, фон тёплый кремовый, а не белый. Свои цвета в коде не появляются нигде, кроме файлов палитр, — единственное исключение во всём проекте это <code>JapanRed = #E03523</code> для иконки.</p>
+
+    <h3>Zestful, светлая</h3>
+    <div class="swatches">
+      <div class="sw" style="background:#FDF9F0; color:#1C1C16;"><span>surface / background</span><span class="hex">#FDF9F0</span></div>
+      <div class="sw" style="background:#F2EEE4; color:#1C1C16;"><span>surfaceContainer</span><span class="hex">#F2EEE4</span></div>
+      <div class="sw" style="background:#ECE8DF; color:#1C1C16;"><span>surfaceContainerHigh<br>карточка подхода</span><span class="hex">#ECE8DF</span></div>
+      <div class="sw" style="background:#63611E; color:#FFFFFF;"><span>primary<br>заголовок-герой</span><span class="hex">#63611E</span></div>
+      <div class="sw" style="background:#F7F3A1; color:#545210;"><span>primaryContainer<br>кнопка «плюс»</span><span class="hex">#F7F3A1</span></div>
+      <div class="sw" style="background:#F5F1C6; color:#49473A;"><span>secondaryContainer</span><span class="hex">#F5F1C6</span></div>
+      <div class="sw" style="background:#70576B; color:#FFF7FB;"><span>tertiary<br>главное действие</span><span class="hex">#70576B</span></div>
+      <div class="sw" style="background:#E7E3D0; color:#49473A;"><span>surfaceVariant</span><span class="hex">#E7E3D0</span></div>
+      <div class="sw" style="background:#FDF9F0; color:#7A7768; border-color:#7A7768;"><span>outline<br>подписи, разделители</span><span class="hex">#7A7768</span></div>
+      <div class="sw" style="background:#FDF9F0; color:#BA1A1A; border-color:#BA1A1A;"><span>error</span><span class="hex">#BA1A1A</span></div>
+    </div>
+
+    <h3>Zestful, тёмная</h3>
+    <div class="swatches">
+      <div class="sw" style="background:#14140E; color:#E6E2D9;"><span>surface / background</span><span class="hex">#14140E</span></div>
+      <div class="sw" style="background:#20201A; color:#E6E2D9;"><span>surfaceContainer</span><span class="hex">#20201A</span></div>
+      <div class="sw" style="background:#2B2A24; color:#E6E2D9;"><span>surfaceContainerHigh</span><span class="hex">#2B2A24</span></div>
+      <div class="sw" style="background:#CECA75; color:#333200;"><span>primary</span><span class="hex">#CECA75</span></div>
+      <div class="sw" style="background:#DCD888; color:#434100;"><span>primaryContainer</span><span class="hex">#DCD888</span></div>
+      <div class="sw" style="background:#49482C; color:#CBC8A4;"><span>secondaryContainer</span><span class="hex">#49482C</span></div>
+      <div class="sw" style="background:#FFE4F7; color:#14140E;"><span>tertiary</span><span class="hex">#FFE4F7</span></div>
+      <div class="sw" style="background:#49473A; color:#CAC7B5;"><span>surfaceVariant</span><span class="hex">#49473A</span></div>
+      <div class="sw" style="background:#14140E; color:#949181; border-color:#949181;"><span>outline</span><span class="hex">#949181</span></div>
+      <div class="sw" style="background:#14140E; color:#FFB4AB; border-color:#FFB4AB;"><span>error</span><span class="hex">#FFB4AB</span></div>
+    </div>
+
+    <h3>Остальные палитры</h3>
+    <div class="grid cols-4">
+      <div>
+        <div class="palette-strip"><span style="background:#63611E"></span><span style="background:#F7F3A1"></span><span style="background:#70576B"></span><span style="background:#FDF9F0"></span></div>
+        <p class="phone-caption">Zestful — по умолчанию, олива и лайм</p>
+      </div>
+      <div>
+        <div class="palette-strip"><span style="background:#5D6146"></span><span style="background:#E2E5C3"></span><span style="background:#6E3D00"></span><span style="background:#FCF9F5"></span></div>
+        <p class="phone-caption">Default — хаки и жжёная охра</p>
+      </div>
+      <div>
+        <div class="palette-strip"><span style="background:#0005B8"></span><span style="background:#2631FC"></span><span style="background:#5D0071"></span><span style="background:#FBF8FF"></span></div>
+        <p class="phone-caption">Serene — ультрамарин</p>
+      </div>
+      <div>
+        <div class="palette-strip"><span style="background:#7900A9"></span><span style="background:#A92CE2"></span><span style="background:#A40022"></span><span style="background:#FFF7FB"></span></div>
+        <p class="phone-caption">Twilight — пурпур с кармином</p>
+      </div>
+    </div>
+    <p class="footnote">Каждая палитра несёт светлую и тёмную схему, а Zestful, Serene и Twilight — ещё и варианты среднего и высокого контраста (поля <code>mediumContrast*</code>, <code>highContrast*</code> в <code>ColorSchemes</code>, в интерфейсе пока не выбираются). Новый экран не имеет права упоминать hex: только <code>MaterialTheme.colorScheme.*</code>, иначе он выпадет из трёх палитр из четырёх.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span> Форма и линия</h2>
+    <p class="sub">Скругления заданы своим набором, он мельче стокового Material: 4 · 8 · 14 · 20 · 28 dp. Плюс четыре расширения в <code>Shapes.kt</code> (<code>top()</code>, <code>bottom()</code>, <code>start()</code>, <code>end()</code>), которыми углу задают форму по одной стороне: так собираются списки, где у первого элемента скруглён верх, у последнего низ.</p>
+
+    <div class="shape-row">
+      <div class="shape" style="border-radius:4px">extraSmall · 4</div>
+      <div class="shape" style="border-radius:8px">small · 8</div>
+      <div class="shape" style="border-radius:14px">medium · 14</div>
+      <div class="shape" style="border-radius:20px">large · 20</div>
+      <div class="shape" style="border-radius:28px">extraLarge · 28</div>
+    </div>
+
+    <h3>Линия вместо тени</h3>
+    <p class="sub">Теней в приложении нет ни одной. Глубину дают три вещи: обводка <code>KenkoBorderWidth = 1.4dp</code>, ступень поверхности (<code>surface</code> → <code>surfaceContainer</code> → <code>surfaceContainerHigh</code>) и разделители <code>HorizontalDivider(thickness = KenkoBorderWidth)</code> той же толщины. Готовые кисти лежат в <code>components/Border.kt</code>: <code>PrimaryBorder</code>, <code>SecondaryBorder</code>, <code>OutlineBorder</code>, <code>OnSurfaceBorder</code>, <code>OnSurfaceVariantBorder</code>.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">04</span> Готовые кирпичи</h2>
+    <p class="sub">Что уже написано и должно переиспользоваться, а не переизобретаться в новых экранах.</p>
+    <div class="tablewrap">
+      <table>
+        <tr><th>Кирпич</th><th>Что это</th><th>Файл</th></tr>
+        <tr><td>KenkoButton</td><td>Кнопка с подписью и иконкой, внутренние поля 24 по вертикали и 40 по горизонтали. Есть варианты Secondary и Tertiary; главное действие экрана всегда третичное.</td><td class="file">components/Button.kt</td></tr>
+        <tr><td>SetItem</td><td>Строка подхода: крупный номер моноширинным слева, справа плашка <code>surfaceContainerHigh</code> со скруглением 20 и парой «повторы / вес». Высота от 64 dp, ширина 240–420 dp.</td><td class="file">sessionDetail/components/SetItem.kt</td></tr>
+        <tr><td>SuggestedSetItem</td><td>Подсказка «повтори прошлый подход» в виде <code>12@20.0KG</code> одной строкой с кнопкой согласия.</td><td class="file">sessionDetail/components/SetItem.kt</td></tr>
+        <tr><td>WeightSelector, WeightStepper, VerticalSelector, DraggableTextField</td><td>Ввод веса и повторов перетаскиванием, без клавиатуры.</td><td class="file">addSet/components/</td></tr>
+        <tr><td>TargetChip, LazyTargets, FlowTargets</td><td>Фильтр по мышечной группе рядом чипов с шагом 8 dp.</td><td class="file">components/Targets.kt</td></tr>
+        <tr><td>EmptyPage</td><td>Пустое состояние: герой по центру, под ним <code>titleMedium</code> цветом outline.</td><td class="file">components/EmptyPageIndicator.kt</td></tr>
+        <tr><td>TickerText, TypingText</td><td>Бегущая строка с разделителем-точкой и печатающийся текст в приветствии.</td><td class="file">components/Text.kt</td></tr>
+        <tr><td>Wave, AnimatedWave</td><td>Волна на канве: подчёркивает заголовки разделов в настройках, амплитуда 12, частота 0.055.</td><td class="file">components/Wave.kt</td></tr>
+        <tr><td>SwipeToDeleteBox</td><td>Удаление смахиванием.</td><td class="file">components/SwipeToDeleteBox.kt</td></tr>
+        <tr><td>LiftingQuotes, HealthQuotes</td><td>Случайная цитата мелким кеглем в подвале экрана.</td><td class="file">components/Labels.kt</td></tr>
+        <tr><td>KenkoIcons</td><td>Единственная точка доступа к иконкам; каждая — vector drawable из <code>res/drawable/ic_*.xml</code>.</td><td class="file">ui/theme/KenkoIcons.kt</td></tr>
+        <tr><td>endItem()</td><td>Хвостовая распорка списка на 88 dp, чтобы плавающая кнопка не накрывала последнюю строку.</td><td class="file">components/List.kt</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">05</span> Как собран экран</h2>
+    <p class="sub">Три повторяющихся приёма, по которым Kenko узнаётся с одного взгляда.</p>
+    <div class="grid cols-3">
+      <div class="card">
+        <div class="k">Приём 1</div>
+        <p><b>Пустота работает.</b> На главной между разделителями стоят распорки <code>weight(1F)</code>, заголовок в 78sp висит в середине, кнопка прижата к низу. Экран не заполняют карточками ради заполнения.</p>
+      </div>
+      <div class="card">
+        <div class="k">Приём 2</div>
+        <p><b>Число крупнее подписи.</b> Номер подхода, счётчик упражнений, вес — набраны кеглем в два-три раза больше, чем их ярлыки. Подпись серая (<code>outline</code>), значение чёрное.</p>
+      </div>
+      <div class="card">
+        <div class="k">Приём 3</div>
+        <p><b>Разделитель как рамка.</b> Секции разграничены линиями 1.4dp во всю ширину, а не отступами. Карточки живут внутри полосы, а не парят на фоне.</p>
+      </div>
+    </div>
+    <p class="footnote">Навигация: Navigation 3, экраны перечислены в <code>ui/navigation/Routes.kt</code>, переходы описаны один раз в <code>KenkoNavHost.kt</code> (предиктивный назад, уход кадра масштабом 0.9). Верхняя панель у каждого экрана своя, общего <code>TopAppBar</code> нет: на главной это <code>KenkoTopBar</code> с кнопкой профиля.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">06</span> Правила для нового кода</h2>
+    <ul class="rules">
+      <li><span class="mark">✓</span><span>Цвет только через <code>MaterialTheme.colorScheme</code>, размеры углов только через <code>MaterialTheme.shapes</code>.</span></li>
+      <li><span class="mark">✓</span><span>Числа — <code>numbers()</code>, заголовок-герой — <code>MaterialTheme.typography.header()</code> с <code>LineBreak.Heading</code>.</span></li>
+      <li><span class="mark">✓</span><span>Любая строка заводится в <code>res/values/strings.xml</code> и <code>values-ru/strings.xml</code>; остальные 35 переводов подтянут переводчики.</span></li>
+      <li><span class="mark">✓</span><span>Новая иконка — <code>ic_*.xml</code> в <code>res/drawable</code> плюс строка в <code>KenkoIcons</code>, контурная, штрих в тон существующим.</span></li>
+      <li><span class="mark">✓</span><span>Экран получает данные из ViewModel через <code>collectAsStateWithLifecycle</code> и имеет второй, приватный <code>@Composable</code> с параметрами по умолчанию — для превью.</span></li>
+      <li class="no"><span class="mark">✕</span><span>Тени, <code>elevation</code>, градиенты. Глубина — ступень поверхности и обводка 1.4dp.</span></li>
+      <li class="no"><span class="mark">✕</span><span>Третий шрифт, эмодзи в интерфейсе, hex прямо в вёрстке.</span></li>
+      <li class="no"><span class="mark">✕</span><span>Material-компоненты «из коробки» там, где уже есть свой кирпич: кнопка, чип, пустая страница, разделитель.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="num">07</span> Наши добавки в этом языке</h2>
+    <p class="sub">Три эскиза для проверки, что новое не выбивается: дропсет как цепочка, суперсет как круг, таймер отдыха. Формы, кегли и цвета — из таблиц выше.</p>
+
+    <div class="phones">
+      <div>
+        <div class="phone">
+          <div class="bar"><span>Жим лёжа</span><span style="color:var(--outline)">+</span></div>
+          <div class="body">
+            <div class="set-row">
+              <div class="set-num">01</div>
+              <div class="set-body">
+                <div class="cell"><div class="k">повторы</div><div class="v">12</div></div>
+                <div class="cell"><div class="k">вес</div><div class="v">60.0 KG</div></div>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-num">02</div>
+              <div class="set-body">
+                <div class="cell"><div class="k">повторы</div><div class="v">10</div></div>
+                <div class="cell"><div class="k">вес</div><div class="v">65.0 KG</div></div>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-num">03</div>
+              <div class="set-body" style="border-bottom-left-radius:4px;border-bottom-right-radius:4px">
+                <div class="cell"><div class="k">повторы</div><div class="v">8</div></div>
+                <div class="cell"><div class="k">вес</div><div class="v">70.0 KG</div></div>
+              </div>
+            </div>
+            <div class="drop-chain">
+              <div class="drop-step"><span class="tag">СБРОС 1</span><span>10 × 50.0 KG</span></div>
+              <div class="drop-step"><span class="tag">СБРОС 2</span><span>8 × 35.0 KG</span></div>
+              <div class="drop-step" style="background:var(--primary-container); color:var(--on-primary-container)"><span class="tag" style="color:var(--on-primary-container)">ДОБАВИТЬ СБРОС</span><span>+</span></div>
+            </div>
+            <div class="quote">пять сбросов подряд это уже не подход</div>
+          </div>
+        </div>
+        <p class="phone-caption">Дропсет: сбросы прицеплены под родительский подход, номер у них не свой, а отступ. Плашка сброса на ступень ниже по поверхности — <code>surfaceContainer</code> против <code>surfaceContainerHigh</code>.</p>
+      </div>
+
+      <div>
+        <div class="phone">
+          <div class="bar"><span>Суперсет</span><span style="color:var(--outline)">2 / 4</span></div>
+          <div class="body">
+            <div class="superset">
+              <div class="head"><span>КРУГ 2 ИЗ 4</span><span>ОТДЫХ 90 С</span></div>
+              <div class="leg"><span>Подтягивания</span><span style="font-weight:700">8 × 0.0</span></div>
+              <div class="divider"></div>
+              <div class="leg"><span>Отжимания на брусьях</span><span style="font-weight:700">10 × 12.5</span></div>
+            </div>
+            <div class="superset" style="border-color:var(--outline-variant); opacity:.55">
+              <div class="head" style="color:var(--outline)"><span>КРУГ 3 ИЗ 4</span><span>ЗАПЛАНИРОВАН</span></div>
+              <div class="leg"><span>Подтягивания</span><span>8 × 0.0</span></div>
+              <div class="divider"></div>
+              <div class="leg"><span>Отжимания на брусьях</span><span>10 × 12.5</span></div>
+            </div>
+            <div style="flex:1"></div>
+            <div class="btn-tertiary">Закрыть круг →</div>
+            <div class="quote">отдых только между кругами</div>
+          </div>
+        </div>
+        <p class="phone-caption">Суперсет: круг — карточка с обводкой <code>PrimaryBorder</code>, упражнения внутри разделены линией 1.4dp. Будущие круги те же карточки полупрозрачным контуром.</p>
+      </div>
+
+      <div>
+        <div class="phone">
+          <div class="bar"><span>Отдых</span><span style="color:var(--outline)">⚙</span></div>
+          <div class="body" style="justify-content:center; gap:18px">
+            <div class="timer-dial">01:27</div>
+            <div class="quote">до подхода 04 · Жим лёжа</div>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap">
+              <span class="pill">−30 с</span>
+              <span class="pill">+30 с</span>
+            </div>
+            <div style="flex:1"></div>
+            <div class="btn-tertiary">Пропустить →</div>
+            <div class="quote">workout is my therapy too</div>
+          </div>
+        </div>
+        <p class="phone-caption">Таймер: циферблат Space Mono 64sp цветом <code>primary</code>, шаги ±30 с плашками <code>primaryContainer</code>, снизу третичная кнопка. Ровно тот же строй, что у главной: пустота, крупное число, действие внизу.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">08</span> Что придётся строить с нуля</h2>
+    <p class="sub">Чего в системе нет вообще, поэтому под это придётся заводить новые кирпичи, держась правил выше.</p>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="k">Нет в коде</div>
+        <p><b>Числовой ввод с клавиатуры.</b> Вес и повторы вводятся перетаскиванием. Для замеров тела и калькулятора блинов понадобится поле ввода в этом же языке: моноширинное, с обводкой, без плавающей подписи Material.</p>
+      </div>
+      <div class="card">
+        <div class="k">Нет в коде</div>
+        <p><b>График по датам.</b> Есть сетка активности (<code>FrequencyGraph</code>) и построитель сглаженной кривой по точкам (<code>Plot.kt</code>), но ни осей, ни подписей, ни выбора периода. Вес, объём и рекорды рисовать на канве штрихом с круглым концом, как <code>Wave</code>, библиотеку не подключать.</p>
+      </div>
+      <div class="card">
+        <div class="k">Нет в коде</div>
+        <p><b>Снимки.</b> Ни одного <code>Image</code> из файла: приложение обходится вектором и типографикой. Фото замеров придётся вводить осторожно — скругление 20, обводка, без теней.</p>
+      </div>
+      <div class="card">
+        <div class="k">Нет в коде</div>
+        <p><b>Единицы веса.</b> Строка <code>KG</code> вшита прямо в вёрстку дважды, обе в <code>SetItem.kt</code> (строки 99 и 148). Фунты потребуют настройку, ресурс строки и пересчёт.</p>
+      </div>
+    </div>
+  </section>
+
+</div>

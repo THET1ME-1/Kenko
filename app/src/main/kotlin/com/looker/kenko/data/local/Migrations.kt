@@ -299,3 +299,24 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         db.execSQL("ALTER TABLE sets ADD COLUMN rir INTEGER NOT NULL DEFAULT 2")
     }
 }
+
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE sets ADD COLUMN parentSetId INTEGER DEFAULT NULL")
+        db.execSQL("ALTER TABLE sets ADD COLUMN dropIndex INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE sets ADD COLUMN supersetId INTEGER DEFAULT NULL")
+        db.execSQL("ALTER TABLE sets ADD COLUMN roundIndex INTEGER DEFAULT NULL")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_sets_parentSetId` ON `sets` (`parentSetId`)")
+    }
+}
+
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE plan_day ADD COLUMN supersetId INTEGER DEFAULT NULL")
+        db.execSQL("ALTER TABLE plan_day ADD COLUMN targetSets INTEGER NOT NULL DEFAULT 3")
+        db.execSQL("ALTER TABLE plan_day ADD COLUMN targetReps INTEGER NOT NULL DEFAULT 10")
+        db.execSQL("ALTER TABLE plan_day ADD COLUMN restSeconds INTEGER NOT NULL DEFAULT 90")
+        db.execSQL("ALTER TABLE plan_day ADD COLUMN `order` INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("UPDATE plan_day SET `order` = id")
+    }
+}

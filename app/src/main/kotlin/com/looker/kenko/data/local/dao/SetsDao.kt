@@ -18,6 +18,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.looker.kenko.data.local.model.SetEntity
+import com.looker.kenko.data.local.model.SetType
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -28,7 +29,7 @@ interface SetsDao {
         SELECT *
         FROM sets
         WHERE sessionId = :sessionId
-        ORDER BY `order`
+        ORDER BY `order`, dropIndex, id
         """,
     )
     fun setsBySessionId(sessionId: Int): Flow<List<SetEntity>>
@@ -39,7 +40,8 @@ interface SetsDao {
         FROM sets
         INNER JOIN sessions ON sets.sessionId = sessions.id
         WHERE sets.exerciseId = :exerciseId
-        ORDER BY sessions.date DESC
+        AND sets.parentSetId IS NULL
+        ORDER BY sessions.date DESC, sets.`order` DESC
         LIMIT 1
         """
     )
@@ -50,7 +52,7 @@ interface SetsDao {
         SELECT *
         FROM sets
         WHERE sessionId = :sessionId
-        ORDER BY `order`
+        ORDER BY `order`, dropIndex, id
         """,
     )
     suspend fun getSetsBySessionId(sessionId: Int): List<SetEntity>
@@ -105,8 +107,76 @@ interface SetsDao {
     )
     fun totalSetCount(): Flow<Int>
 
+    @Query(
+        """
+        SELECT MAX(`order`)
+        FROM sets
+        WHERE sessionId = :sessionId
+        AND parentSetId IS NULL
+        """,
+    )
+    suspend fun getMaxOrder(sessionId: Int): Int?
+
+    @Query(
+        """
+        SELECT MAX(dropIndex)
+        FROM sets
+        WHERE parentSetId = :parentSetId
+        """,
+    )
+    suspend fun getMaxDropIndex(parentSetId: Int): Int?
+
+    @Query(
+        """
+        SELECT *
+        FROM sets
+        WHERE id = :setId
+        """,
+    )
+    suspend fun get(setId: Int): SetEntity?
+
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM sets
+        WHERE sessionId = :sessionId
+        AND exerciseId = :exerciseId
+        AND supersetId = :supersetId
+        AND parentSetId IS NULL
+        """,
+    )
+    suspend fun getSupersetSetCount(sessionId: Int, exerciseId: Int, supersetId: Int): Int
+
+    @Query(
+        """
+        SELECT MAX(supersetId)
+        FROM sets
+        WHERE sessionId = :sessionId
+        """,
+    )
+    suspend fun getMaxSupersetId(sessionId: Int): Int?
+
+    @Query(
+        """
+        SELECT MAX(roundIndex)
+        FROM sets
+        WHERE sessionId = :sessionId
+        AND supersetId = :supersetId
+        """,
+    )
+    suspend fun getMaxRoundIndex(sessionId: Int, supersetId: Int): Int?
+
+    @Query(
+        """
+        UPDATE sets
+        SET type = :type
+        WHERE id = :setId
+        """,
+    )
+    suspend fun updateType(setId: Int, type: SetType)
+
     @Insert
-    suspend fun insert(set: SetEntity)
+    suspend fun insert(set: SetEntity): Long
 
     @Query(
         """

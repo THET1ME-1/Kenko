@@ -166,8 +166,21 @@ class LocalPlanRepo @Inject constructor(
     }
 
     override suspend fun addItem(planItem: PlanItem) {
-        dao.insertPlanItem(planItem.toEntity())
+        val order = dao.getMaxOrder(planItem.planId, planItem.dayOfWeek.isoDayNumber)?.plus(1) ?: 0
+        dao.insertPlanItem(planItem.toEntity().copy(order = order))
     }
+
+    override suspend fun updateItem(planItem: PlanItem) {
+        dao.updatePlanItem(planItem.toEntity())
+    }
+
+    override suspend fun setSuperset(itemIds: List<Long>, supersetId: Int?) {
+        if (itemIds.isEmpty()) return
+        dao.setSuperset(itemIds, supersetId)
+    }
+
+    override suspend fun nextSupersetId(planId: Int): Int =
+        (dao.getMaxSupersetId(planId) ?: 0) + 1
 
     override suspend fun removeItem(id: Long) {
         dao.deleteItem(id)

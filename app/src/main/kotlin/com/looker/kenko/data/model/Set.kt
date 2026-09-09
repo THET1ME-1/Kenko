@@ -26,8 +26,27 @@ data class Set(
     val type: SetType,
     val exercise: Exercise,
     val rir: RepsInReserve,
+    /**
+     * Set this to the id of the parent set to make this set a drop of that set.
+     */
+    val parentSetId: Int? = null,
+    /**
+     * Position inside a drop chain. `0` for a normal set, `1` for the first drop and so on.
+     */
+    val dropIndex: Int = 0,
+    /**
+     * Sets sharing a [supersetId] inside a session are performed as one superset.
+     */
+    val supersetId: Int? = null,
+    /**
+     * Round of the superset this set belongs to, starting at `0`.
+     */
+    val roundIndex: Int? = null,
     val id: Int? = null,
 )
+
+val Set.isDrop: Boolean
+    get() = parentSetId != null
 
 val Set.rating: Rating
     get() = Rating(repsOrDuration * weight * type.ratingModifier * rir.modifier)

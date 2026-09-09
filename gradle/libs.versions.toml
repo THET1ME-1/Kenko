@@ -7,6 +7,7 @@ coroutines = "1.11.0"
 datastore = "1.2.1"
 dateTime = "0.8.0"
 hilt = "2.60.1"
+junit = "4.13.2"
 hiltNavigation = "1.4.0"
 hiltWork = "1.4.0"
 kotlin = "2.4.10"
@@ -43,6 +44,7 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+junit = { module = "junit:junit", version.ref = "junit" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }

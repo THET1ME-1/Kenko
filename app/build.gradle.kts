@@ -63,7 +63,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs["release"]
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs["debug"]
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -138,6 +138,8 @@ dependencies {
 
     implementation(libs.bundles.room)
     ksp(libs.room.compiler)
+
+    testImplementation(libs.junit)
 }
 
 fun versionCodeFor(version: String?): Int? {

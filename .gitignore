@@ -12,3 +12,7 @@ local.properties
 *.jks
 /.kotlin
 /kls_database.db
+
+# личная память
+CLAUDE.md
+CLAUDE.local.md

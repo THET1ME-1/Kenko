@@ -43,8 +43,10 @@ import kotlinx.coroutines.launch
 @HiltViewModel(assistedFactory = AddSetViewModel.AddSetViewModelFactory::class)
 class AddSetViewModel @AssistedInject constructor(
     private val sessionRepo: SessionRepo,
-    @Assisted private val id: Int,
+    @Assisted private val target: AddSetTarget,
 ) : ViewModel() {
+
+    private val id: Int = target.exerciseId
 
     var reps by mutableIntStateOf(12)
     val weights: TextFieldState = TextFieldState("20.0")
@@ -80,6 +82,16 @@ class AddSetViewModel @AssistedInject constructor(
 
     fun addSet() {
         viewModelScope.launch {
+            val parentSetId = target.parentSetId
+            if (parentSetId != null) {
+                sessionRepo.addDrop(
+                    parentSetId = parentSetId,
+                    weight = weightFloat,
+                    reps = reps,
+                    rir = RepsInReserve(2),
+                )
+                return@launch
+            }
             val sessionId = sessionRepo.getSessionIdOrCreate(localDate)
             sessionRepo.addSet(
                 sessionId = sessionId,
@@ -88,6 +100,7 @@ class AddSetViewModel @AssistedInject constructor(
                 reps = reps,
                 setType = selectedSetType,
                 rir = RepsInReserve(2),
+                supersetId = target.supersetId,
             )
         }
     }
@@ -96,18 +109,25 @@ class AddSetViewModel @AssistedInject constructor(
         get() = weights.text.toString().toFloatOrNull() ?: 0F
 
     init {
-        viewModelScope.launch {
-            sessionRepo.getLastSetByExerciseId(id)?.let { set ->
-                reps = set.repsOrDuration
-                addWeight(set.weight - weightFloat)
-                setSetType(set.type)
+        val suggestion = target.suggestion
+        if (suggestion != null) {
+            reps = suggestion.reps
+            addWeight(suggestion.weight - weightFloat)
+            setSetType(SetType.Drop)
+        } else {
+            viewModelScope.launch {
+                sessionRepo.getLastSetByExerciseId(id)?.let { set ->
+                    reps = set.repsOrDuration
+                    addWeight(set.weight - weightFloat)
+                    setSetType(set.type)
+                }
             }
         }
     }
 
     @AssistedFactory
     interface AddSetViewModelFactory {
-        fun create(id: Int): AddSetViewModel
+        fun create(target: AddSetTarget): AddSetViewModel
     }
 
     object IntTransformation : InputTransformation {

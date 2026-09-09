@@ -16,6 +16,7 @@ package com.looker.kenko.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.RawQuery
 import androidx.room.Transaction
 import androidx.room.Upsert
@@ -28,6 +29,37 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlanDao {
+
+    @Update
+    suspend fun updatePlanItem(item: PlanDayEntity)
+
+    @Query(
+        """
+        UPDATE plan_day
+        SET supersetId = :supersetId
+        WHERE id IN (:itemIds)
+        """,
+    )
+    suspend fun setSuperset(itemIds: List<Long>, supersetId: Int?)
+
+    @Query(
+        """
+        SELECT MAX(supersetId)
+        FROM plan_day
+        WHERE planId = :planId
+        """,
+    )
+    suspend fun getMaxSupersetId(planId: Int): Int?
+
+    @Query(
+        """
+        SELECT MAX(`order`)
+        FROM plan_day
+        WHERE planId = :planId
+        AND dayOfWeek = :day
+        """,
+    )
+    suspend fun getMaxOrder(planId: Int, day: Int): Int?
 
     @Query(
         """
@@ -47,7 +79,7 @@ interface PlanDao {
         FROM plan_history
         WHERE `end` IS NULL
         AND start IS NOT NULL)
-        ORDER BY id ASC
+        ORDER BY `order` ASC, id ASC
         """,
     )
     fun currentPlanItemsFlow(): Flow<List<PlanDayEntity>>
@@ -63,7 +95,7 @@ interface PlanDao {
         WHERE `end` IS NULL
         AND start IS NOT NULL)
         AND dayOfWeek = :day
-        ORDER BY id ASC
+        ORDER BY `order` ASC, id ASC
         """,
     )
     fun currentPlanItemsByDayFlow(day: Int): Flow<List<PlanDayEntity>>
@@ -92,7 +124,7 @@ interface PlanDao {
         SELECT *
         FROM plan_day
         WHERE planId = :planId
-        ORDER BY id ASC
+        ORDER BY `order` ASC, id ASC
         """,
     )
     fun planItemsByPlanIdFlow(planId: Int): Flow<List<PlanDayEntity>>
@@ -102,7 +134,7 @@ interface PlanDao {
         SELECT *
         FROM plan_day
         WHERE planId = :planId
-        ORDER BY id ASC
+        ORDER BY `order` ASC, id ASC
         """,
     )
     suspend fun getPlanItemsByPlanId(planId: Int): List<PlanDayEntity>
@@ -127,7 +159,7 @@ interface PlanDao {
         INNER JOIN plan_day
         ON exercises.id = plan_day.exerciseId
         WHERE plan_day.planId = :planId
-        ORDER BY plan_day.id ASC
+        ORDER BY plan_day.`order` ASC, plan_day.id ASC
         """,
     )
     fun exerciseByPlanIdFlow(planId: Int): Flow<List<ExerciseEntity>>
@@ -140,7 +172,7 @@ interface PlanDao {
         INNER JOIN plan_day
         ON exercises.id = plan_day.exerciseId
         WHERE plan_day.planId = :planId
-        ORDER BY plan_day.id ASC
+        ORDER BY plan_day.`order` ASC, plan_day.id ASC
         """,
     )
     suspend fun getExerciseByPlanId(planId: Int): List<ExerciseEntity>
@@ -151,7 +183,7 @@ interface PlanDao {
         FROM plan_day
         WHERE planId = :planId
         AND dayOfWeek = :day
-        ORDER BY id ASC
+        ORDER BY `order` ASC, id ASC
         """,
     )
     fun planItemsByPlanIdAndDayFlow(planId: Int, day: Int): Flow<List<PlanDayEntity>>
@@ -162,7 +194,7 @@ interface PlanDao {
         FROM plan_day
         WHERE planId = :planId
         AND dayOfWeek = :day
-        ORDER BY id ASC
+        ORDER BY `order` ASC, id ASC
         """,
     )
     suspend fun getPlanItemsByPlanIdAndDay(planId: Int, day: Int): List<PlanDayEntity>

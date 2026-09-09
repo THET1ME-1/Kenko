@@ -72,9 +72,23 @@ data class PlanDayEntity(
     val planId: Int,
     val exerciseId: Int,
     val dayOfWeek: Int,
+    @ColumnInfo(defaultValue = "NULL")
+    val supersetId: Int? = null,
+    @ColumnInfo(defaultValue = "3")
+    val targetSets: Int = DEFAULT_TARGET_SETS,
+    @ColumnInfo(defaultValue = "10")
+    val targetReps: Int = DEFAULT_TARGET_REPS,
+    @ColumnInfo(defaultValue = "90")
+    val restSeconds: Int = DEFAULT_REST_SECONDS,
+    @ColumnInfo(defaultValue = "0")
+    val order: Int = 0,
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
 )
+
+const val DEFAULT_TARGET_SETS = 3
+const val DEFAULT_TARGET_REPS = 10
+const val DEFAULT_REST_SECONDS = 90
 
 fun PlanEntity.toExternal(isActive: Boolean, stat: PlanStat) = Plan(
     id = id,
@@ -103,12 +117,22 @@ fun PlanItem.toEntity() = PlanDayEntity(
     planId = planId,
     exerciseId = requireNotNull(exercise.id) { "Exercise id cannot be null" },
     dayOfWeek = dayOfWeek.isoDayNumber,
+    supersetId = supersetId,
+    targetSets = targetSets,
+    targetReps = targetReps,
+    restSeconds = restSeconds,
+    order = order,
 )
 
 inline fun PlanDayEntity.toExternal(block: (exerciseId: Int) -> Exercise?) = PlanItem(
     planId = planId,
     dayOfWeek = DayOfWeek(dayOfWeek),
     exercise = block(exerciseId) ?: DefaultExercise,
+    supersetId = supersetId,
+    targetSets = targetSets,
+    targetReps = targetReps,
+    restSeconds = restSeconds,
+    order = order,
     id = id,
 )
 

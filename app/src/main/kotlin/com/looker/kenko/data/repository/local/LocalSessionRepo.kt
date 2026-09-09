@@ -55,12 +55,7 @@ class LocalSessionRepo @Inject constructor(
     override val sessionsCount: Flow<Int> = dao.totalSessions()
 
     override suspend fun addSet(sessionId: Int, set: Set) {
-        setsDao.insert(
-            set.toEntity(
-                sessionId,
-                setsDao.getSetsCountBySessionId(sessionId) ?: 0,
-            ),
-        )
+        setsDao.insert(set.toEntity(sessionId, nextOrder(sessionId)))
     }
 
     override suspend fun addSet(
@@ -70,6 +65,7 @@ class LocalSessionRepo @Inject constructor(
         reps: Int,
         setType: SetType,
         rir: RepsInReserve,
+        supersetId: Int?,
     ) {
         setsDao.insert(
             SetEntity(
@@ -78,11 +74,42 @@ class LocalSessionRepo @Inject constructor(
                 exerciseId = exerciseId,
                 sessionId = sessionId,
                 type = setType,
-                order = setsDao.getSetsCountBySessionId(sessionId) ?: 0,
+                order = nextOrder(sessionId),
                 rir = rir.value,
+                supersetId = supersetId,
+                roundIndex = supersetId?.let {
+                    setsDao.getSupersetSetCount(sessionId, exerciseId, it)
+                },
             ),
         )
     }
+
+    override suspend fun addDrop(
+        parentSetId: Int,
+        weight: Float,
+        reps: Int,
+        rir: RepsInReserve,
+    ) {
+        val parent = requireNotNull(setsDao.get(parentSetId)) { "Parent set is gone" }
+        require(parent.parentSetId == null) { "A drop cannot hang under another drop" }
+        setsDao.insert(
+            parent.copy(
+                id = 0,
+                repsOrDuration = reps,
+                weight = weight,
+                type = SetType.Drop,
+                rir = rir.value,
+                parentSetId = parentSetId,
+                dropIndex = (setsDao.getMaxDropIndex(parentSetId) ?: 0) + 1,
+            ),
+        )
+        if (parent.type != SetType.Drop) {
+            setsDao.updateType(parentSetId, SetType.Drop)
+        }
+    }
+
+    private suspend fun nextOrder(sessionId: Int): Int =
+        setsDao.getMaxOrder(sessionId)?.plus(1) ?: 0
 
     override suspend fun removeSet(setId: Int) {
         if (!dao.sessionExistsOn(localDate.toLocalEpochDays())) {
