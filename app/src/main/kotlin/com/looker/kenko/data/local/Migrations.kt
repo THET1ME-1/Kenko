@@ -302,10 +302,37 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
 
 val MIGRATION_3_4 = object : Migration(3, 4) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE sets ADD COLUMN parentSetId INTEGER DEFAULT NULL")
-        db.execSQL("ALTER TABLE sets ADD COLUMN dropIndex INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("ALTER TABLE sets ADD COLUMN supersetId INTEGER DEFAULT NULL")
-        db.execSQL("ALTER TABLE sets ADD COLUMN roundIndex INTEGER DEFAULT NULL")
+        // Drop sets point at the set they hang under, and SQLite cannot bolt a foreign key
+        // onto an existing table: the table is rebuilt instead.
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `sets_new` (
+            `reps` INTEGER NOT NULL,
+            `weight` REAL NOT NULL,
+            `type` TEXT NOT NULL,
+            `order` INTEGER NOT NULL,
+            `sessionId` INTEGER NOT NULL,
+            `exerciseId` INTEGER NOT NULL,
+            `rir` INTEGER NOT NULL DEFAULT 2,
+            `parentSetId` INTEGER DEFAULT NULL,
+            `dropIndex` INTEGER NOT NULL DEFAULT 0,
+            `supersetId` INTEGER DEFAULT NULL,
+            `roundIndex` INTEGER DEFAULT NULL,
+            `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            FOREIGN KEY(`exerciseId`) REFERENCES `exercises`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
+            FOREIGN KEY(`sessionId`) REFERENCES `sessions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
+            FOREIGN KEY(`parentSetId`) REFERENCES `sets`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE)
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            INSERT INTO `sets_new` (`reps`, `weight`, `type`, `order`, `sessionId`, `exerciseId`, `rir`, `id`)
+            SELECT `reps`, `weight`, `type`, `order`, `sessionId`, `exerciseId`, `rir`, `id` FROM `sets`
+            """.trimIndent(),
+        )
+        db.execSQL("DROP TABLE `sets`")
+        db.execSQL("ALTER TABLE `sets_new` RENAME TO `sets`")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_sets_sessionId_exerciseId` ON `sets` (`sessionId`, `exerciseId`)")
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_sets_parentSetId` ON `sets` (`parentSetId`)")
     }
 }

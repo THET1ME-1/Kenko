@@ -45,7 +45,7 @@ interface SetsDao {
         LIMIT 1
         """
     )
-    fun getLastSetByExerciseId(exerciseId: Int): SetEntity?
+    suspend fun getLastSetByExerciseId(exerciseId: Int): SetEntity?
 
     @Query(
         """
