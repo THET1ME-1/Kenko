@@ -36,7 +36,7 @@
     <string name="label_select_plan_one">Выбрать программу</string>
     <string name="label_current_plan_FORMAT">Сейчас: %s</string>
     <string name="label_lifts">Подъёмы</string>
-    <string name="label_plan_description">%1$s упражнений\n%2$s дней\n%3$s дней отдыха</string>
+    <string name="label_plan_description">%1$s · %2$s</string>
     <string name="label_browse_exercises">Упражнения</string>
     <string name="label_all_muscle_groups">Все</string>
     <string name="label_create_exercise">Создать</string>

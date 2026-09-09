@@ -220,6 +220,7 @@ class SessionDetailViewModel @AssistedInject constructor(
             SessionDetailState.Success(
                 SessionUiData(
                     date = currentSession.date,
+                    dayIndex = session?.dayIndex ?: currentDayIndex,
                     blocks = blocks,
                     isToday = currentSession.date.isToday,
                     planId = planId,
@@ -249,6 +250,7 @@ class SessionDetailViewModel @AssistedInject constructor(
                         dropCount = plan?.dropCount ?: 0,
                         dropPercent = plan?.dropPercent ?: DEFAULT_DROP_PERCENT,
                         planWeight = plan?.targetWeight ?: 0F,
+                        planReps = plan?.targetReps ?: 0,
                         gripId = plan?.gripId,
                     ),
                 ),
@@ -375,6 +377,7 @@ data class SetSheetTarget(
 @Stable
 data class SessionUiData(
     val date: LocalDate,
+    val dayIndex: Int?,
     val blocks: List<SessionBlock>,
     val isToday: Boolean = false,
     val planId: Int? = null,

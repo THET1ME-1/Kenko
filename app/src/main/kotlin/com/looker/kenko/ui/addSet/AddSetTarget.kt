@@ -34,6 +34,10 @@ data class AddSetTarget(
      */
     val planWeight: Float = 0F,
     /**
+     * Reps the plan asks for, used when the exercise has no history yet.
+     */
+    val planReps: Int = 0,
+    /**
      * Handle the plan expects, preselected when the sheet opens.
      */
     val gripId: Int? = null,

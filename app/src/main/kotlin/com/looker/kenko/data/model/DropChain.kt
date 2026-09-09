@@ -89,6 +89,10 @@ fun List<DropStep>.volume(): Float = sumOf { (it.weight * it.reps).toDouble() }.
 fun List<DropStep>.chainLabel(): String = joinToString(" → ") { formatWeight(it.weight) }
 
 fun formatWeight(weight: Float): String {
-    val rounded = (weight * 10).roundToInt() / 10F
-    return if (rounded % 1F == 0F) "${rounded.toInt()}.0" else rounded.toString()
+    val rounded = (weight * 100).roundToInt() / 100F
+    return when {
+        rounded % 1F == 0F -> "${rounded.toInt()}.0"
+        (rounded * 10) % 1F == 0F -> rounded.toString()
+        else -> String.format(java.util.Locale.US, "%.2f", rounded)
+    }
 }

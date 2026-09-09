@@ -90,6 +90,7 @@ import com.looker.kenko.data.model.SessionBlock
 import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.SetChain
 import com.looker.kenko.data.model.formatSeconds
+import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.ui.addSet.AddSet
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.DashedAddButton
@@ -232,6 +233,7 @@ private fun SessionDetail(
             Box(modifier = Modifier.fillMaxSize()) {
             SetsList(
                 date = data.date,
+                dayIndex = data.dayIndex,
                 blocks = data.blocks,
                 planId = data.planId,
                 isEditable = data.isToday,
@@ -336,6 +338,7 @@ private fun RestBar(
 @Composable
 private fun SetsList(
     date: LocalDate,
+    dayIndex: Int?,
     blocks: List<SessionBlock>,
     planId: Int?,
     isEditable: Boolean,
@@ -363,6 +366,7 @@ private fun SetsList(
         ) {
             Header(
                 performedOn = date,
+                dayIndex = dayIndex,
                 onBackPress = onBackPress,
                 actions = {
                     if (hasPreviousSession) {
@@ -541,6 +545,7 @@ private fun LazyGridScope.singleExerciseBlock(
             PlannedSetRow(
                 number = block.chains.size + index + 1,
                 reps = plan.repsLabel,
+                weight = plan.targetWeight,
                 onClick = { onAddSetClick(exercise, null) },
             )
         }
@@ -676,6 +681,7 @@ private fun PlannedSetRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     name: String? = null,
+    weight: Float = 0F,
 ) {
     Row(
         modifier = modifier
@@ -695,7 +701,11 @@ private fun PlannedSetRow(
             color = MaterialTheme.colorScheme.outline,
         )
         Text(
-            text = "$reps ×",
+            text = if (weight > 0F) {
+                "$reps × ${formatWeight(weight)} ${stringResource(R.string.label_kg)}"
+            } else {
+                "$reps ${stringResource(R.string.label_field_reps)}"
+            },
             style = MaterialTheme.typography.titleMedium.numbers(),
             color = MaterialTheme.colorScheme.outline,
         )
@@ -718,6 +728,7 @@ private fun Header(
     performedOn: LocalDate,
     onBackPress: () -> Unit,
     modifier: Modifier = Modifier,
+    dayIndex: Int? = null,
     actions: @Composable (RowScope.() -> Unit),
 ) {
     val date = remember {
@@ -735,7 +746,11 @@ private fun Header(
                     mutableStateOf(false)
                 }
                 TypingText(
-                    text = dayName(performedOn.dayOfWeek),
+                    text = if (dayIndex != null) {
+                        stringResource(R.string.label_day_number, dayIndex)
+                    } else {
+                        dayName(performedOn.dayOfWeek)
+                    },
                     onCompleteListener = {
                         startAnimatingDate = true
                     },
@@ -847,6 +862,7 @@ private fun SessionDetailPreview(
             SessionDetailState.Success(
                 SessionUiData(
                     date = LocalDate(2024, 4, 15),
+                    dayIndex = 1,
                     blocks = emptyList(),
                     isToday = true,
                 ),

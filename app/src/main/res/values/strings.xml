@@ -51,7 +51,7 @@
     <string name="label_select_plan_one">Select Plan</string>
     <string name="label_current_plan_FORMAT">Current: %s</string>
     <string name="label_lifts">Lifts</string>
-    <string name="label_plan_description">%1$s exercises\n%2$s days\n%3$s rest days</string>
+    <string name="label_plan_description">%1$s · %2$s</string>
 
     <!--Exercises-->
     <string name="label_browse_exercises">Browse Exercises</string>

@@ -409,7 +409,7 @@ private fun PlanEdit(
                         Text(
                             text = stringResource(R.string.no_exercises_yet),
                             style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.error,
+                            color = MaterialTheme.colorScheme.outline,
                         )
                     }
                 }
@@ -426,13 +426,13 @@ private fun PlanEdit(
                                     number = index + 1,
                                     chains = block.chains,
                                     selected = item.id in state.selectedItems,
-                                    expanded = expandedBlocks[item.id] ?: true,
+                                    expanded = expandedBlocks[item.id ?: 0L] != false,
                                     onToggleExpand = {
                                         if (state.supersetMode) {
                                             onItemLongClick(item)
                                         } else {
-                                            expandedBlocks[item.id ?: 0L] =
-                                                !(expandedBlocks[item.id] ?: true)
+                                            val key = item.id ?: 0L
+                                            expandedBlocks[key] = expandedBlocks[key] == false
                                         }
                                     },
                                     onClick = { onItemClick(item) },
@@ -450,7 +450,7 @@ private fun PlanEdit(
 
                         is SessionBlock.Superset -> {
                             item(key = "superset-${block.id}") {
-                                val open = expandedBlocks[-block.id.toLong()] ?: true
+                                val open = expandedBlocks[-block.id.toLong()] != false
                                 Column(modifier = Modifier.animateItem()) {
                                     if (open) {
                                         SupersetCard(

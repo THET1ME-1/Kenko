@@ -178,14 +178,16 @@ fun TargetsScreen(
 
             Spacer(Modifier.height(20.dp))
 
+            CounterCard(
+                caption = stringResource(R.string.label_sets),
+                value = normalizeInt(sets),
+                onDecrease = { sets = (sets - 1).coerceAtLeast(1) },
+                onIncrease = { sets = (sets + 1).coerceAtMost(MAX_SETS) },
+            )
+
+            Spacer(Modifier.height(12.dp))
+
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                CounterCard(
-                    modifier = Modifier.weight(1F),
-                    caption = stringResource(R.string.label_sets),
-                    value = normalizeInt(sets),
-                    onDecrease = { sets = (sets - 1).coerceAtLeast(1) },
-                    onIncrease = { sets = (sets + 1).coerceAtMost(MAX_SETS) },
-                )
                 CounterCard(
                     modifier = Modifier.weight(1F),
                     caption = stringResource(R.string.label_reps_from),
@@ -199,16 +201,14 @@ fun TargetsScreen(
                         repsMax = maxOf(repsMax, repsMin)
                     },
                 )
+                CounterCard(
+                    modifier = Modifier.weight(1F),
+                    caption = stringResource(R.string.label_reps_to),
+                    value = normalizeInt(repsMax),
+                    onDecrease = { repsMax = (repsMax - 1).coerceAtLeast(repsMin) },
+                    onIncrease = { repsMax = (repsMax + 1).coerceAtMost(MAX_REPS) },
+                )
             }
-
-            Spacer(Modifier.height(12.dp))
-
-            CounterCard(
-                caption = stringResource(R.string.label_reps_to),
-                value = normalizeInt(repsMax),
-                onDecrease = { repsMax = (repsMax - 1).coerceAtLeast(repsMin) },
-                onIncrease = { repsMax = (repsMax + 1).coerceAtMost(MAX_REPS) },
-            )
 
             Spacer(Modifier.height(16.dp))
 
@@ -405,24 +405,23 @@ private fun DropSection(
             )
             .padding(vertical = 14.dp, horizontal = 16.dp),
     ) {
+        Text(
+            text = stringResource(R.string.label_drop_in_plan).uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(modifier = Modifier.weight(1F)) {
-                Text(
-                    text = stringResource(R.string.label_drop_in_plan).uppercase(),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outline,
-                )
-                Text(
-                    text = if (drops == 0) {
-                        stringResource(R.string.label_no_drops)
-                    } else {
-                        stringResource(R.string.label_drop_short, drops)
-                    },
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            }
             CounterKey(label = "−", onClick = { onDropsChange(drops - 1) })
-            Spacer(Modifier.size(8.dp))
+            Text(
+                modifier = Modifier.weight(1F),
+                text = if (drops == 0) {
+                    stringResource(R.string.label_no_drops)
+                } else {
+                    stringResource(R.string.label_drop_short, drops)
+                },
+                style = MaterialTheme.typography.displaySmall.numbers(),
+                textAlign = TextAlign.Center,
+            )
             CounterKey(label = "+", onClick = { onDropsChange(drops + 1) })
         }
         if (drops > 0) {

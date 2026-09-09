@@ -277,6 +277,8 @@ class PlanEditViewModel @AssistedInject constructor(
                 return@launch
             }
             val createId = repo.createPlan(planNameState.text.toString())
+            // Только что собранная программа сразу становится текущей: иначе она лежит мёртвым грузом.
+            repo.setCurrent(createId)
             planIdStream.emit(createId)
         }
     }

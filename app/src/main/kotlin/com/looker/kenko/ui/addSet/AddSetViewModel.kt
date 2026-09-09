@@ -147,8 +147,9 @@ class AddSetViewModel @AssistedInject constructor(
                     reps = last.repsOrDuration
                     addWeight(last.weight - weightFloat)
                     setSetType(last.type)
-                } else if (target.planWeight > 0F) {
-                    addWeight(target.planWeight - weightFloat)
+                } else {
+                    if (target.planReps > 0) reps = target.planReps
+                    if (target.planWeight > 0F) addWeight(target.planWeight - weightFloat)
                 }
             }
         }

@@ -133,34 +133,22 @@ private fun Home(
                 .padding(innerPadding),
         ) {
             HorizontalDivider(thickness = KenkoBorderWidth)
-            AnimatedContent(
-                modifier = Modifier.align(CenterHorizontally),
-                targetState = state.isPlanSelected,
-                label = "",
-            ) { isPlanActive ->
-                if (isPlanActive) {
-                    Row(
-                        modifier = Modifier
-                            .widthIn(240.dp, 420.dp)
-                            .height(120.dp),
-                    ) {
-                        ExploreExerciseCard(
-                            onClick = onExploreExercisesClick,
-                            onLongClick = onAddExerciseClick,
-                            modifier = Modifier.weight(1F),
-                        )
-                        VerticalDivider()
-                        SessionHistoryCard(
-                            onClick = onExploreSessionsClick,
-                            modifier = Modifier.weight(1F),
-                        )
-                    }
-                } else {
-                    TickerText(
-                        text = stringResource(R.string.label_select_a_plan),
-                        color = MaterialTheme.colorScheme.outline,
-                    )
-                }
+            Row(
+                modifier = Modifier
+                    .align(CenterHorizontally)
+                    .widthIn(240.dp, 420.dp)
+                    .height(120.dp),
+            ) {
+                ExploreExerciseCard(
+                    onClick = onExploreExercisesClick,
+                    onLongClick = onAddExerciseClick,
+                    modifier = Modifier.weight(1F),
+                )
+                VerticalDivider()
+                SessionHistoryCard(
+                    onClick = onExploreSessionsClick,
+                    modifier = Modifier.weight(1F),
+                )
             }
             HorizontalDivider(thickness = KenkoBorderWidth)
             run {
