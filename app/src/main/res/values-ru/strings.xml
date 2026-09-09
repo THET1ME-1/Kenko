@@ -248,4 +248,21 @@
     <string name="label_drop_ladder">веса: %1$s %%</string>
     <string name="label_in_this_day">в этом дне</string>
     <string name="label_sets_and_time">%1$d подходов по %2$d · ~%3$d мин</string>
+    <string name="label_weight_total">общий вес</string>
+    <string name="label_bar">гриф</string>
+    <string name="label_no_bar">нет</string>
+    <string name="label_own_bar">свой гриф, кг</string>
+    <string name="label_side_left">слева, кг</string>
+    <string name="label_side_right">справа, кг</string>
+    <string name="label_same_on_both_sides">одинаково с двух сторон</string>
+    <string name="label_kg">КГ</string>
+    <string name="label_reps_range">повторы %1$s</string>
+    <string name="label_reps_from">повторов от</string>
+    <string name="label_reps_to">до</string>
+    <string name="label_weight_default">стартовый вес</string>
+    <string name="label_replace_exercise">заменить</string>
+    <string name="label_move_up">выше</string>
+    <string name="label_move_down">ниже</string>
+    <string name="label_drop_group_planned">в группе %1$d подходов, отдых после всей группы</string>
+    <string name="label_sets_left_range">осталось подходов: %1$d по %2$s</string>
 </resources>

@@ -124,10 +124,13 @@ class AddSetViewModel @AssistedInject constructor(
             setSetType(SetType.Drop)
         } else {
             viewModelScope.launch {
-                sessionRepo.getLastSetByExerciseId(id)?.let { set ->
-                    reps = set.repsOrDuration
-                    addWeight(set.weight - weightFloat)
-                    setSetType(set.type)
+                val last = sessionRepo.getLastSetByExerciseId(id)
+                if (last != null) {
+                    reps = last.repsOrDuration
+                    addWeight(last.weight - weightFloat)
+                    setSetType(last.type)
+                } else if (target.planWeight > 0F) {
+                    addWeight(target.planWeight - weightFloat)
                 }
             }
         }

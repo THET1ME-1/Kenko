@@ -29,6 +29,10 @@ data class AddSetTarget(
     val supersetId: Int? = null,
     val dropCount: Int = 0,
     val dropPercent: Int = DEFAULT_DROP_PERCENT,
+    /**
+     * Weight the plan starts from when this exercise has no history yet.
+     */
+    val planWeight: Float = 0F,
     val suggestion: Suggestion? = null,
 ) {
     @Immutable

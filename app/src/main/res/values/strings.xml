@@ -299,4 +299,21 @@
     <string name="label_drop_ladder">weights: %1$s %%</string>
     <string name="label_in_this_day">in this day</string>
     <string name="label_sets_and_time">%1$d sets of %2$d · ~%3$d min</string>
+    <string name="label_weight_total">total weight</string>
+    <string name="label_bar">bar</string>
+    <string name="label_no_bar">none</string>
+    <string name="label_own_bar">own bar, kg</string>
+    <string name="label_side_left">left side, kg</string>
+    <string name="label_side_right">right side, kg</string>
+    <string name="label_same_on_both_sides">same on both sides</string>
+    <string name="label_kg">KG</string>
+    <string name="label_reps_range">reps %1$s</string>
+    <string name="label_reps_from">reps from</string>
+    <string name="label_reps_to">to</string>
+    <string name="label_weight_default">starting weight</string>
+    <string name="label_replace_exercise">replace</string>
+    <string name="label_move_up">up</string>
+    <string name="label_move_down">down</string>
+    <string name="label_drop_group_planned">%1$d sets in the group, rest comes after all of them</string>
+    <string name="label_sets_left_range">%1$d sets of %2$s left</string>
 </resources>

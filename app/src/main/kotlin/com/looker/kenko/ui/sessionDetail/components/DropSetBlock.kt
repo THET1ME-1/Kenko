@@ -79,6 +79,10 @@ fun DropSetCard(
     onMarkGroup: () -> Unit,
     onUndo: () -> Unit,
     modifier: Modifier = Modifier,
+    /**
+     * In a plan there is nothing to tick off yet: the group only shows what is coming.
+     */
+    isPlan: Boolean = false,
 ) {
     val steps = chain.steps
     val performed = chain.performedSteps
@@ -113,11 +117,15 @@ fun DropSetCard(
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
                 Text(
-                    text = stringResource(
-                        R.string.label_drop_group_progress,
-                        performed,
-                        steps.size,
-                    ),
+                    text = if (isPlan) {
+                        stringResource(R.string.label_drop_group_planned, steps.size)
+                    } else {
+                        stringResource(
+                            R.string.label_drop_group_progress,
+                            performed,
+                            steps.size,
+                        )
+                    },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
@@ -162,12 +170,13 @@ fun DropSetCard(
                 DropStepRow(
                     step = step,
                     number = number,
-                    isNext = !step.isPerformed && step.index == performed,
-                    onTick = { onMarkStep(step.index) }.takeIf { isEditable },
+                    isNext = !isPlan && !step.isPerformed && step.index == performed,
+                    onTick = { onMarkStep(step.index) }.takeIf { isEditable && !isPlan },
+                    showTick = !isPlan,
                 )
             }
         }
-        if (isEditable) {
+        if (isEditable && !isPlan) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -222,8 +231,10 @@ private fun DropStepRow(
     isNext: Boolean,
     onTick: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    showTick: Boolean = true,
 ) {
     val alpha = when {
+        !showTick -> 1F
         step.isPerformed -> DONE_ALPHA
         isNext -> 1F
         else -> AHEAD_ALPHA
@@ -285,15 +296,17 @@ private fun DropStepRow(
                 alignEnd = true,
             )
         }
-        Spacer(Modifier.width(11.dp))
-        SetTick(
-            state = when {
-                step.isPerformed -> TickState.Done
-                isNext -> TickState.Active
-                else -> TickState.Ahead
-            },
-            onClick = onTick,
-        )
+        if (showTick) {
+            Spacer(Modifier.width(11.dp))
+            SetTick(
+                state = when {
+                    step.isPerformed -> TickState.Done
+                    isNext -> TickState.Active
+                    else -> TickState.Ahead
+                },
+                onClick = onTick,
+            )
+        }
     }
 }
 
@@ -306,6 +319,7 @@ fun DropSetRow(
     number: Int,
     onExpand: () -> Unit,
     modifier: Modifier = Modifier,
+    isPlan: Boolean = false,
 ) {
     val steps = chain.steps
     Row(
@@ -351,8 +365,10 @@ fun DropSetRow(
             }
             DropBars(steps = steps)
         }
-        Spacer(Modifier.width(11.dp))
-        SetTick(state = TickState.Done, size = 22.dp)
+        if (!isPlan) {
+            Spacer(Modifier.width(11.dp))
+            SetTick(state = TickState.Done, size = 22.dp)
+        }
     }
 }
 

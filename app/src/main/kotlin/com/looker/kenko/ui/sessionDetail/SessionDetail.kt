@@ -468,9 +468,9 @@ private fun LazyGridScope.singleExerciseBlock(
             name = exercise.name,
             subtitle = block.plan?.let { plan ->
                 stringResource(
-                    R.string.label_sets_left,
+                    R.string.label_sets_left_range,
                     block.setsLeft,
-                    plan.targetReps,
+                    plan.repsLabel,
                 )
             },
         ) {
@@ -538,7 +538,7 @@ private fun LazyGridScope.singleExerciseBlock(
         ) { index ->
             PlannedSetRow(
                 number = block.chains.size + index + 1,
-                reps = plan.targetReps,
+                reps = plan.repsLabel,
                 onClick = { onAddSetClick(exercise, null) },
             )
         }
@@ -670,7 +670,7 @@ private fun ChainItem(
 @Composable
 private fun PlannedSetRow(
     number: Int?,
-    reps: Int,
+    reps: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     name: String? = null,

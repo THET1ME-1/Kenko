@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -40,12 +41,17 @@ import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.OutlinedToggleButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.toPath
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -69,11 +75,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.looker.kenko.R
 import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.ui.addSet.components.ITEMS
 import com.looker.kenko.ui.addSet.components.ItemSize
 import com.looker.kenko.ui.addSet.components.VerticalSelector
 import com.looker.kenko.ui.addSet.components.WeightStepper
 import com.looker.kenko.ui.addSet.components.WeightTextField
+import com.looker.kenko.ui.components.WeightCalculator
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -177,6 +185,38 @@ private fun AddSetContent(
                 onChange = { haptic.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick) },
             )
         }
+        Spacer(modifier = Modifier.height(12.dp))
+
+        var calculatorOpen by rememberSaveable { mutableStateOf(false) }
+        TextButton(
+            modifier = Modifier.align(CenterHorizontally),
+            onClick = { calculatorOpen = !calculatorOpen },
+        ) {
+            Text(text = stringResource(R.string.label_weight_total))
+        }
+        if (calculatorOpen) {
+            var bar by remember { mutableFloatStateOf(20F) }
+            var left by remember { mutableFloatStateOf(0F) }
+            var right by remember { mutableFloatStateOf(0F) }
+            WeightCalculator(
+                bar = bar,
+                left = left,
+                right = right,
+                onBarChange = {
+                    bar = it
+                    weights.setTextAndPlaceCursorAtEnd(formatWeight(bar + left + right))
+                },
+                onLeftChange = {
+                    left = it
+                    weights.setTextAndPlaceCursorAtEnd(formatWeight(bar + left + right))
+                },
+                onRightChange = {
+                    right = it
+                    weights.setTextAndPlaceCursorAtEnd(formatWeight(bar + left + right))
+                },
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
     }
 }

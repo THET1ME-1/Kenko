@@ -375,3 +375,13 @@ val MIGRATION_8_9 = object : Migration(8, 9) {
         db.execSQL("ALTER TABLE sessions ADD COLUMN dayIndex INTEGER DEFAULT NULL")
     }
 }
+
+val MIGRATION_9_10 = object : Migration(9, 10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE plan_day ADD COLUMN targetRepsMax INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE plan_day ADD COLUMN barWeight REAL NOT NULL DEFAULT 20")
+        db.execSQL("ALTER TABLE plan_day ADD COLUMN leftWeight REAL NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE plan_day ADD COLUMN rightWeight REAL NOT NULL DEFAULT 0")
+        db.execSQL("UPDATE plan_day SET targetRepsMax = targetReps")
+    }
+}

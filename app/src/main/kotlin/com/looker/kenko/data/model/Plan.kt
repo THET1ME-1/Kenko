@@ -16,6 +16,7 @@ package com.looker.kenko.data.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.looker.kenko.data.local.model.DEFAULT_BAR_WEIGHT
 import com.looker.kenko.data.local.model.DEFAULT_REST_SECONDS
 import com.looker.kenko.data.local.model.DEFAULT_TARGET_REPS
 import com.looker.kenko.data.local.model.DEFAULT_TARGET_SETS
@@ -54,7 +55,23 @@ data class PlanItem(
      */
     val supersetId: Int? = null,
     val targetSets: Int = DEFAULT_TARGET_SETS,
+    /**
+     * Lower end of the rep range the plan asks for.
+     */
     val targetReps: Int = DEFAULT_TARGET_REPS,
+    /**
+     * Upper end of the range. Equal to [targetReps] when the plan asks for one exact number.
+     */
+    val targetRepsMax: Int = DEFAULT_TARGET_REPS,
+    /**
+     * Bar the exercise is loaded on. Zero for movements without one.
+     */
+    val barWeight: Float = DEFAULT_BAR_WEIGHT,
+    /**
+     * Weight hanging on each side. They can differ, which dumbbells and machines do all the time.
+     */
+    val leftWeight: Float = 0F,
+    val rightWeight: Float = 0F,
     val restSeconds: Int = DEFAULT_REST_SECONDS,
     val order: Int = 0,
     /**
@@ -68,6 +85,17 @@ data class PlanItem(
      * Sets this item adds to the day, drops counted in.
      */
     val setCount: Int get() = targetSets * (dropCount + 1)
+
+    /**
+     * What the bar weighs once loaded.
+     */
+    val targetWeight: Float get() = barWeight + leftWeight + rightWeight
+
+    /**
+     * `10` for an exact number, `6–10` for a range.
+     */
+    val repsLabel: String
+        get() = if (targetRepsMax > targetReps) "$targetReps–$targetRepsMax" else "$targetReps"
 }
 
 val localDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date

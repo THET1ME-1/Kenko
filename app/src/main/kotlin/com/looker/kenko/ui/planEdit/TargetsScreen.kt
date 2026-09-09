@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,10 +62,26 @@ import com.looker.kenko.ui.components.ExercisePhoto
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.KenkoButton
 import com.looker.kenko.ui.components.OnSurfaceVariantBorder
+import com.looker.kenko.ui.components.WeightCalculator
 import com.looker.kenko.ui.exercises.string
 import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.numbers
+
+/**
+ * Everything the plan says about one exercise, carried in one piece.
+ */
+data class PlanTargets(
+    val sets: Int,
+    val repsMin: Int,
+    val repsMax: Int,
+    val restSeconds: Int,
+    val dropCount: Int,
+    val dropPercent: Int,
+    val barWeight: Float,
+    val leftWeight: Float,
+    val rightWeight: Float,
+)
 
 /**
  * Rest lengths a lifter actually uses, offered as one tap instead of eight.
@@ -83,15 +100,19 @@ private const val MAX_REPS = 100
 @Composable
 fun TargetsScreen(
     item: PlanItem,
-    onSave: (sets: Int, reps: Int, restSeconds: Int, dropCount: Int, dropPercent: Int) -> Unit,
+    onSave: (targets: PlanTargets) -> Unit,
     onBackPress: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var sets by remember(item.id) { mutableIntStateOf(item.targetSets) }
-    var reps by remember(item.id) { mutableIntStateOf(item.targetReps) }
+    var repsMin by remember(item.id) { mutableIntStateOf(item.targetReps) }
+    var repsMax by remember(item.id) { mutableIntStateOf(maxOf(item.targetRepsMax, item.targetReps)) }
     var rest by remember(item.id) { mutableIntStateOf(item.restSeconds) }
     var drops by remember(item.id) { mutableIntStateOf(item.dropCount) }
     var dropPercent by remember(item.id) { mutableIntStateOf(item.dropPercent) }
+    var bar by remember(item.id) { mutableFloatStateOf(item.barWeight) }
+    var left by remember(item.id) { mutableFloatStateOf(item.leftWeight) }
+    var right by remember(item.id) { mutableFloatStateOf(item.rightWeight) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -136,12 +157,27 @@ fun TargetsScreen(
                 )
                 CounterCard(
                     modifier = Modifier.weight(1F),
-                    caption = stringResource(R.string.label_field_reps),
-                    value = normalizeInt(reps),
-                    onDecrease = { reps = (reps - 1).coerceAtLeast(1) },
-                    onIncrease = { reps = (reps + 1).coerceAtMost(MAX_REPS) },
+                    caption = stringResource(R.string.label_reps_from),
+                    value = normalizeInt(repsMin),
+                    onDecrease = {
+                        repsMin = (repsMin - 1).coerceAtLeast(1)
+                        repsMax = maxOf(repsMax, repsMin)
+                    },
+                    onIncrease = {
+                        repsMin = (repsMin + 1).coerceAtMost(MAX_REPS)
+                        repsMax = maxOf(repsMax, repsMin)
+                    },
                 )
             }
+
+            Spacer(Modifier.height(12.dp))
+
+            CounterCard(
+                caption = stringResource(R.string.label_reps_to),
+                value = normalizeInt(repsMax),
+                onDecrease = { repsMax = (repsMax - 1).coerceAtLeast(repsMin) },
+                onIncrease = { repsMax = (repsMax + 1).coerceAtMost(MAX_REPS) },
+            )
 
             Spacer(Modifier.height(16.dp))
 
@@ -164,6 +200,23 @@ fun TargetsScreen(
 
             Spacer(Modifier.height(24.dp))
 
+            Text(
+                text = stringResource(R.string.label_weight_default).uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
+            Spacer(Modifier.height(8.dp))
+            WeightCalculator(
+                bar = bar,
+                left = left,
+                right = right,
+                onBarChange = { bar = it },
+                onLeftChange = { left = it },
+                onRightChange = { right = it },
+            )
+
+            Spacer(Modifier.height(24.dp))
+
             DropSection(
                 drops = drops,
                 percent = dropPercent,
@@ -175,13 +228,27 @@ fun TargetsScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            Summary(sets = sets, reps = reps, rest = rest, drops = drops)
+            Summary(sets = sets, reps = repsMin, rest = rest, drops = drops)
 
             Spacer(Modifier.height(24.dp))
 
             KenkoButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                onClick = { onSave(sets, reps, rest, drops, dropPercent) },
+                onClick = {
+                    onSave(
+                        PlanTargets(
+                            sets = sets,
+                            repsMin = repsMin,
+                            repsMax = repsMax,
+                            restSeconds = rest,
+                            dropCount = drops,
+                            dropPercent = dropPercent,
+                            barWeight = bar,
+                            leftWeight = left,
+                            rightWeight = right,
+                        ),
+                    )
+                },
                 label = { Text(text = stringResource(R.string.label_save)) },
                 icon = {
                     Icon(

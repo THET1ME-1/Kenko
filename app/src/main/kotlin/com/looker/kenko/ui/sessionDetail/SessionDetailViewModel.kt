@@ -248,6 +248,7 @@ class SessionDetailViewModel @AssistedInject constructor(
                         supersetId = supersetId,
                         dropCount = plan?.dropCount ?: 0,
                         dropPercent = plan?.dropPercent ?: DEFAULT_DROP_PERCENT,
+                        planWeight = plan?.targetWeight ?: 0F,
                     ),
                 ),
             )

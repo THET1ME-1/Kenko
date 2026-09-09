@@ -24,9 +24,11 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,6 +64,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -86,8 +89,12 @@ import com.looker.kenko.data.model.MIN_DROP_PERCENT
 import com.looker.kenko.data.model.MuscleGroups
 import com.looker.kenko.data.model.PlanDayGroup
 import com.looker.kenko.data.model.PlanItem
+import com.looker.kenko.data.model.SessionBlock
+import com.looker.kenko.data.model.SetChain
 import com.looker.kenko.data.model.daySummary
+import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.data.model.toDayGroups
+import com.looker.kenko.data.model.toPreviewBlocks
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.DashedAddButton
 import com.looker.kenko.ui.components.DaySelectorChip
@@ -102,6 +109,10 @@ import com.looker.kenko.ui.planEdit.components.DaySwitcher
 import com.looker.kenko.ui.planEdit.components.ExerciseItem
 import com.looker.kenko.ui.planEdit.components.kenkoDayName
 import com.looker.kenko.ui.selectExercise.SelectExercise
+import com.looker.kenko.ui.sessionDetail.components.DropSetCard
+import com.looker.kenko.ui.sessionDetail.components.SetItem
+import com.looker.kenko.ui.sessionDetail.components.SupersetCard
+import com.looker.kenko.ui.sessionDetail.components.SupersetRow
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -164,6 +175,8 @@ fun PlanEdit(
                     onClearSelection = viewModel::clearSelection,
                     onAddExercise = viewModel::openSheet,
                     onStartSupersetMode = viewModel::startSupersetMode,
+                    onReplaceItem = viewModel::startReplacing,
+                    onMoveItem = viewModel::moveItem,
                 )
             }
         }
@@ -182,14 +195,21 @@ fun PlanEdit(
     }
 
     val editedItem by viewModel.editedItem.collectAsStateWithLifecycle()
+    val replacedItem by viewModel.replacedItem.collectAsStateWithLifecycle()
+    replacedItem?.let { item ->
+        SelectExercise(
+            modifier = Modifier.fillMaxSize(),
+            onBackPress = { viewModel.startReplacing(null) },
+            onRequestNewExercise = onAddNewExerciseClick,
+            onDone = { exercise -> viewModel.replaceExercise(item, exercise) },
+        )
+    }
     editedItem?.let { item ->
         TargetsScreen(
             modifier = Modifier.fillMaxSize(),
             item = item,
             onBackPress = { viewModel.editTargets(null) },
-            onSave = { sets, reps, rest, drops, percent ->
-                viewModel.saveTargets(item, sets, reps, rest, drops, percent)
-            },
+            onSave = { targets -> viewModel.saveTargets(item, targets) },
         )
     }
 }
@@ -345,10 +365,12 @@ private fun PlanEdit(
     onClearSelection: () -> Unit,
     onAddExercise: () -> Unit,
     onStartSupersetMode: () -> Unit,
+    onReplaceItem: (PlanItem) -> Unit,
+    onMoveItem: (PlanItem, Int) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
     val isCurrentDayBlank by remember(state.items) { derivedStateOf { state.items.isEmpty() } }
-    val groups by remember(state.items) { derivedStateOf { state.items.toDayGroups() } }
+    val expandedBlocks = remember { mutableStateMapOf<Long, Boolean>() }
     PlanExercise(
         modifier = Modifier.fillMaxSize(),
         header = {
@@ -386,62 +408,78 @@ private fun PlanEdit(
                     }
                 }
             } else {
-                var number = 0
-                groups.forEach { group ->
-                    when (group) {
-                        is PlanDayGroup.Single -> {
-                            number++
-                            val position = number
-                            item(key = group.item.id) {
-                                SwipeToDeleteBox(
-                                    modifier = Modifier
-                                        .clip(MaterialTheme.shapes.small)
-                                        .animateItem(),
-                                    onDismiss = {
-                                        focusManager.clearFocus()
-                                        onRemoveItemClick(group.item)
+                val blocks = state.items.toPreviewBlocks()
+                blocks.forEachIndexed { index, block ->
+                    when (block) {
+                        is SessionBlock.SingleExercise -> {
+                            val item = block.plan ?: return@forEachIndexed
+                            item(key = "item-${item.id}") {
+                                PlanExerciseBlock(
+                                    modifier = Modifier.animateItem(),
+                                    item = item,
+                                    number = index + 1,
+                                    chains = block.chains,
+                                    selected = item.id in state.selectedItems,
+                                    expanded = expandedBlocks[item.id] ?: true,
+                                    onToggleExpand = {
+                                        expandedBlocks[item.id ?: 0L] =
+                                            !(expandedBlocks[item.id] ?: true)
                                     },
-                                ) {
-                                    PlanItemRow(
-                                        item = group.item,
-                                        position = position,
-                                        selected = group.item.id in state.selectedItems,
-                                        onClick = {
-                                            if (state.supersetMode) {
-                                                onItemLongClick(group.item)
-                                            } else {
-                                                onItemClick(group.item)
-                                            }
-                                        },
-                                        onLongClick = { onItemLongClick(group.item) },
-                                    )
-                                }
+                                    onClick = {
+                                        if (state.supersetMode) onItemLongClick(item) else onItemClick(item)
+                                    },
+                                    onLongClick = { onItemLongClick(item) },
+                                    onReplace = { onReplaceItem(item) },
+                                    onMoveUp = { onMoveItem(item, -1) },
+                                    onMoveDown = { onMoveItem(item, 1) },
+                                    onRemove = {
+                                        focusManager.clearFocus()
+                                        onRemoveItemClick(item)
+                                    },
+                                )
                             }
                         }
 
-                        is PlanDayGroup.Superset -> {
-                            val positions = group.items.map { number++ + 1 }
-                            item(key = "superset-${group.id}") {
-                                SupersetGroup(
-                                    modifier = Modifier.animateItem(),
-                                    number = positions.first(),
-                                    rounds = group.items.minOfOrNull { it.targetSets } ?: 0,
-                                    onBreak = { onBreakSuperset(group.id) },
-                                ) {
-                                    group.items.forEachIndexed { index, item ->
-                                        PlanItemRow(
-                                            item = item,
-                                            position = positions[index],
-                                            selected = item.id in state.selectedItems,
-                                            onClick = {
-                                                if (state.supersetMode) {
-                                                    onItemLongClick(item)
-                                                } else {
-                                                    onItemClick(item)
-                                                }
+                        is SessionBlock.Superset -> {
+                            item(key = "superset-${block.id}") {
+                                val open = expandedBlocks[-block.id.toLong()] ?: true
+                                Column(modifier = Modifier.animateItem()) {
+                                    if (open) {
+                                        SupersetCard(
+                                            block = block,
+                                            isEditable = true,
+                                            isPlan = true,
+                                            onCollapse = {
+                                                expandedBlocks[-block.id.toLong()] = false
                                             },
-                                            onLongClick = { onItemLongClick(item) },
+                                            onCloseRound = {},
+                                            onUndo = {},
                                         )
+                                    } else {
+                                        SupersetRow(
+                                            block = block,
+                                            number = index + 1,
+                                            isPlan = true,
+                                            onExpand = {
+                                                expandedBlocks[-block.id.toLong()] = true
+                                            },
+                                        )
+                                    }
+                                    Row(
+                                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    ) {
+                                        block.plan.forEach { planItem ->
+                                            TextButton(onClick = { onItemClick(planItem) }) {
+                                                Text(
+                                                    text = "${planItem.exercise.name} ${planItem.targetSets}×${planItem.repsLabel}",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                )
+                                            }
+                                        }
+                                        TextButton(onClick = { onBreakSuperset(block.id) }) {
+                                            Text(text = stringResource(R.string.label_break_superset))
+                                        }
                                     }
                                 }
                             }
@@ -469,6 +507,119 @@ private fun PlanEdit(
             }
         },
     )
+}
+
+/**
+ * An exercise inside a plan: the same rows the session will show, plus the tools to
+ * set it up, swap it for another movement or move it around the day.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun PlanExerciseBlock(
+    item: PlanItem,
+    number: Int,
+    chains: List<SetChain>,
+    selected: Boolean,
+    expanded: Boolean,
+    onToggleExpand: () -> Unit,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
+    onReplace: () -> Unit,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit,
+    onRemove: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val chain = chains.firstOrNull()
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp)
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(
+                if (selected) {
+                    MaterialTheme.colorScheme.secondaryContainer
+                } else {
+                    MaterialTheme.colorScheme.surfaceContainerLow
+                },
+            ),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .combinedClickable(onClick = onToggleExpand, onLongClick = onLongClick)
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = normalizeInt(number),
+                style = MaterialTheme.typography.headlineSmall.numbers(),
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Spacer(Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1F)) {
+                Text(
+                    text = item.exercise.name,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = "${item.targetSets} × ${item.repsLabel} · " +
+                        "${formatWeight(item.targetWeight)} ${stringResource(R.string.label_kg)} · " +
+                        stringResource(R.string.label_rest_short, formatRest(item.restSeconds)),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+            }
+        }
+        if (expanded) {
+            if (item.dropCount > 0 && chain != null) {
+                DropSetCard(
+                    chain = chain,
+                    number = number,
+                    isEditable = false,
+                    isPlan = true,
+                    onCollapse = onToggleExpand,
+                    onDropsChange = {},
+                    onPercentChange = {},
+                    onMarkStep = {},
+                    onMarkGroup = {},
+                    onUndo = {},
+                )
+            } else {
+                chains.forEachIndexed { index, setChain ->
+                    SetItem(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp),
+                        set = setChain.set,
+                        title = { Text(text = normalizeInt(index + 1)) },
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                TextButton(onClick = onClick) {
+                    Text(text = stringResource(R.string.label_edit_targets))
+                }
+                TextButton(onClick = onReplace) {
+                    Text(text = stringResource(R.string.label_replace_exercise))
+                }
+                TextButton(onClick = onMoveUp) {
+                    Text(text = stringResource(R.string.label_move_up))
+                }
+                TextButton(onClick = onMoveDown) {
+                    Text(text = stringResource(R.string.label_move_down))
+                }
+                Spacer(Modifier.weight(1F))
+                IconButton(onClick = onRemove) {
+                    Icon(painter = KenkoIcons.Delete, contentDescription = null)
+                }
+            }
+        }
+    }
 }
 
 /**

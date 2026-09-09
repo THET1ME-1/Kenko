@@ -140,3 +140,85 @@ class PlanDaySummaryTest {
         assertEquals(11, summary.minutes)
     }
 }
+
+class PlanPreviewTest {
+
+    private val bench = Exercise("Bench Press", MuscleGroups.Chest, id = 1)
+    private val pullUp = Exercise("Pull-ups", MuscleGroups.Lats, id = 2)
+    private val dips = Exercise("Dips", MuscleGroups.Triceps, id = 3)
+
+    private fun item(
+        exercise: Exercise,
+        targetSets: Int = 3,
+        reps: Int = 10,
+        repsMax: Int = 10,
+        supersetId: Int? = null,
+        dropCount: Int = 0,
+        bar: Float = 20F,
+        left: Float = 0F,
+        right: Float = 0F,
+    ) = PlanItem(
+        dayIndex = 1,
+        exercise = exercise,
+        planId = 1,
+        supersetId = supersetId,
+        targetSets = targetSets,
+        targetReps = reps,
+        targetRepsMax = repsMax,
+        barWeight = bar,
+        leftWeight = left,
+        rightWeight = right,
+        dropCount = dropCount,
+        id = exercise.id!!.toLong(),
+    )
+
+    @Test
+    fun `an exact number of reps reads as one number`() {
+        assertEquals("10", item(bench, reps = 10, repsMax = 10).repsLabel)
+    }
+
+    @Test
+    fun `a range reads with a dash`() {
+        assertEquals("6–10", item(bench, reps = 6, repsMax = 10).repsLabel)
+    }
+
+    @Test
+    fun `weight adds up from the bar and both sides`() {
+        assertEquals(45F, item(bench, bar = 20F, left = 12.5F, right = 12.5F).targetWeight, 0.01F)
+    }
+
+    @Test
+    fun `sides may differ`() {
+        assertEquals(32.5F, item(bench, bar = 20F, left = 7.5F, right = 5F).targetWeight, 0.01F)
+    }
+
+    @Test
+    fun `a planned exercise previews as many rows as it has sets`() {
+        val blocks = listOf(item(bench, targetSets = 4)).toPreviewBlocks()
+
+        val block = blocks.single() as SessionBlock.SingleExercise
+        assertEquals(4, block.chains.size)
+        assertEquals(20F, block.chains.first().set.weight, 0.01F)
+    }
+
+    @Test
+    fun `a planned superset previews as rounds`() {
+        val blocks = listOf(
+            item(pullUp, supersetId = 3, targetSets = 3),
+            item(dips, supersetId = 3, targetSets = 3),
+        ).toPreviewBlocks()
+
+        val superset = blocks.single() as SessionBlock.Superset
+        assertEquals(3, superset.rounds.size)
+        assertTrue(superset.rounds.all { it.chains.size == 2 })
+    }
+
+    @Test
+    fun `a planned drop set previews as a group`() {
+        val blocks = listOf(item(bench, targetSets = 2, dropCount = 3)).toPreviewBlocks()
+
+        val chain = (blocks.single() as SessionBlock.SingleExercise).chains.first()
+        assertTrue(chain.isDropSet)
+        assertEquals(4, chain.steps.size)
+    }
+}

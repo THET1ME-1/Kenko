@@ -69,6 +69,10 @@ fun SupersetCard(
     onCloseRound: () -> Unit,
     onUndo: () -> Unit,
     modifier: Modifier = Modifier,
+    /**
+     * A plan shows the rounds ahead: nothing to close, nothing to tick.
+     */
+    isPlan: Boolean = false,
 ) {
     val plannedRounds = block.plannedRounds
     val closed = block.closedRounds
@@ -111,10 +115,10 @@ fun SupersetCard(
         }
         Column(modifier = Modifier.padding(horizontal = 13.dp, vertical = 12.dp)) {
             repeat(plannedRounds) { index ->
-                RoundCard(block = block, roundIndex = index)
+                RoundCard(block = block, roundIndex = index, isPlan = isPlan)
             }
         }
-        if (isEditable) {
+        if (isEditable && !isPlan) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -157,12 +161,14 @@ private fun RoundCard(
     block: SessionBlock.Superset,
     roundIndex: Int,
     modifier: Modifier = Modifier,
+    isPlan: Boolean = false,
 ) {
     val round = block.rounds.firstOrNull { it.index == roundIndex }
     val performed = round?.chains.orEmpty()
     val isClosed = performed.size >= block.exercises.size && block.exercises.isNotEmpty()
     val isRunning = performed.isNotEmpty() && !isClosed
     val alpha = when {
+        isPlan -> 1F
         isClosed -> DONE_ALPHA
         isRunning -> 1F
         else -> AHEAD_ALPHA
@@ -194,6 +200,7 @@ private fun RoundCard(
             Text(
                 text = stringResource(
                     when {
+                        isPlan -> R.string.label_round_planned
                         isClosed -> R.string.label_round_closed
                         isRunning -> R.string.label_round_running
                         else -> R.string.label_round_planned
@@ -211,7 +218,9 @@ private fun RoundCard(
                 exercise = exercise,
                 chain = chain,
                 plannedReps = block.plan.firstOrNull { it.exercise == exercise }?.targetReps,
-                isNext = chain == null && (isRunning || isClosed.not() && roundIndex == block.closedRounds),
+                isNext = !isPlan && chain == null &&
+                    (isRunning || isClosed.not() && roundIndex == block.closedRounds),
+                showTick = !isPlan,
             )
         }
     }
@@ -225,6 +234,7 @@ private fun SupersetLegRow(
     plannedReps: Int?,
     isNext: Boolean,
     modifier: Modifier = Modifier,
+    showTick: Boolean = true,
 ) {
     Row(
         modifier = modifier
@@ -275,14 +285,16 @@ private fun SupersetLegRow(
                 )
             }
         }
-        Spacer(Modifier.width(9.dp))
-        SetTick(
-            state = when {
-                chain != null -> TickState.Done
-                isNext -> TickState.Active
-                else -> TickState.Ahead
-            },
-        )
+        if (showTick) {
+            Spacer(Modifier.width(9.dp))
+            SetTick(
+                state = when {
+                    chain != null -> TickState.Done
+                    isNext -> TickState.Active
+                    else -> TickState.Ahead
+                },
+            )
+        }
     }
 }
 
@@ -295,6 +307,7 @@ fun SupersetRow(
     number: Int,
     onExpand: () -> Unit,
     modifier: Modifier = Modifier,
+    isPlan: Boolean = false,
 ) {
     Row(
         modifier = modifier
@@ -350,11 +363,13 @@ fun SupersetRow(
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
         }
-        Spacer(Modifier.width(11.dp))
-        SetTick(
-            state = if (block.roundsLeft == 0) TickState.Done else TickState.Ahead,
-            size = 22.dp,
-        )
+        if (!isPlan) {
+            Spacer(Modifier.width(11.dp))
+            SetTick(
+                state = if (block.roundsLeft == 0) TickState.Done else TickState.Ahead,
+                size = 22.dp,
+            )
+        }
     }
 }
 

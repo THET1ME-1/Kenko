@@ -30,6 +30,7 @@ import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.ui.navigation.Routes
+import com.looker.kenko.ui.planEdit.PlanTargets
 import com.looker.kenko.utils.asStateFlow
 import com.looker.kenko.utils.nextLocalDateTime
 import dagger.assisted.Assisted
@@ -95,6 +96,9 @@ class PlanEditViewModel @AssistedInject constructor(
 
     private val _editedItem: MutableStateFlow<PlanItem?> = MutableStateFlow(null)
     val editedItem: StateFlow<PlanItem?> = _editedItem
+
+    private val _replacedItem: MutableStateFlow<PlanItem?> = MutableStateFlow(null)
+    val replacedItem: StateFlow<PlanItem?> = _replacedItem
 
     @OptIn(FlowPreview::class)
     val isNameAlreadyUsed = snapshotFlow { planNameState.text.trim().toString() }
@@ -189,28 +193,57 @@ class PlanEditViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Puts another exercise in the same slot, keeping sets, reps and rest.
+     */
+    fun replaceExercise(item: PlanItem, exercise: Exercise) {
+        viewModelScope.launch {
+            repo.updateItem(item.copy(exercise = exercise))
+            _replacedItem.emit(null)
+        }
+    }
+
+    fun startReplacing(item: PlanItem?) {
+        viewModelScope.launch {
+            _replacedItem.emit(item)
+        }
+    }
+
+    /**
+     * Moves an exercise up or down the day by swapping its place with the neighbour.
+     */
+    fun moveItem(item: PlanItem, delta: Int) {
+        viewModelScope.launch {
+            val dayItems = repo.getPlanItems(planIdStream.value, _dayIndex.value)
+                .sortedBy { it.order }
+            val index = dayItems.indexOfFirst { it.id == item.id }
+            val target = index + delta
+            if (index < 0 || target !in dayItems.indices) return@launch
+            val neighbour = dayItems[target]
+            repo.updateItem(item.copy(order = neighbour.order))
+            repo.updateItem(neighbour.copy(order = item.order))
+        }
+    }
+
     fun editTargets(item: PlanItem?) {
         viewModelScope.launch {
             _editedItem.emit(item)
         }
     }
 
-    fun saveTargets(
-        item: PlanItem,
-        sets: Int,
-        reps: Int,
-        restSeconds: Int,
-        dropCount: Int,
-        dropPercent: Int,
-    ) {
+    fun saveTargets(item: PlanItem, targets: PlanTargets) {
         viewModelScope.launch {
             repo.updateItem(
                 item.copy(
-                    targetSets = sets,
-                    targetReps = reps,
-                    restSeconds = restSeconds,
-                    dropCount = dropCount,
-                    dropPercent = dropPercent,
+                    targetSets = targets.sets,
+                    targetReps = targets.repsMin,
+                    targetRepsMax = targets.repsMax,
+                    restSeconds = targets.restSeconds,
+                    dropCount = targets.dropCount,
+                    dropPercent = targets.dropPercent,
+                    barWeight = targets.barWeight,
+                    leftWeight = targets.leftWeight,
+                    rightWeight = targets.rightWeight,
                 ),
             )
             _editedItem.emit(null)
