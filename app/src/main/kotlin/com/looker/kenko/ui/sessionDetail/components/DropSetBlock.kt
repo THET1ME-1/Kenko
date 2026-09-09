@@ -28,8 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -57,7 +55,6 @@ import com.looker.kenko.ui.components.SetTick
 import com.looker.kenko.ui.components.TickState
 import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.theme.numbers
-import kotlin.math.roundToInt
 
 private const val DONE_ALPHA = 0.6F
 private const val AHEAD_ALPHA = 0.45F
@@ -221,11 +218,6 @@ fun DropSetCard(
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Text(
-                text = stringResource(R.string.label_group_volume, chain.volume.roundToInt()),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }
@@ -356,12 +348,6 @@ fun DropSetRow(
                     Text(
                         text = stringResource(R.string.label_drop_short, chain.set.dropCount),
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    )
-                    Spacer(Modifier.width(7.dp))
-                    Text(
-                        text = stringResource(R.string.label_volume_kg, chain.volume.roundToInt()),
-                        style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                 }

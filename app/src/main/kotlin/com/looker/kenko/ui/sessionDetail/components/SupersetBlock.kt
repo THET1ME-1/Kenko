@@ -360,11 +360,6 @@ fun SupersetRow(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
-            Text(
-                text = stringResource(R.string.label_volume_kg, block.totalVolume.roundToInt()),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
         }
         if (!isPlan) {
             Spacer(Modifier.width(11.dp))

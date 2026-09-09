@@ -43,7 +43,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -89,7 +88,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlin.math.abs
 import com.looker.kenko.R
-import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.Ghost
 import com.looker.kenko.data.model.Record
@@ -106,13 +104,11 @@ import com.looker.kenko.ui.components.PrimaryBorder
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.components.TypingText
 import com.looker.kenko.ui.exercises.displayName
+import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.exercises.localizedExerciseName
 import com.looker.kenko.ui.extensions.normalizeInt
-import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
 import com.looker.kenko.ui.selectExercise.SelectExercise
-import com.looker.kenko.ui.sessionDetail.components.AddDropRow
-import com.looker.kenko.ui.sessionDetail.components.DropRow
 import com.looker.kenko.ui.sessionDetail.components.DropSetCard
 import com.looker.kenko.ui.sessionDetail.components.DropSetRow
 import com.looker.kenko.ui.sessionDetail.components.SetItem
@@ -125,7 +121,6 @@ import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.ui.theme.numbers
 import com.looker.kenko.utils.DateFormat
 import com.looker.kenko.utils.formatDate
-import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
@@ -650,13 +645,6 @@ private fun LazyGridScope.singleExerciseBlock(
             )
         }
     }
-    if (block.chains.isNotEmpty()) {
-        item(
-            span = { GridItemSpan(maxLineSpan) },
-        ) {
-            VolumeCard(block = block)
-        }
-    }
 }
 
 private fun LazyGridScope.supersetBlock(
@@ -710,44 +698,6 @@ private fun LazyGridScope.supersetBlock(
                     }
                 }
             }
-        }
-    }
-}
-
-/**
- * What the exercise added up to, drop sets counted separately.
- */
-@Composable
-private fun VolumeCard(
-    block: SessionBlock.SingleExercise,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clip(MaterialTheme.shapes.extraLarge)
-            .border(OnSurfaceVariantBorder, MaterialTheme.shapes.extraLarge)
-            .padding(horizontal = 20.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(modifier = Modifier.weight(1F)) {
-            Text(
-                text = stringResource(R.string.label_exercise_volume),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline,
-            )
-            Text(
-                text = stringResource(R.string.label_volume_kg, block.volume.roundToInt()),
-                style = MaterialTheme.typography.headlineMedium.numbers(),
-            )
-        }
-        if (block.dropVolume > 0F) {
-            Text(
-                text = stringResource(R.string.label_of_them_drop, block.dropVolume.roundToInt()),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline,
-            )
         }
     }
 }
