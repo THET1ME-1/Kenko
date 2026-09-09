@@ -118,7 +118,10 @@ fun DropSetCard(
                 )
                 Text(
                     text = if (isPlan) {
-                        stringResource(R.string.label_drop_group_planned, steps.size)
+                        stringResource(
+                            R.string.label_drop_group_planned,
+                            pluralStringResource(R.plurals.plural_sets, steps.size, steps.size),
+                        )
                     } else {
                         stringResource(
                             R.string.label_drop_group_progress,

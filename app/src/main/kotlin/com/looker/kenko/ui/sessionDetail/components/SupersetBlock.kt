@@ -50,6 +50,7 @@ import com.looker.kenko.data.model.oneRepMax
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.SetTick
 import com.looker.kenko.ui.components.TickState
+import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.theme.numbers
 import kotlin.math.roundToInt
 
@@ -105,7 +106,7 @@ fun SupersetCard(
                 )
                 Text(
                     text = block.exercises
-                        .mapIndexed { index, exercise -> "${legLetter(index)} ${exercise.name}" }
+                        .mapIndexed { index, exercise -> "${legLetter(index)} ${exercise.displayName()}" }
                         .joinToString(" → "),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -260,7 +261,7 @@ private fun SupersetLegRow(
         ) {
             Column(modifier = Modifier.weight(1F)) {
                 Text(
-                    text = exercise.name,
+                    text = exercise.displayName(),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline,
                 )
@@ -343,17 +344,18 @@ fun SupersetRow(
                 )
             }
             Spacer(Modifier.height(7.dp))
+            val legs = block.exercises.mapIndexed { index, exercise ->
+                val last = block.rounds
+                    .flatMap { it.chains }
+                    .lastOrNull { it.set.exercise == exercise }
+                    ?.set
+                val reps = last?.repsOrDuration
+                    ?: block.plan.firstOrNull { it.exercise == exercise }?.targetReps
+                val weight = last?.weight?.let { formatWeight(it) } ?: "—"
+                "${legLetter(index)} ${exercise.displayName()} ${reps ?: "—"}×$weight"
+            }
             Text(
-                text = block.exercises.joinToString(" · ") { exercise ->
-                    val last = block.rounds
-                        .flatMap { it.chains }
-                        .lastOrNull { it.set.exercise == exercise }
-                        ?.set
-                    val reps = last?.repsOrDuration
-                        ?: block.plan.firstOrNull { it.exercise == exercise }?.targetReps
-                    val weight = last?.weight?.let { formatWeight(it) } ?: "—"
-                    "${legLetter(block.exercises.indexOf(exercise))} ${exercise.name} ${reps ?: "—"}×$weight"
-                },
+                text = legs.joinToString(" · "),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )

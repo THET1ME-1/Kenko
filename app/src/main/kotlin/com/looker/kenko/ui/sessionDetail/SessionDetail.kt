@@ -77,6 +77,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -96,6 +97,7 @@ import com.looker.kenko.ui.components.OnSurfaceVariantBorder
 import com.looker.kenko.ui.components.PrimaryBorder
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.components.TypingText
+import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
@@ -465,11 +467,11 @@ private fun LazyGridScope.singleExerciseBlock(
         span = { GridItemSpan(maxLineSpan) },
     ) {
         StickyHeader(
-            name = exercise.name,
+            name = exercise.displayName(),
             subtitle = block.plan?.let { plan ->
                 stringResource(
                     R.string.label_sets_left_range,
-                    block.setsLeft,
+                    pluralStringResource(R.plurals.plural_sets, block.setsLeft, block.setsLeft),
                     plan.repsLabel,
                 )
             },
@@ -593,7 +595,7 @@ private fun LazyGridScope.supersetBlock(
             ) {
                 block.exercises.forEach { exercise ->
                     TextButton(onClick = { onAddSetClick(exercise, block.id) }) {
-                        Text(text = exercise.name)
+                        Text(text = exercise.displayName())
                         Spacer(modifier = Modifier.width(8.dp))
                         Icon(
                             painter = KenkoIcons.Add,

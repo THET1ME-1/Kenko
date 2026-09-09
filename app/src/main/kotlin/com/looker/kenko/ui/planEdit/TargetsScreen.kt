@@ -45,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -63,6 +64,7 @@ import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.KenkoButton
 import com.looker.kenko.ui.components.OnSurfaceVariantBorder
 import com.looker.kenko.ui.components.WeightCalculator
+import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.exercises.string
 import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.theme.KenkoIcons
@@ -134,7 +136,7 @@ fun TargetsScreen(
                 Spacer(Modifier.size(14.dp))
                 Column {
                     Text(
-                        text = item.exercise.name,
+                        text = item.exercise.displayName(),
                         style = MaterialTheme.typography.headlineSmall,
                     )
                     Text(
@@ -450,7 +452,12 @@ private fun Summary(
                 color = MaterialTheme.colorScheme.outline,
             )
             Text(
-                text = stringResource(R.string.label_sets_and_time, total, reps, minutes),
+                text = stringResource(
+                    R.string.label_sets_and_time,
+                    pluralStringResource(R.plurals.plural_sets, total, total),
+                    reps,
+                    minutes,
+                ),
                 style = MaterialTheme.typography.titleMedium,
             )
         }

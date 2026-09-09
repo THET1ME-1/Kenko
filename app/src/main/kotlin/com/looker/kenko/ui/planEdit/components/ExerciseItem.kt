@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.ExercisesPreviewParameter
+import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -96,7 +97,7 @@ fun ExerciseItem(
                 verticalArrangement = Arrangement.SpaceAround,
             ) {
                 Text(
-                    text = exercise.name,
+                    text = exercise.displayName(),
                     maxLines = 2,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,

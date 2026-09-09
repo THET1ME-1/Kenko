@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.exercises.string
 import com.looker.kenko.ui.theme.numbers
 
@@ -63,7 +64,7 @@ fun ExerciseCard(
         Spacer(Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1F)) {
             Text(
-                text = exercise.name,
+                text = exercise.displayName(),
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -114,7 +115,7 @@ fun ExercisePhoto(
             )
         } else {
             Text(
-                text = exercise.name.take(2).uppercase(),
+                text = exercise.displayName().take(2).uppercase(),
                 style = MaterialTheme.typography.titleMedium.numbers(),
                 color = MaterialTheme.colorScheme.outline,
             )

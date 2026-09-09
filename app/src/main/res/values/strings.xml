@@ -44,21 +44,14 @@
 
     <string name="heading_select_plan_name">Select a plan name</string>
     <string name="heading_select_plan_items">Select exercises</string>
-    <string name="desc_select_plan_name">
-        Plan name should be easy to remember and not too long. Ideally unique with no special symbols.\n
-        e.g: Push Pull Leg, Strength Cycle, etc.
-    </string>
+    <string name="desc_select_plan_name">A short name that is easy to remember, without special symbols.\ne.g. Push Pull Leg, Strength Cycle.</string>
 
     <!--Profile-->
     <string name="label_select_plan">Select Plan</string>
     <string name="label_select_plan_one">Select Plan</string>
     <string name="label_current_plan_FORMAT">Current: %s</string>
     <string name="label_lifts">Lifts</string>
-    <string name="label_plan_description">
-        <ul>%1$s exercises</ul>\n
-        <ul>%2$s days</ul>\n
-        <ul>%3$s rest days</ul>
-    </string>
+    <string name="label_plan_description">%1$s exercises\n%2$s days\n%3$s rest days</string>
 
     <!--Exercises-->
     <string name="label_browse_exercises">Browse Exercises</string>
@@ -106,7 +99,7 @@
 
     <!--Performance Dashboard-->
     <string name="label_activity">Activity</string>
-    <string name="error_not_enough_activity">Get moving...</string>
+    <string name="error_not_enough_activity">Time to move</string>
 
     <!--Error-->
     <string name="error_invalid_reference_format">Invalid reference format</string>
@@ -134,7 +127,7 @@
     <string name="label_color_scheme_twilight">Twilight</string>
 
     <!--Backup-->
-    <string name="label_backup">Backup &amp; Restore</string>
+    <string name="label_backup">Backup &amp; restore</string>
     <string name="label_backup_location">Backup Location</string>
     <string name="label_backup_interval">Backup Frequency</string>
     <string name="label_backup_off">Off</string>
@@ -146,8 +139,8 @@
     <string name="label_last_backup">Last Backup: %s</string>
     <string name="label_backup_in_progress">Backing up…</string>
     <string name="label_restore_in_progress">Restoring…</string>
-    <string name="label_backup_success">Backup completed</string>
-    <string name="label_restore_success">Restore completed. Please restart the app.</string>
+    <string name="label_backup_success">Backup ready</string>
+    <string name="label_restore_success">Data restored. Restart the app</string>
     <string name="error_backup_failed">Backup failed</string>
     <string name="error_restore_failed">Restore failed</string>
     <string name="label_restore_warning">This will replace all current data. Continue?</string>
@@ -156,7 +149,7 @@
     <!--Muscle Groups-->
     <string name="label_muscle_biceps">Biceps</string>
     <string name="label_muscle_triceps">Triceps</string>
-    <string name="label_muscle_back">Back</string>
+    <string name="label_muscle_back">Upper Back</string>
     <string name="label_muscle_lats">Lats</string>
     <string name="label_muscle_traps">Traps</string>
     <string name="label_muscle_chest">Chest</string>
@@ -170,11 +163,11 @@
     <!--Day of Week-->
     <string name="label_select_a_plan">Select A Plan</string>
     <string name="label_selecting_a_plan">Start by Selecting a Plan</string>
-    <string name="label_start_first_session">Start your first session</string>
+    <string name="label_start_first_session">Your first session</string>
     <string name="label_start_session_heading">Start today\'s session</string>
     <string name="label_continue_session_heading">Continue today\'s session</string>
     <string name="label_next">Next</string>
-    <string name="label_boarding_quote">Your next transformation starts here.</string>
+    <string name="label_boarding_quote">It all starts with the first set</string>
     <string name="label_no_sessions">No sessions performed</string>
     <string-array name="label_features">
         <item>Progress Tracking</item>
@@ -222,21 +215,16 @@
     <string name="label_add_drop_for">Drop for</string>
     <string name="label_add_drop">Add drop</string>
     <string name="label_drop_number">Drop %1$d</string>
-    <string name="label_drops_count">%1$d drops</string>
-    <string name="label_superset">Superset</string>
     <string name="label_round_number">Round %1$d</string>
     <string name="error_superset_needs_two">Pick at least two exercises</string>
     <string name="label_make_superset">Tie into superset</string>
     <string name="label_break_superset">Untie</string>
-    <string name="label_targets">%1$d × %2$d · rest %3$s</string>
     <string name="label_rest">Rest</string>
     <string name="label_sets">Sets</string>
     <string name="label_edit_targets">Sets and rest</string>
     <string name="label_seconds_short">s</string>
     <string name="label_minutes_short">min</string>
     <string name="label_cancel">Cancel</string>
-    <string name="label_sets_left">%1$d sets of %2$d left</string>
-    <string name="label_rounds_left">%1$d rounds left</string>
     <string name="label_skip_rest">Skip</string>
     <string name="label_done">Done</string>
     <string name="label_drop_group">drop set · %1$s</string>
@@ -255,7 +243,7 @@
     <string name="label_drop_short">drop set ×%1$d</string>
     <string name="label_volume_kg">%1$d kg</string>
     <string name="label_superset_no_rest">superset · no rest inside a round</string>
-    <string name="label_round_of">%1$d/%2$d rounds</string>
+    <string name="label_round_of">rounds: %1$d/%2$d</string>
     <string name="label_round_short">round %1$d</string>
     <string name="label_round_closed">closed</string>
     <string name="label_round_running">running</string>
@@ -271,9 +259,9 @@
         <item quantity="one">%1$d drop</item>
         <item quantity="other">%1$d drops</item>
     </plurals>
-    <string name="label_superset_rounds">superset · %1$d rounds</string>
+    <string name="label_superset_rounds">superset · %1$s</string>
     <string name="label_rest_short">rest %1$s</string>
-    <string name="label_day_summary">%1$d exercises · %2$d sets · ~%3$d min</string>
+    <string name="label_day_summary">%1$s · %2$s · ~%3$d min</string>
     <string name="label_add_exercise_short">+ exercise</string>
     <string name="label_add_superset">+ superset</string>
     <string name="label_drop_in_plan">drop set</string>
@@ -283,14 +271,13 @@
     <string name="label_body_back">back</string>
     <string name="label_primary_muscle">main muscle</string>
     <string name="label_secondary_muscles">also works</string>
-    <string name="label_photo">photo</string>
     <string name="label_add_photo">add a photo</string>
     <string name="label_replace_photo">replace</string>
     <string name="label_remove_photo">remove</string>
     <string name="label_pick_muscle_hint">Tap the body: first tap sets the main muscle, the next ones add the helpers.</string>
     <string name="error_exercise_name_exists">An exercise with this name is already there</string>
     <string name="label_day_number">Day %1$d</string>
-    <string name="label_days_in_plan">%1$d days in the plan</string>
+    <string name="label_days_in_plan">%1$s in the plan</string>
     <string name="label_week_mode">Days of the week</string>
     <string name="label_week_mode_desc">Off — the plan runs day after day, whenever you train.</string>
     <string name="label_free_session_heading">Train as you like</string>
@@ -298,7 +285,7 @@
     <string name="label_no_drops">no drops</string>
     <string name="label_drop_ladder">weights: %1$s %%</string>
     <string name="label_in_this_day">in this day</string>
-    <string name="label_sets_and_time">%1$d sets of %2$d · ~%3$d min</string>
+    <string name="label_sets_and_time">%1$s of %2$d · ~%3$d min</string>
     <string name="label_weight_total">total weight</string>
     <string name="label_bar">bar</string>
     <string name="label_no_bar">none</string>
@@ -307,13 +294,63 @@
     <string name="label_side_right">right side, kg</string>
     <string name="label_same_on_both_sides">same on both sides</string>
     <string name="label_kg">KG</string>
-    <string name="label_reps_range">reps %1$s</string>
     <string name="label_reps_from">reps from</string>
     <string name="label_reps_to">to</string>
     <string name="label_weight_default">starting weight</string>
     <string name="label_replace_exercise">replace</string>
     <string name="label_move_up">up</string>
     <string name="label_move_down">down</string>
-    <string name="label_drop_group_planned">%1$d sets in the group, rest comes after all of them</string>
-    <string name="label_sets_left_range">%1$d sets of %2$s left</string>
+    <string name="label_drop_group_planned">%1$s in the group, rest comes after all of them</string>
+    <string name="label_sets_left_range">%1$s of %2$s left</string>
+    <string name="exercise_curls">Curls</string>
+    <string name="exercise_barbell_curls">Barbell Curls</string>
+    <string name="exercise_preacher_curls">Preacher Curls</string>
+    <string name="exercise_incline_bicep_curls">Incline Bicep Curls</string>
+    <string name="exercise_tricep_push_down">Tricep Push-down</string>
+    <string name="exercise_skull_crushers">Skull-Crushers</string>
+    <string name="exercise_overhead_extensions">Overhead Extensions</string>
+    <string name="exercise_lateral_raises">Lateral Raises</string>
+    <string name="exercise_shoulder_press">Shoulder Press</string>
+    <string name="exercise_face_pulls">Face Pulls</string>
+    <string name="exercise_squats">Squats</string>
+    <string name="exercise_leg_press">Leg Press</string>
+    <string name="exercise_hack_squats">Hack Squats</string>
+    <string name="exercise_stiff_legged_deadlift">Stiff Legged Deadlift</string>
+    <string name="exercise_lying_leg_curls">Lying Leg Curls</string>
+    <string name="exercise_calf_raises">Calf Raises</string>
+    <string name="exercise_hip_thrusts">Hip Thrusts</string>
+    <string name="exercise_lunges">Lunges</string>
+    <string name="exercise_sit_ups">Sit-ups</string>
+    <string name="exercise_leg_raises">Leg Raises</string>
+    <string name="exercise_bench_press">Bench Press</string>
+    <string name="exercise_incline_bench">Incline Bench</string>
+    <string name="exercise_pec_dec">Pec Dec</string>
+    <string name="exercise_chest_fly">Chest Fly</string>
+    <string name="exercise_shrugs">Shrugs</string>
+    <string name="exercise_lat_pull_down">Lat Pull-down</string>
+    <string name="exercise_pull_ups">Pull-ups</string>
+    <string name="exercise_lat_prayers">Lat Prayers</string>
+    <string name="exercise_bent_over_rows">Bent-over Rows</string>
+    <string name="exercise_chest_supported_rows">Chest-Supported Rows</string>
+    <string name="exercise_leg_extensions">Leg Extensions</string>
+    <string name="exercise_behind_the_back_curls">Behind-the-Back Bicep Curls</string>
+    <string name="exercise_smith_squats">Smith-Squats</string>
+    <string name="exercise_cable_lateral_raises">Cable Lateral Raises</string>
+    <string name="exercise_upright_rows">Upright Rows</string>
+    <plurals name="plural_exercises">
+        <item quantity="one">%1$d exercise</item>
+        <item quantity="other">%1$d exercises</item>
+    </plurals>
+    <plurals name="plural_sets">
+        <item quantity="one">%1$d set</item>
+        <item quantity="other">%1$d sets</item>
+    </plurals>
+    <plurals name="plural_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <plurals name="plural_rounds">
+        <item quantity="one">%1$d round</item>
+        <item quantity="other">%1$d rounds</item>
+    </plurals>
 </resources>

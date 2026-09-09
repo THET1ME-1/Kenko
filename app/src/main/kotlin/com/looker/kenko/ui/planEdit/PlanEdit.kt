@@ -72,6 +72,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -103,6 +104,7 @@ import com.looker.kenko.ui.components.HorizontalDaySelector
 import com.looker.kenko.ui.components.KenkoButton
 import com.looker.kenko.ui.components.PrimaryBorder
 import com.looker.kenko.ui.components.SwipeToDeleteBox
+import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.DaySwitcher
@@ -472,7 +474,7 @@ private fun PlanEdit(
                                         block.plan.forEach { planItem ->
                                             TextButton(onClick = { onItemClick(planItem) }) {
                                                 Text(
-                                                    text = "${planItem.exercise.name} ${planItem.targetSets}×${planItem.repsLabel}",
+                                                    text = "${planItem.exercise.displayName()} ${planItem.targetSets}×${planItem.repsLabel}",
                                                     style = MaterialTheme.typography.labelSmall,
                                                 )
                                             }
@@ -559,7 +561,7 @@ private fun PlanExerciseBlock(
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1F)) {
                 Text(
-                    text = item.exercise.name,
+                    text = item.exercise.displayName(),
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
@@ -674,7 +676,10 @@ private fun DayHeader(
         }
         if (!isWeekMode && dayCount > 0) {
             Text(
-                text = stringResource(R.string.label_days_in_plan, dayCount),
+                text = stringResource(
+                    R.string.label_days_in_plan,
+                    pluralStringResource(R.plurals.plural_days, dayCount, dayCount),
+                ),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.outline,
             )
@@ -695,8 +700,8 @@ private fun DaySummaryRow(
     Text(
         text = stringResource(
             R.string.label_day_summary,
-            summary.exercises,
-            summary.sets,
+            pluralStringResource(R.plurals.plural_exercises, summary.exercises, summary.exercises),
+            pluralStringResource(R.plurals.plural_sets, summary.sets, summary.sets),
             summary.minutes,
         ),
         style = MaterialTheme.typography.labelSmall,
@@ -794,7 +799,10 @@ private fun SupersetGroup(
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text = stringResource(R.string.label_superset_rounds, rounds),
+                text = stringResource(
+                    R.string.label_superset_rounds,
+                    pluralStringResource(R.plurals.plural_rounds, rounds, rounds),
+                ),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.weight(1F),
