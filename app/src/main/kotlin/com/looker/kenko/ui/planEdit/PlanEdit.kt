@@ -29,6 +29,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -426,12 +428,14 @@ private fun PlanEdit(
                                     selected = item.id in state.selectedItems,
                                     expanded = expandedBlocks[item.id] ?: true,
                                     onToggleExpand = {
-                                        expandedBlocks[item.id ?: 0L] =
-                                            !(expandedBlocks[item.id] ?: true)
+                                        if (state.supersetMode) {
+                                            onItemLongClick(item)
+                                        } else {
+                                            expandedBlocks[item.id ?: 0L] =
+                                                !(expandedBlocks[item.id] ?: true)
+                                        }
                                     },
-                                    onClick = {
-                                        if (state.supersetMode) onItemLongClick(item) else onItemClick(item)
-                                    },
+                                    onClick = { onItemClick(item) },
                                     onLongClick = { onItemLongClick(item) },
                                     onReplace = { onReplaceItem(item) },
                                     onMoveUp = { onMoveItem(item, -1) },
@@ -601,6 +605,7 @@ private fun PlanExerciseBlock(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -617,7 +622,6 @@ private fun PlanExerciseBlock(
                 TextButton(onClick = onMoveDown) {
                     Text(text = stringResource(R.string.label_move_down))
                 }
-                Spacer(Modifier.weight(1F))
                 IconButton(onClick = onRemove) {
                     Icon(painter = KenkoIcons.Delete, contentDescription = null)
                 }
@@ -710,112 +714,6 @@ private fun DaySummaryRow(
         color = MaterialTheme.colorScheme.outline,
         modifier = modifier.padding(bottom = 12.dp),
     )
-}
-
-@Composable
-private fun PlanItemRow(
-    item: PlanItem,
-    position: Int,
-    selected: Boolean,
-    onClick: () -> Unit,
-    onLongClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    ExerciseItem(
-        modifier = modifier,
-        exercise = item.exercise,
-        subtitle = buildString {
-            append(stringResource(item.exercise.target.stringRes))
-            if (item.dropCount > 0) {
-                append(" · ")
-                append(stringResource(R.string.label_drop_short, item.dropCount))
-            }
-            append(" · ")
-            append(stringResource(R.string.label_rest_short, formatRest(item.restSeconds)))
-        },
-        selected = selected,
-        onClick = onClick,
-        onLongClick = onLongClick,
-        leadingIcon = {
-            Text(
-                text = normalizeInt(position),
-                style = LocalTextStyle.current.numbers(),
-            )
-        },
-        trailing = {
-            PresetPill(item = item, onClick = onClick)
-        },
-    )
-}
-
-/**
- * `3×10` — the preset of the day, edited by tapping it.
- */
-@Composable
-private fun PresetPill(
-    item: PlanItem,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = "${item.targetSets}×${item.targetReps}",
-        style = MaterialTheme.typography.labelLarge.numbers(),
-        color = MaterialTheme.colorScheme.onPrimaryContainer,
-        modifier = modifier
-            .clip(MaterialTheme.shapes.extraLarge)
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
-    )
-}
-
-@Composable
-private fun SupersetGroup(
-    number: Int,
-    rounds: Int,
-    onBreak: () -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .border(
-                border = PrimaryBorder,
-                shape = MaterialTheme.shapes.large,
-            )
-            .clip(MaterialTheme.shapes.large),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = normalizeInt(number),
-                style = MaterialTheme.typography.titleMedium.numbers(),
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
-            Spacer(Modifier.width(10.dp))
-            Text(
-                text = stringResource(
-                    R.string.label_superset_rounds,
-                    pluralStringResource(R.plurals.plural_rounds, rounds, rounds),
-                ),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.weight(1F),
-            )
-            TextButton(onClick = onBreak) {
-                Text(text = stringResource(R.string.label_break_superset))
-            }
-        }
-        content()
-        Spacer(Modifier.height(8.dp))
-    }
 }
 
 @Composable

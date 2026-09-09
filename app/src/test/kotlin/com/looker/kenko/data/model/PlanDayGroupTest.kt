@@ -222,3 +222,32 @@ class PlanPreviewTest {
         assertEquals(4, chain.steps.size)
     }
 }
+
+class NextDayIndexTest {
+
+    @Test
+    fun `training starts from the first day`() {
+        assertEquals(1, nextDayIndex(lastDay = null, dayCount = 3))
+    }
+
+    @Test
+    fun `days follow one another`() {
+        assertEquals(2, nextDayIndex(lastDay = 1, dayCount = 3))
+        assertEquals(3, nextDayIndex(lastDay = 2, dayCount = 3))
+    }
+
+    @Test
+    fun `after the last day the cycle starts over`() {
+        assertEquals(1, nextDayIndex(lastDay = 3, dayCount = 3))
+    }
+
+    @Test
+    fun `a shortened plan does not leave the lifter on a day that is gone`() {
+        assertEquals(1, nextDayIndex(lastDay = 5, dayCount = 2))
+    }
+
+    @Test
+    fun `a plan without days always answers the first one`() {
+        assertEquals(1, nextDayIndex(lastDay = 4, dayCount = 0))
+    }
+}

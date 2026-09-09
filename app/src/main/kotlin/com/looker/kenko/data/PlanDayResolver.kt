@@ -15,6 +15,7 @@
 package com.looker.kenko.data
 
 import com.looker.kenko.data.local.dao.SessionDao
+import com.looker.kenko.data.model.nextDayIndex
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.utils.toLocalEpochDays
@@ -43,12 +44,7 @@ class PlanDayResolver @Inject constructor(
             return date.dayOfWeek.isoDayNumber
         }
         val days = planId?.let { planRepo.dayCount(it) } ?: 0
-        if (days <= 0) return FIRST_DAY
-        val last = sessionDao.getLastDayIndexBefore(date.toLocalEpochDays()) ?: return FIRST_DAY
-        return if (last >= days) FIRST_DAY else last + 1
-    }
-
-    private companion object {
-        const val FIRST_DAY = 1
+        val last = sessionDao.getLastDayIndexBefore(date.toLocalEpochDays())
+        return nextDayIndex(lastDay = last, dayCount = days)
     }
 }

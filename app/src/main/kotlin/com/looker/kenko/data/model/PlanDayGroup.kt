@@ -86,3 +86,14 @@ fun List<PlanItem>.daySummary(): PlanDaySummary {
         minutes = (seconds + 59) / 60,
     )
 }
+
+/**
+ * Which day of the plan follows [lastDay] in a cycle of [dayCount] days.
+ *
+ * The cycle wraps: after the last day comes the first one again. With nothing performed yet,
+ * or with a plan that has no days, training starts from day one.
+ */
+fun nextDayIndex(lastDay: Int?, dayCount: Int): Int {
+    if (dayCount <= 0 || lastDay == null) return 1
+    return if (lastDay >= dayCount) 1 else lastDay + 1
+}

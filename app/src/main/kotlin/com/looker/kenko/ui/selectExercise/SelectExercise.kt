@@ -125,7 +125,7 @@ fun SelectExercise(
                     Text(
                         text = stringResource(
                             if (showEverything) {
-                                R.string.label_gym
+                                R.string.label_only_gym
                             } else {
                                 R.string.label_show_all_exercises
                             },

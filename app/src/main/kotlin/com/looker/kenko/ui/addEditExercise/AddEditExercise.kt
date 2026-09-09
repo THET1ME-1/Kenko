@@ -460,7 +460,7 @@ private fun GripRow(
             style = MaterialTheme.typography.titleMedium,
         )
         TextButton(onClick = onRemove) {
-            Text(text = stringResource(R.string.label_remove_photo))
+            Text(text = stringResource(R.string.label_remove))
         }
     }
 }

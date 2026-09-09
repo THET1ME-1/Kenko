@@ -235,7 +235,7 @@ private fun AddSetContent(
             modifier = Modifier.align(CenterHorizontally),
             onClick = { calculatorOpen = !calculatorOpen },
         ) {
-            Text(text = stringResource(R.string.label_weight_total))
+            Text(text = stringResource(R.string.label_weight_calculator))
         }
         if (calculatorOpen) {
             var bar by remember { mutableFloatStateOf(20F) }

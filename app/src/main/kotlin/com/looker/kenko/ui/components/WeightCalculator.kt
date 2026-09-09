@@ -17,6 +17,7 @@ package com.looker.kenko.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,7 +28,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -43,7 +47,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.text.KeyboardOptions
 import com.looker.kenko.R
 import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.ui.theme.numbers
@@ -95,7 +98,10 @@ fun WeightCalculator(
             color = MaterialTheme.colorScheme.outline,
         )
         Spacer(Modifier.height(6.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(
+            modifier = Modifier.horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
             barPresets.forEach { preset ->
                 WeightPill(
                     text = if (preset == 0F) {
@@ -139,23 +145,13 @@ fun WeightCalculator(
         }
         Spacer(Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(20.dp)
-                    .clip(CircleShape)
-                    .background(
-                        if (mirrored) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.surfaceContainerHigh
-                        },
-                    )
-                    .clickable {
-                        mirrored = !mirrored
-                        if (mirrored) onRightChange(left)
-                    },
+            Checkbox(
+                checked = mirrored,
+                onCheckedChange = { checked ->
+                    mirrored = checked
+                    if (checked) onRightChange(left)
+                },
             )
-            Spacer(Modifier.width(10.dp))
             Text(
                 text = stringResource(R.string.label_same_on_both_sides),
                 style = MaterialTheme.typography.bodySmall,

@@ -173,7 +173,7 @@
     <string name="label_break_superset">Развязать</string>
     <string name="label_rest">Отдых</string>
     <string name="label_sets">Подходы</string>
-    <string name="label_edit_targets">Подходы и отдых</string>
+    <string name="label_edit_targets">Настройка упражнения</string>
     <string name="label_seconds_short">с</string>
     <string name="label_minutes_short">мин</string>
     <string name="label_cancel">Отмена</string>
@@ -335,4 +335,8 @@
     <string name="label_grip_hint">Узкая, широкая, канат — одно упражнение вместо трёх, у каждой своё фото.</string>
     <string name="label_grip_default">рукоятка по умолчанию</string>
     <string name="label_no_grip">без рукоятки</string>
+    <string name="label_delete_gym_question">Удалить зал? Упражнения останутся, уйдёт только список оборудования.</string>
+    <string name="label_remove">удалить</string>
+    <string name="label_weight_calculator">калькулятор веса</string>
+    <string name="label_only_gym">только зал</string>
 </resources>

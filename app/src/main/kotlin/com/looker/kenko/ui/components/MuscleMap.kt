@@ -56,7 +56,6 @@ private data class Zone(
     val top: Float,
     val width: Float,
     val height: Float,
-    val rounded: Boolean = true,
 ) {
     fun rect(size: Size) = Rect(
         offset = Offset(left * size.width, top * size.height),
@@ -67,11 +66,11 @@ private data class Zone(
 private val zones = listOf(
     // Front
     Zone(MuscleGroups.Traps, Side.Front, 0.36F, 0.115F, 0.28F, 0.045F),
-    Zone(MuscleGroups.Shoulders, Side.Front, 0.20F, 0.16F, 0.15F, 0.09F),
-    Zone(MuscleGroups.Shoulders, Side.Front, 0.65F, 0.16F, 0.15F, 0.09F),
+    Zone(MuscleGroups.Shoulders, Side.Front, 0.185F, 0.155F, 0.125F, 0.085F),
+    Zone(MuscleGroups.Shoulders, Side.Front, 0.69F, 0.155F, 0.125F, 0.085F),
     Zone(MuscleGroups.Chest, Side.Front, 0.30F, 0.17F, 0.40F, 0.11F),
-    Zone(MuscleGroups.Biceps, Side.Front, 0.16F, 0.26F, 0.13F, 0.13F),
-    Zone(MuscleGroups.Biceps, Side.Front, 0.71F, 0.26F, 0.13F, 0.13F),
+    Zone(MuscleGroups.Biceps, Side.Front, 0.155F, 0.26F, 0.115F, 0.13F),
+    Zone(MuscleGroups.Biceps, Side.Front, 0.735F, 0.26F, 0.115F, 0.13F),
     Zone(MuscleGroups.Core, Side.Front, 0.34F, 0.29F, 0.32F, 0.16F),
     Zone(MuscleGroups.Quads, Side.Front, 0.31F, 0.47F, 0.17F, 0.24F),
     Zone(MuscleGroups.Quads, Side.Front, 0.52F, 0.47F, 0.17F, 0.24F),
@@ -80,8 +79,8 @@ private val zones = listOf(
     // Back
     Zone(MuscleGroups.Traps, Side.Back, 0.33F, 0.115F, 0.34F, 0.075F),
     Zone(MuscleGroups.UpperBack, Side.Back, 0.30F, 0.20F, 0.40F, 0.10F),
-    Zone(MuscleGroups.Triceps, Side.Back, 0.16F, 0.26F, 0.13F, 0.13F),
-    Zone(MuscleGroups.Triceps, Side.Back, 0.71F, 0.26F, 0.13F, 0.13F),
+    Zone(MuscleGroups.Triceps, Side.Back, 0.155F, 0.26F, 0.115F, 0.13F),
+    Zone(MuscleGroups.Triceps, Side.Back, 0.735F, 0.26F, 0.115F, 0.13F),
     Zone(MuscleGroups.Lats, Side.Back, 0.28F, 0.30F, 0.44F, 0.12F),
     Zone(MuscleGroups.Glutes, Side.Back, 0.33F, 0.43F, 0.34F, 0.09F),
     Zone(MuscleGroups.Hamstrings, Side.Back, 0.31F, 0.53F, 0.17F, 0.20F),

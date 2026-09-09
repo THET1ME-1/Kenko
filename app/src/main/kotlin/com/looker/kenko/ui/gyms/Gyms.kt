@@ -19,6 +19,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,12 +28,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -71,6 +75,30 @@ fun Gyms(
     val state by viewModel.state.collectAsStateWithLifecycle()
     var newName by remember { mutableStateOf("") }
     var creating by remember { mutableStateOf(false) }
+    var gymToDelete by remember { mutableStateOf<Gym?>(null) }
+
+    gymToDelete?.let { gym ->
+        AlertDialog(
+            onDismissRequest = { gymToDelete = null },
+            title = { Text(text = gym.name) },
+            text = { Text(text = stringResource(R.string.label_delete_gym_question)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        gym.id?.let(viewModel::deleteGym)
+                        gymToDelete = null
+                    },
+                ) {
+                    Text(text = stringResource(R.string.label_yes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { gymToDelete = null }) {
+                    Text(text = stringResource(R.string.label_no))
+                }
+            },
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -84,7 +112,7 @@ fun Gyms(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+            contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             item {
@@ -113,7 +141,7 @@ fun Gyms(
                     selected = state.currentId == gym.id,
                     onClick = { viewModel.selectGym(gym.id) },
                     onEdit = { gym.id?.let(onGymClick) },
-                    onDelete = { gym.id?.let(viewModel::deleteGym) },
+                    onDelete = { gymToDelete = gym },
                 )
             }
             item {
@@ -129,25 +157,27 @@ fun Gyms(
                             label = { Text(text = stringResource(R.string.label_gym_name)) },
                         )
                         Spacer(Modifier.height(8.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            DashedAddButton(
-                                modifier = Modifier.weight(1F),
-                                label = stringResource(R.string.label_save),
-                                accent = true,
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Button(
                                 onClick = {
                                     viewModel.createGym(newName)
                                     newName = ""
                                     creating = false
                                 },
-                            )
-                            DashedAddButton(
-                                modifier = Modifier.weight(1F),
-                                label = stringResource(R.string.label_cancel),
+                            ) {
+                                Text(text = stringResource(R.string.label_save))
+                            }
+                            TextButton(
                                 onClick = {
                                     newName = ""
                                     creating = false
                                 },
-                            )
+                            ) {
+                                Text(text = stringResource(R.string.label_cancel))
+                            }
                         }
                     }
                 } else {

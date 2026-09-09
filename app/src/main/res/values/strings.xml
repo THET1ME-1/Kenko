@@ -221,7 +221,7 @@
     <string name="label_break_superset">Untie</string>
     <string name="label_rest">Rest</string>
     <string name="label_sets">Sets</string>
-    <string name="label_edit_targets">Sets and rest</string>
+    <string name="label_edit_targets">Exercise setup</string>
     <string name="label_seconds_short">s</string>
     <string name="label_minutes_short">min</string>
     <string name="label_cancel">Cancel</string>
@@ -373,4 +373,8 @@
     <string name="label_grip_hint">Wide, close, rope — one exercise instead of three, with a photo for each.</string>
     <string name="label_grip_default">default handle</string>
     <string name="label_no_grip">no handle</string>
+    <string name="label_delete_gym_question">Delete this gym? Exercises stay, only the equipment list goes.</string>
+    <string name="label_remove">remove</string>
+    <string name="label_weight_calculator">weight calculator</string>
+    <string name="label_only_gym">only this gym</string>
 </resources>
