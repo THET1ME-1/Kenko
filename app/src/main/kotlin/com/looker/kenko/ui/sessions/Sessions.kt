@@ -51,6 +51,7 @@ import com.looker.kenko.data.model.Session
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.EmptyPage
 import com.looker.kenko.ui.components.TertiaryKenkoButton
+import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
 import com.looker.kenko.ui.theme.KenkoIcons
@@ -189,9 +190,7 @@ fun SessionCard(
             }
             Text(text = string)
 
-            val exerciseNames = remember(session.performExercises) {
-                session.performExercises.joinToString { it.name }
-            }
+            val exerciseNames = session.performExercises.map { it.displayName() }.joinToString()
             Text(
                 text = exerciseNames,
                 style = MaterialTheme.typography.labelMedium,

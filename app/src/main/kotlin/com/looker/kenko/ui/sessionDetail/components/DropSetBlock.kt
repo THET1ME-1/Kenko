@@ -300,7 +300,7 @@ private fun DropStepRow(
                         R.string.label_field_weight
                     },
                 ),
-                value = "${formatWeight(step.weight)} KG",
+                value = "${formatWeight(step.weight)} ${stringResource(R.string.label_kg)}",
                 alignEnd = true,
             )
         }
@@ -366,7 +366,7 @@ fun DropSetRow(
                     )
                 }
                 Text(
-                    text = "${steps.chainLabel()} KG",
+                    text = "${steps.chainLabel()} ${stringResource(R.string.label_kg)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )

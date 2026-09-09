@@ -14,15 +14,13 @@
 
 package com.looker.kenko.ui.addSet
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,100 +29,99 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialShapes
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedToggleButton
-import androidx.compose.material3.OutlinedToggleButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.ToggleButtonDefaults
-import androidx.compose.material3.toPath
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.center
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Matrix
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.graphics.shapes.Morph
-import androidx.graphics.shapes.RoundedPolygon
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.local.model.SetType
-import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.Grip
+import com.looker.kenko.data.model.Set
+import com.looker.kenko.data.model.WEIGHT_STEP
 import com.looker.kenko.data.model.formatWeight
-import com.looker.kenko.ui.addSet.components.ITEMS
-import com.looker.kenko.ui.addSet.components.ItemSize
-import com.looker.kenko.ui.addSet.components.VerticalSelector
-import com.looker.kenko.ui.addSet.components.WeightStepper
-import com.looker.kenko.ui.addSet.components.WeightTextField
-import com.looker.kenko.ui.components.WeightCalculator
+import com.looker.kenko.ui.components.KenkoBorderWidth
+import com.looker.kenko.ui.components.Loadout
+import com.looker.kenko.ui.components.PlateCalculator
+import com.looker.kenko.ui.components.loadoutFor
+import com.looker.kenko.ui.components.WeightRuler
 import com.looker.kenko.ui.components.rememberPhoto
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
 import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
-import com.looker.kenko.ui.theme.colorSchemes.JapanRed
-import kotlinx.coroutines.launch
+import com.looker.kenko.ui.theme.numbers
 
 @Composable
 fun AddSet(
     exerciseName: String,
     target: AddSetTarget,
     onDone: () -> Unit,
+    setNumber: Int = 1,
 ) {
     val viewModel: AddSetViewModel =
         hiltViewModel<AddSetViewModel, AddSetViewModel.AddSetViewModelFactory>(
-            key = "$exerciseName-${target.parentSetId}",
+            key = "$exerciseName-${target.parentSetId}-${target.dropIndex}",
         ) {
             it.create(target)
         }
     val grips by viewModel.grips.collectAsStateWithLifecycle()
+    val weight = viewModel.weights.text.toString().toFloatOrNull() ?: 0F
+    var loadout by remember { mutableStateOf<Loadout?>(null) }
+
+    val plates = loadout
+    if (plates != null) {
+        PlatesSheet(
+            loadout = plates,
+            onLoadoutChange = { loadout = it },
+            onBack = { loadout = null },
+            onApply = {
+                viewModel.setWeight(it)
+                loadout = null
+            },
+        )
+        return
+    }
+
     AddSetContent(
         exerciseName = exerciseName,
         isDrop = target.parentSetId != null,
+        dropIndex = target.dropIndex,
+        setNumber = setNumber,
+        lastSet = viewModel.lastSet,
+        weight = weight,
+        reps = viewModel.reps,
+        reserve = viewModel.repsInReserve,
+        setType = viewModel.selectedSetType,
         grips = grips,
         selectedGripId = viewModel.selectedGripId,
         onSelectGrip = viewModel::selectGrip,
-        weights = viewModel.weights,
-        reps = viewModel.reps,
-        selectedSetType = viewModel.selectedSetType,
-        onSelectSetType = viewModel::setSetType,
-        onAddWeight = viewModel::addWeight,
+        onWeightChange = viewModel::setWeight,
         onRepsChanged = { viewModel.reps = it },
+        onCycleType = viewModel::cycleSetType,
+        onCycleReserve = viewModel::cycleReserve,
+        onFailure = { viewModel.setReserve(0) },
+        onOpenPlates = { loadout = loadoutFor(weight) },
         onDoneClick = {
             viewModel.addSet()
             onDone()
@@ -132,53 +129,111 @@ fun AddSet(
     )
 }
 
+/**
+ * The plate calculator: the same sheet, but showing a bar instead of the entry keys.
+ */
+@Composable
+private fun PlatesSheet(
+    loadout: Loadout,
+    onLoadoutChange: (Loadout) -> Unit,
+    onBack: () -> Unit,
+    onApply: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState()),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = onBack) {
+                Icon(
+                    painter = KenkoIcons.ArrowBack,
+                    contentDescription = stringResource(R.string.label_back),
+                )
+            }
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = stringResource(R.string.title_plate_calculator),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+        Spacer(Modifier.height(10.dp))
+        PlateCalculator(
+            loadout = loadout,
+            onLoadoutChange = onLoadoutChange,
+            onApply = onApply,
+        )
+        Spacer(Modifier.height(24.dp))
+    }
+}
+
+/**
+ * Writing a set: the weight is read from one big number and changed by dragging the ruler
+ * under it. Everything else stands in rows of equal keys, so nothing wraps or jumps.
+ */
 @Composable
 private fun AddSetContent(
     exerciseName: String,
+    weight: Float,
+    reps: Int,
+    reserve: Int,
+    setType: SetType,
+    onWeightChange: (Float) -> Unit,
+    onRepsChanged: (Int) -> Unit,
+    onCycleType: () -> Unit,
+    onCycleReserve: () -> Unit,
+    onFailure: () -> Unit,
+    onOpenPlates: () -> Unit,
+    onDoneClick: () -> Unit,
+    modifier: Modifier = Modifier,
     isDrop: Boolean = false,
+    dropIndex: Int = 0,
+    setNumber: Int = 1,
+    lastSet: Set? = null,
     grips: List<Grip> = emptyList(),
     selectedGripId: Int? = null,
     onSelectGrip: (Int?) -> Unit = {},
-    weights: TextFieldState,
-    reps: Int,
-    selectedSetType: SetType,
-    onSelectSetType: (SetType) -> Unit,
-    onAddWeight: (Float) -> Unit,
-    onRepsChanged: (Int) -> Unit,
-    onDoneClick: () -> Unit,
 ) {
-    val haptic = LocalHapticFeedback.current
     Column(
-        modifier = Modifier
+        modifier = modifier
+            .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .wrapContentHeight(),
+            .verticalScroll(rememberScrollState()),
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        AddSetHeader(
-            modifier = Modifier.fillMaxWidth(),
-            exerciseName = exerciseName,
-            isDrop = isDrop,
-            onClick = onDoneClick,
+        Text(
+            text = if (isDrop) {
+                stringResource(R.string.label_drop_number, dropIndex)
+            } else {
+                stringResource(
+                    R.string.label_set_number,
+                    setNumber.toString().padStart(2, '0'),
+                )
+            }.uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        Text(
+            text = exerciseName,
+            style = MaterialTheme.typography.displaySmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Text(
+            text = lastSet?.let {
+                stringResource(R.string.label_last_time, formatWeight(it.weight), it.repsOrDuration)
+            } ?: " ",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (!isDrop) {
-            SetTypeSelector(
-                modifier = Modifier.align(CenterHorizontally),
-                selected = selectedSetType,
-                onSelect = onSelectSetType,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
         if (grips.isNotEmpty()) {
+            Spacer(Modifier.height(10.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(bottom = 12.dp),
+                    .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 GripChip(
@@ -198,69 +253,224 @@ private fun AddSetContent(
             }
         }
 
+        Spacer(Modifier.height(14.dp))
+
+        Row(
+            modifier = Modifier.align(CenterHorizontally),
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            Text(
+                text = formatWeight(weight),
+                style = MaterialTheme.typography.displayMedium.numbers(),
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(
+                modifier = Modifier.padding(bottom = 8.dp),
+                text = stringResource(R.string.label_kg).lowercase(),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.outline,
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        WeightRuler(weight = weight, onWeightChange = onWeightChange)
+
+        Spacer(Modifier.height(10.dp))
+
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Column(
-                modifier = Modifier
-                    .weight(1F)
-                    .height(ItemSize * ITEMS),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                WeightTextField(
-                    state = weights,
-                    modifier = Modifier
-                        .weight(3F)
-                        .fillMaxWidth(),
-                )
-                WeightStepper(
-                    onStep = { step ->
-                        onAddWeight(step)
-                        haptic.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
-                    },
-                    modifier = Modifier
-                        .weight(2F)
-                        .fillMaxWidth(),
+            WEIGHT_STEPS.forEach { step ->
+                StepKey(
+                    modifier = Modifier.weight(1F),
+                    label = stepLabel(step),
+                    accent = step == WEIGHT_STEP,
+                    onClick = { onWeightChange((weight + step).coerceAtLeast(0F)) },
                 )
             }
-            VerticalSelector(
-                label = stringResource(R.string.label_reps),
-                value = reps,
-                onChanged = onRepsChanged,
-                onChange = { haptic.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick) },
+        }
+
+        Spacer(Modifier.height(18.dp))
+
+        Text(
+            text = stringResource(R.string.label_reps_caption).uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        Spacer(Modifier.height(6.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            StepKey(
+                modifier = Modifier.weight(1F),
+                label = "−1",
+                onClick = { onRepsChanged((reps - 1).coerceAtLeast(1)) },
+            )
+            DisplayKey(
+                modifier = Modifier.weight(1F),
+                label = reps.toString(),
+            )
+            StepKey(
+                modifier = Modifier.weight(1F),
+                label = "+1",
+                onClick = { onRepsChanged(reps + 1) },
+            )
+            StepKey(
+                modifier = Modifier.weight(1.8F),
+                label = stringResource(R.string.label_to_failure),
+                accent = reserve == 0,
+                onClick = onFailure,
             )
         }
-        Spacer(modifier = Modifier.height(12.dp))
 
-        var calculatorOpen by rememberSaveable { mutableStateOf(false) }
-        TextButton(
-            modifier = Modifier.align(CenterHorizontally),
-            onClick = { calculatorOpen = !calculatorOpen },
+        Spacer(Modifier.height(18.dp))
+
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            onClick = onDoneClick,
+            shape = MaterialTheme.shapes.extraLarge,
         ) {
-            Text(text = stringResource(R.string.label_weight_calculator))
-        }
-        if (calculatorOpen) {
-            var bar by remember { mutableFloatStateOf(20F) }
-            var left by remember { mutableFloatStateOf(0F) }
-            var right by remember { mutableFloatStateOf(0F) }
-            WeightCalculator(
-                bar = bar,
-                left = left,
-                right = right,
-                onBarChange = {
-                    bar = it
-                    weights.setTextAndPlaceCursorAtEnd(formatWeight(bar + left + right))
-                },
-                onLeftChange = {
-                    left = it
-                    weights.setTextAndPlaceCursorAtEnd(formatWeight(bar + left + right))
-                },
-                onRightChange = {
-                    right = it
-                    weights.setTextAndPlaceCursorAtEnd(formatWeight(bar + left + right))
-                },
+            Text(
+                text = stringResource(
+                    if (isDrop) R.string.label_write_drop else R.string.label_write_set,
+                ),
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(Modifier.height(10.dp))
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlineKey(
+                modifier = Modifier.weight(1F),
+                label = stringResource(R.string.label_plates),
+                onClick = onOpenPlates,
+            )
+            if (!isDrop) {
+                OutlineKey(
+                    modifier = Modifier.weight(1F),
+                    label = setTypeLabel(setType),
+                    accent = setType != SetType.Standard,
+                    onClick = onCycleType,
+                )
+            }
+            OutlineKey(
+                modifier = Modifier.weight(1F),
+                label = if (reserve == 0) {
+                    stringResource(R.string.label_to_failure)
+                } else {
+                    stringResource(R.string.label_rir_short, reserve)
+                },
+                onClick = onCycleReserve,
+            )
+        }
+
+        Spacer(Modifier.height(24.dp))
+    }
+}
+
+/**
+ * Steps of the bar a lifter actually uses. Order matters: minus on the left, plus on the right.
+ */
+private val WEIGHT_STEPS = listOf(-2.5F, -WEIGHT_STEP, WEIGHT_STEP, 2.5F)
+
+/**
+ * `−2.5` and `+1.25` — the same minus sign the reps row uses.
+ */
+private fun stepLabel(step: Float): String {
+    val number = formatWeight(kotlin.math.abs(step)).removeSuffix(".0")
+    return if (step > 0) "+$number" else "−$number"
+}
+
+/**
+ * The current value, sitting in the same slot as the keys but not asking to be pressed.
+ */
+@Composable
+private fun DisplayKey(
+    label: String,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .height(48.dp)
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(MaterialTheme.colorScheme.primaryContainer),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.titleLarge.numbers(),
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+    }
+}
+
+@Composable
+private fun StepKey(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    accent: Boolean = false,
+) {
+    Box(
+        modifier = modifier
+            .height(48.dp)
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(
+                if (accent) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else {
+                    MaterialTheme.colorScheme.surfaceContainerHigh
+                },
+            )
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.titleMedium.numbers(),
+            color = if (accent) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
+            maxLines = 1,
+        )
+    }
+}
+
+@Composable
+private fun OutlineKey(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    accent: Boolean = false,
+) {
+    Box(
+        modifier = modifier
+            .height(44.dp)
+            .clip(MaterialTheme.shapes.extraLarge)
+            .border(
+                width = KenkoBorderWidth,
+                color = if (accent) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.outlineVariant
+                },
+                shape = MaterialTheme.shapes.extraLarge,
+            )
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = if (accent) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            maxLines = 1,
+        )
     }
 }
 
@@ -287,7 +497,7 @@ private fun GripChip(
                 },
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (bitmap != null) {
@@ -296,7 +506,7 @@ private fun GripChip(
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(28.dp)
+                    .size(26.dp)
                     .clip(MaterialTheme.shapes.small),
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -314,173 +524,35 @@ private fun GripChip(
 }
 
 @Composable
-private fun AddSetHeader(
-    exerciseName: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    isDrop: Boolean = false,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(modifier = Modifier.weight(1F)) {
-            Text(
-                text = stringResource(
-                    if (isDrop) R.string.label_add_drop_for else R.string.label_add_set_for,
-                ).uppercase(),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.outline,
-            )
-            Text(
-                text = exerciseName,
-                style = MaterialTheme.typography.displaySmall,
-                color = MaterialTheme.colorScheme.tertiary,
-            )
-        }
-        FilledTonalIconButton(onClick = onClick) {
-            Icon(
-                painter = KenkoIcons.Done,
-                contentDescription = "",
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun SetTypeSelector(
-    selected: SetType,
-    onSelect: (SetType) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val options = listOf(SetType.Standard, SetType.Drop, SetType.RestPause)
-    Row(
-        modifier.padding(horizontal = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
-    ) {
-        options.forEachIndexed { index, type ->
-            val interactionSource = remember { MutableInteractionSource() }
-            val checked = selected == type
-            OutlinedToggleButton(
-                checked = checked,
-                onCheckedChange = { onSelect(type) },
-                interactionSource = interactionSource,
-                modifier = Modifier.semantics { role = Role.RadioButton },
-                border = if (checked) ButtonDefaults.outlinedButtonBorder(true) else null,
-                colors = OutlinedToggleButtonDefaults.colors(
-                    checkedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    checkedContentColor = MaterialTheme.colorScheme.onSurface,
-                ),
-                shapes = when (index) {
-                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                    options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                },
-            ) {
-                SetTypeIndicator(
-                    selected = checked,
-                    type = type,
-                    interactionSource = interactionSource,
-                    modifier = Modifier.size(12.dp),
-                )
-                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(text = setTypeLabel(type))
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun SetTypeIndicator(
-    selected: Boolean,
-    type: SetType,
-    interactionSource: MutableInteractionSource,
-    modifier: Modifier = Modifier,
-) {
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val morphAnimatable = remember { Animatable(0F) }
-    val morph = remember { Morph(MaterialShapes.Circle, setTypeShape(type)) }
-    val path = remember { Path() }
-
-    LaunchedEffect(isPressed || selected) {
-        launch {
-            if (isPressed || selected) {
-                morphAnimatable.animateTo(1F)
-            } else {
-                morphAnimatable.animateTo(0F)
-            }
-        }
-    }
-
-    val color = setTypeColor(type)
-    Canvas(modifier) {
-        drawPath(
-            color = color,
-            path = processPath(
-                path = morph.toPath(progress = morphAnimatable.value, path = path),
-                size = size,
-                scaleFactor = 1F,
-            ),
-        )
-    }
-}
-
-private fun processPath(
-    path: Path,
-    size: Size,
-    scaleFactor: Float,
-    scaleMatrix: Matrix = Matrix(),
-): Path {
-    scaleMatrix.reset()
-
-    scaleMatrix.apply { scale(x = size.width * scaleFactor, y = size.height * scaleFactor) }
-
-    // Scale to the desired size.
-    path.transform(scaleMatrix)
-
-    // Translate the path to align its center with the available size center.
-    path.translate(size.center - path.getBounds().center)
-    return path
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-private fun setTypeShape(type: SetType): RoundedPolygon = when (type) {
-    SetType.Standard -> MaterialShapes.Ghostish
-    SetType.Drop -> MaterialShapes.Arrow
-    SetType.RestPause -> MaterialShapes.Bun
-}
-
-@Composable
-private fun setTypeColor(type: SetType): Color = when (type) {
-    SetType.Standard -> MaterialTheme.colorScheme.primary
-    SetType.Drop -> MaterialTheme.colorScheme.tertiary
-    SetType.RestPause -> JapanRed
-}
-
-fun setTypeLabel(type: SetType): String = when (type) {
-    SetType.Standard -> "Standard"
-    SetType.Drop -> "Drop"
-    SetType.RestPause -> "Rest-Pause"
-}
+fun setTypeLabel(type: SetType): String = stringResource(
+    when (type) {
+        SetType.Standard -> R.string.label_set_type_standard
+        SetType.Drop -> R.string.label_set_type_drop
+        SetType.RestPause -> R.string.label_set_type_rest_pause
+    },
+)
 
 @Preview
 @Composable
 private fun AddSetPreview(
     @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
 ) {
+    var weight by remember { mutableFloatStateOf(47.5F) }
+    var reps by remember { mutableStateOf(8) }
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Surface {
             AddSetContent(
                 exerciseName = "Bench Press",
-                weights = rememberTextFieldState("40.0"),
-                reps = 12,
-                selectedSetType = SetType.Standard,
-                onSelectSetType = {},
-                onAddWeight = {},
-                onRepsChanged = {},
+                weight = weight,
+                reps = reps,
+                reserve = 2,
+                setType = SetType.Standard,
+                onWeightChange = { weight = it },
+                onRepsChanged = { reps = it },
+                onCycleType = {},
+                onCycleReserve = {},
+                onFailure = {},
+                onOpenPlates = {},
                 onDoneClick = {},
             )
         }

@@ -122,7 +122,7 @@ fun SuggestedSetItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(horizontal = 12.dp),
         ) {
-            val typeLabel = remember(type) { setTypeLabel(type) }
+            val typeLabel = setTypeLabel(type)
             Text(
                 text = typeLabel,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -135,7 +135,8 @@ fun SuggestedSetItem(
                 .copy(color = MaterialTheme.colorScheme.onSurface)
                 .toSpanStyle()
 
-            val annotatedString = remember {
+            val kg = stringResource(R.string.label_kg)
+            val annotatedString = remember(kg) {
                 buildAnnotatedString {
                     withStyle(spanStyle1) {
                         append(repCount.toString())
@@ -147,7 +148,7 @@ fun SuggestedSetItem(
                         append(weight.toString())
                     }
                     withStyle(spanStyle2) {
-                        append("KG")
+                        append(kg)
                     }
                 }
             }

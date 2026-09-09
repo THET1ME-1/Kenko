@@ -74,7 +74,6 @@
     <string name="label_no_exercise_today">No exercises planned today</string>
 
     <!--Add Sets-->
-    <string name="label_add_set_for">Add Set for</string>
     <string name="label_plus_int">+%s</string>
     <string name="label_minus_int">-%s</string>
 
@@ -212,7 +211,6 @@
         <item>Saturday</item>
         <item>Sunday</item>
     </string-array>
-    <string name="label_add_drop_for">Drop for</string>
     <string name="label_add_drop">Add drop</string>
     <string name="label_drop_number">Drop %1$d</string>
     <string name="label_round_number">Round %1$d</string>
@@ -378,4 +376,25 @@
     <string name="label_weight_calculator">weight calculator</string>
     <string name="label_only_gym">only this gym</string>
     <string name="label_drop_hint_editable">The app does the weights: %1$s kg. Tap a drop to set your own.</string>
+    <string name="label_reps_caption">reps</string>
+    <string name="label_to_failure">to failure</string>
+    <string name="label_rir_short">in reserve %1$d</string>
+    <string name="label_plates">⊙ plates</string>
+    <string name="label_last_time">last time %1$s × %2$d</string>
+    <string name="label_write_set">write the set</string>
+    <string name="label_write_drop">write the drop</string>
+    <string name="label_set_type_standard">standard</string>
+    <string name="label_set_type_drop">drop set</string>
+    <string name="label_set_type_rest_pause">rest-pause</string>
+    <string name="title_plate_calculator">plate calculator</string>
+    <string name="label_hang_plates">tap hangs a plate on both sides, long press on one</string>
+    <string name="action_use_weight">use %1$s kg</string>
+    <string name="action_clear_plates">take off</string>
+    <string name="label_side_short_left">left</string>
+    <string name="label_side_short_right">right</string>
+    <string name="label_back">back</string>
+    <string name="label_set_number">set %1$s</string>
+    <string name="label_plan_done">plan done</string>
+    <string name="label_add_set_for">Add set for</string>
+    <string name="label_add_drop_for">Add drop for</string>
 </resources>

@@ -259,6 +259,7 @@ private fun SupersetLegRow(
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.Bottom,
         ) {
+            val kg = stringResource(R.string.label_kg)
             Column(modifier = Modifier.weight(1F)) {
                 Text(
                     text = exercise.displayName(),
@@ -270,7 +271,7 @@ private fun SupersetLegRow(
                         append(chain?.set?.repsOrDuration?.toString() ?: plannedReps?.toString() ?: "—")
                         append(" × ")
                         append(chain?.set?.weight?.let { formatWeight(it) } ?: "—")
-                        append(" KG")
+                        append(" $kg")
                     },
                     style = MaterialTheme.typography.titleMedium.numbers(),
                 )

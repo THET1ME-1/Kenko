@@ -31,11 +31,11 @@ import androidx.lifecycle.viewModelScope
 import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.Grip
 import com.looker.kenko.data.model.RepsInReserve
+import com.looker.kenko.data.model.Set
+import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.GripRepo
 import com.looker.kenko.data.repository.SessionRepo
-import com.looker.kenko.ui.addSet.components.BoundReached
-import com.looker.kenko.ui.addSet.components.Direction
 import com.looker.kenko.utils.asStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -67,6 +67,38 @@ class AddSetViewModel @AssistedInject constructor(
     var selectedGripId: Int? by mutableStateOf(target.gripId)
         private set
 
+    /**
+     * What this exercise looked like last time, shown under the title.
+     */
+    var lastSet: Set? by mutableStateOf(null)
+        private set
+
+    /**
+     * Reps left in the tank. Kenko counts them into the rating of a set.
+     */
+    var repsInReserve: Int by mutableIntStateOf(2)
+        private set
+
+    fun cycleReserve() {
+        repsInReserve = (repsInReserve + 1) % 5
+    }
+
+    fun setReserve(value: Int) {
+        repsInReserve = value.coerceIn(0, 4)
+    }
+
+    fun cycleSetType() {
+        selectedSetType = when (selectedSetType) {
+            SetType.Standard -> SetType.Drop
+            SetType.Drop -> SetType.RestPause
+            SetType.RestPause -> SetType.Standard
+        }
+    }
+
+    fun setWeight(value: Float) {
+        weights.setTextAndPlaceCursorAtEnd(formatWeight(value))
+    }
+
     fun selectGrip(gripId: Int?) {
         selectedGripId = gripId
     }
@@ -83,20 +115,6 @@ class AddSetViewModel @AssistedInject constructor(
         weights.setTextAndPlaceCursorAtEnd((weightFloat + value).toString())
     }
 
-    val repsBoundReached = BoundReached { direction ->
-        when (direction) {
-            Direction.Left -> addRep(-1)
-            Direction.Right -> addRep(1)
-        }
-    }
-
-    val weightsBoundReached = BoundReached { direction ->
-        when (direction) {
-            Direction.Left -> addWeight(-1F)
-            Direction.Right -> addWeight(1F)
-        }
-    }
-
     fun addSet() {
         viewModelScope.launch {
             val parentSetId = target.parentSetId
@@ -105,7 +123,7 @@ class AddSetViewModel @AssistedInject constructor(
                     parentSetId = parentSetId,
                     weight = weightFloat,
                     reps = reps,
-                    rir = RepsInReserve(2),
+                    rir = RepsInReserve(repsInReserve),
                     dropIndex = target.dropIndex,
                 )
                 return@launch
@@ -117,7 +135,7 @@ class AddSetViewModel @AssistedInject constructor(
                 weight = weightFloat,
                 reps = reps,
                 setType = selectedSetType,
-                rir = RepsInReserve(2),
+                rir = RepsInReserve(repsInReserve),
                 supersetId = target.supersetId,
                 dropCount = when {
                     selectedSetType == SetType.Drop -> maxOf(1, target.dropCount)
@@ -144,6 +162,7 @@ class AddSetViewModel @AssistedInject constructor(
         } else {
             viewModelScope.launch {
                 val last = sessionRepo.getLastSetByExerciseId(id)
+                lastSet = last
                 if (last != null) {
                     reps = last.repsOrDuration
                     addWeight(last.weight - weightFloat)

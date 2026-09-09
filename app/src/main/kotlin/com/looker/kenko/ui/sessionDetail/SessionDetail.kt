@@ -99,6 +99,7 @@ import com.looker.kenko.ui.components.PrimaryBorder
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.components.TypingText
 import com.looker.kenko.ui.exercises.displayName
+import com.looker.kenko.ui.exercises.localizedExerciseName
 import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
@@ -307,7 +308,7 @@ private fun RestBar(
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(
-                text = rest.exerciseName,
+                text = localizedExerciseName(rest.exerciseName),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.outline,
             )
@@ -475,11 +476,15 @@ private fun LazyGridScope.singleExerciseBlock(
         StickyHeader(
             name = exercise.displayName(),
             subtitle = block.plan?.let { plan ->
-                stringResource(
-                    R.string.label_sets_left_range,
-                    pluralStringResource(R.plurals.plural_sets, block.setsLeft, block.setsLeft),
-                    plan.repsLabel,
-                )
+                if (block.setsLeft == 0) {
+                    stringResource(R.string.label_plan_done)
+                } else {
+                    stringResource(
+                        R.string.label_sets_left_range,
+                        pluralStringResource(R.plurals.plural_sets, block.setsLeft, block.setsLeft),
+                        plan.repsLabel,
+                    )
+                }
             },
         ) {
             if (!exercise.reference.isNullOrBlank()) {
@@ -844,7 +849,8 @@ private fun AddSetSheet(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         AddSet(
-            exerciseName = sheet.exerciseName,
+            exerciseName = localizedExerciseName(sheet.exerciseName),
+            setNumber = sheet.setNumber,
             target = sheet.target,
             onDone = {
                 scope.launch { state.hide() }.invokeOnCompletion {

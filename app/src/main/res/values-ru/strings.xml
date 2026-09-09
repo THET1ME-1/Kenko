@@ -51,7 +51,6 @@
     <string name="label_add_exercise_header">Добавить упражнение</string>
     <string name="label_search_exercise">Найти упражнение</string>
     <string name="label_no_exercise_today">На сегодня упражнений нет</string>
-    <string name="label_add_set_for">Добавить подход</string>
     <string name="label_plus_int">%s</string>
     <string name="label_minus_int">-%s</string>
     <string name="label_settings">Настройки</string>
@@ -164,7 +163,6 @@
         <item>Суббота</item>
         <item>Воскресенье</item>
     </string-array>
-    <string name="label_add_drop_for">Сброс для</string>
     <string name="label_add_drop">Добавить сброс</string>
     <string name="label_drop_number">Сброс %1$d</string>
     <string name="label_round_number">Круг %1$d</string>
@@ -340,4 +338,25 @@
     <string name="label_weight_calculator">калькулятор веса</string>
     <string name="label_only_gym">только зал</string>
     <string name="label_drop_hint_editable">Веса считает приложение: %1$s кг. Тап по сбросу — поставить свой.</string>
+    <string name="label_reps_caption">повторы</string>
+    <string name="label_to_failure">до отказа</string>
+    <string name="label_rir_short">в запасе %1$d</string>
+    <string name="label_plates">⊙ блины</string>
+    <string name="label_last_time">прошлый раз %1$s × %2$d</string>
+    <string name="label_write_set">записать подход</string>
+    <string name="label_write_drop">записать сброс</string>
+    <string name="label_set_type_standard">обычный</string>
+    <string name="label_set_type_drop">дропсет</string>
+    <string name="label_set_type_rest_pause">рест-пауза</string>
+    <string name="title_plate_calculator">калькулятор блинов</string>
+    <string name="label_hang_plates">тап вешает блин на обе стороны, долгий — на одну</string>
+    <string name="action_use_weight">поставить %1$s кг</string>
+    <string name="action_clear_plates">снять всё</string>
+    <string name="label_side_short_left">лево</string>
+    <string name="label_side_short_right">право</string>
+    <string name="label_back">назад</string>
+    <string name="label_set_number">подход %1$s</string>
+    <string name="label_plan_done">план выполнен</string>
+    <string name="label_add_set_for">Добавить подход</string>
+    <string name="label_add_drop_for">Добавить сброс</string>
 </resources>

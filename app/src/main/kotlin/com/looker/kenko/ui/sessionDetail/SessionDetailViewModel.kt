@@ -244,6 +244,7 @@ class SessionDetailViewModel @AssistedInject constructor(
             _sheetTarget.emit(
                 SetSheetTarget(
                     exerciseName = exercise.name,
+                    setNumber = performedSets(exerciseId) + 1,
                     target = AddSetTarget(
                         exerciseId = exerciseId,
                         supersetId = supersetId,
@@ -256,6 +257,23 @@ class SessionDetailViewModel @AssistedInject constructor(
                 ),
             )
         }
+    }
+
+    /**
+     * How many sets of this exercise are already written down — the sheet shows the next number.
+     */
+    private fun performedSets(exerciseId: Int): Int {
+        val blocks = (state.value as? SessionDetailState.Success)?.data?.blocks.orEmpty()
+        return blocks.filterIsInstance<SessionBlock.SingleExercise>()
+            .firstOrNull { it.exercise.id == exerciseId }
+            ?.chains
+            ?.size
+            ?: blocks.filterIsInstance<SessionBlock.Superset>()
+                .sumOf { block ->
+                    block.rounds.count { round ->
+                        round.chains.any { it.set.exercise.id == exerciseId }
+                    }
+                }
     }
 
     fun showAddDropSheet(chain: SetChain) {
@@ -390,6 +408,7 @@ data class RestUiState(
 data class SetSheetTarget(
     val exerciseName: String,
     val target: AddSetTarget,
+    val setNumber: Int = 1,
 )
 
 @Stable

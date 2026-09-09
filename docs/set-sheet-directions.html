@@ -1,0 +1,256 @@
+<title>Ввод подхода — три хода</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@600;700&family=Space+Mono:wght@400;700&display=swap">
+<style>
+  :root {
+    --bg: #FCFBFF;
+    --surface: #FCFBFF;
+    --container-low: #FBF9FF;
+    --container: #F4F2FB;
+    --container-high: #F1EEFA;
+    --primary: #714BA8;
+    --on-primary: #FCFBFF;
+    --primary-container: #EBDFFF;
+    --on-primary-container: #4E2D7A;
+    --outline: #898296;
+    --outline-variant: #E0DBEC;
+    --on-surface: #211D29;
+    --on-surface-variant: #665F73;
+    --coral: #C1514D;
+    --border: 1.4px;
+    --display: "Darker Grotesque", "Trebuchet MS", sans-serif;
+    --mono: "Space Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16121B;
+      --surface: #16121B;
+      --container-low: #1D1823;
+      --container: #221C29;
+      --container-high: #2C2534;
+      --primary: #D3B4F5;
+      --on-primary: #3B1C63;
+      --primary-container: #53308A;
+      --on-primary-container: #EBDFFF;
+      --outline: #948AA3;
+      --outline-variant: #443A50;
+      --on-surface: #E9E3F2;
+      --on-surface-variant: #C9C0D6;
+      --coral: #F2A9A5;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16121B; --surface: #16121B; --container-low: #1D1823; --container: #221C29;
+    --container-high: #2C2534; --primary: #D3B4F5; --on-primary: #3B1C63;
+    --primary-container: #53308A; --on-primary-container: #EBDFFF; --outline: #948AA3;
+    --outline-variant: #443A50; --on-surface: #E9E3F2; --on-surface-variant: #C9C0D6; --coral: #F2A9A5;
+  }
+
+  body { background: var(--bg); color: var(--on-surface); font-family: var(--mono); font-size: 14px; line-height: 1.6; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 40px 20px 80px; }
+  h1 { font-family: var(--display); font-weight: 700; font-size: clamp(48px, 10vw, 88px); line-height: .92; margin: 0; color: var(--primary); }
+  .lede { max-width: 60ch; color: var(--on-surface-variant); margin: 16px 0 0; }
+  h2 { font-family: var(--display); font-weight: 700; font-size: 34px; margin: 0 0 2px; display: flex; align-items: baseline; gap: 12px; }
+  h2 .n { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--outline); letter-spacing: .08em; }
+  .why { color: var(--on-surface-variant); max-width: 46ch; margin: 0 0 18px; font-size: 13px; }
+  section { margin-top: 56px; }
+  .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; align-items: start; }
+
+  /* телефонная рамка */
+  .phone { border: var(--border) solid var(--on-surface); border-radius: 28px; overflow: hidden; background: var(--container-low); }
+  .dim { padding: 14px 16px 26px; opacity: .35; border-bottom: var(--border) solid var(--outline-variant); }
+  .dim .line { height: 12px; border-radius: 6px; background: var(--container-high); margin-bottom: 8px; }
+  .dim .line.short { width: 40%; }
+  .sheet { background: var(--container-low); border-radius: 26px 26px 0 0; padding: 14px 18px 22px; }
+  .grabber { width: 44px; height: 4px; border-radius: 2px; background: var(--outline-variant); margin: 0 auto 16px; }
+  .eyebrow { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--outline); }
+  .title { font-family: var(--display); font-weight: 700; font-size: 30px; line-height: 1.05; color: var(--primary); margin: 2px 0 4px; }
+  .context { font-size: 11px; color: var(--outline); margin-bottom: 14px; }
+
+  /* А: два столбца */
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { border: var(--border) solid var(--outline-variant); border-radius: 20px; padding: 12px 14px 10px; }
+  .field.hot { border-color: var(--primary); }
+  .field .cap { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--outline); }
+  .field .val { font-family: var(--mono); font-weight: 700; font-size: 34px; line-height: 1.1; letter-spacing: -.02em; }
+  .field .unit { font-size: 13px; color: var(--outline); margin-left: 4px; }
+  .keys { display: flex; gap: 6px; margin-top: 10px; }
+  .key { flex: 1; text-align: center; border-radius: 999px; background: var(--container-high); padding: 8px 0; font-size: 12px; }
+  .key.accent { background: var(--primary-container); color: var(--on-primary-container); }
+
+  /* Б: строка подхода */
+  .setrow { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .setno { font-family: var(--mono); font-weight: 700; font-size: 30px; color: var(--outline); min-width: 56px; }
+  .setno small { display: block; font-size: 10px; font-weight: 400; letter-spacing: .06em; }
+  .setbody { flex: 1; display: flex; justify-content: space-between; background: var(--container-high); border-radius: 18px; padding: 10px 16px; }
+  .setbody.active { background: var(--primary-container); color: var(--on-primary-container); }
+  .cell .k { font-size: 10px; color: var(--outline); }
+  .setbody.active .cell .k { color: var(--on-primary-container); opacity: .75; }
+  .cell .v { font-family: var(--mono); font-weight: 700; font-size: 20px; }
+  .tick { width: 26px; height: 26px; border-radius: 50%; border: var(--border) solid var(--outline-variant); }
+  .tick.done { background: var(--primary); border-color: var(--primary); }
+
+  /* В: клавиатура */
+  .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+  .pad div { text-align: center; padding: 14px 0; border-radius: 16px; background: var(--container-high); font-size: 18px; font-family: var(--mono); }
+  .pad div.wide { grid-column: span 2; }
+  .pad div.accent { background: var(--primary); color: var(--on-primary); }
+
+  .cta { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
+  .cta .primary { flex: 1; text-align: center; background: var(--primary); color: var(--on-primary); border-radius: 999px; padding: 16px 0; font-weight: 700; }
+  .cta .ghost { border: var(--border) solid var(--outline-variant); border-radius: 999px; padding: 16px 18px; color: var(--on-surface-variant); font-size: 12px; }
+  .note { font-size: 11px; color: var(--outline); margin-top: 12px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .chip { border-radius: 999px; background: var(--container-high); padding: 7px 12px; font-size: 12px; }
+  .chip.on { background: var(--primary-container); color: var(--on-primary-container); }
+  ul.pros { list-style: none; padding: 0; margin: 14px 0 0; font-size: 13px; color: var(--on-surface-variant); }
+  ul.pros li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; margin-bottom: 6px; }
+  ul.pros li .m { color: var(--primary); }
+  ul.pros li.minus .m { color: var(--coral); }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Ввод подхода</h1>
+    <p class="lede">Сейчас в шторке спорят три элемента: карточка веса, вертикальный барабан повторов и полоса шагов с ползунком посередине. Ни один не главный, барабан режется рамкой, а «калькулятор веса» висит ссылкой. Три хода ниже решают это по-разному — на настоящих цветах и шрифтах приложения.</p>
+  </header>
+
+  <section>
+    <h2><span class="n">A</span> Две колонки</h2>
+    <p class="why">Вес и повторы — равные величины, значит стоят рядом одинаковыми карточками. Активная обведена акцентом, под ней её шаги. Барабан не нужен: повторы меняются теми же клавишами.</p>
+    <div class="row">
+      <div class="phone">
+        <div class="dim">
+          <div class="line"></div><div class="line short"></div>
+        </div>
+        <div class="sheet">
+          <div class="grabber"></div>
+          <div class="eyebrow">сброс 1 из 3</div>
+          <div class="title">Тяга верхнего блока</div>
+          <div class="context">−20 % от рабочих 40.0 · узкая рукоятка</div>
+
+          <div class="duo">
+            <div class="field hot">
+              <div class="cap">вес</div>
+              <div class="val">16.25<span class="unit">кг</span></div>
+              <div class="keys"><div class="key">−2.5</div><div class="key">−1.25</div><div class="key accent">+1.25</div><div class="key">+2.5</div></div>
+            </div>
+            <div class="field">
+              <div class="cap">повторы</div>
+              <div class="val">9</div>
+              <div class="keys"><div class="key">−1</div><div class="key accent">+1</div></div>
+            </div>
+          </div>
+
+          <div class="chips">
+            <span class="chip on">обычный</span>
+            <span class="chip">дропсет</span>
+            <span class="chip">до отказа</span>
+          </div>
+
+          <div class="cta">
+            <div class="primary">записать сброс</div>
+            <div class="ghost">⊙ блины</div>
+          </div>
+          <p class="note">Тап по числу — ввод с клавиатуры, если нужно точное значение.</p>
+        </div>
+      </div>
+      <div>
+        <ul class="pros">
+          <li><span class="m">+</span><span>Оба числа читаются с метра, ничего не режется.</span></li>
+          <li><span class="m">+</span><span>Шаги подписаны прямо под своим числом — не гадаешь, что двигаешь.</span></li>
+          <li><span class="m">+</span><span>Контекст сброса виден: от какого веса и сколько процентов.</span></li>
+          <li class="minus"><span class="m">−</span><span>Быстрого «пролистать до 15 повторов» нет, только шаг за шагом.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">Б</span> Живая строка</h2>
+    <p class="why">Шторка повторяет строку подхода из тренировки: тот же номер, те же подписи, та же плашка. Меняется только одно — строка активна, и её числа можно крутить. Что видишь, то и записываешь.</p>
+    <div class="row">
+      <div class="phone">
+        <div class="dim">
+          <div class="line"></div><div class="line short"></div>
+        </div>
+        <div class="sheet">
+          <div class="grabber"></div>
+          <div class="eyebrow">дропсет · 3 сброса</div>
+          <div class="title">Тяга верхнего блока</div>
+          <div class="context">отдых только после всей группы</div>
+
+          <div class="setrow">
+            <div class="setno">03<small>основной</small></div>
+            <div class="setbody"><div class="cell"><div class="k">.повторы</div><div class="v">12</div></div><div class="cell"><div class="k">.вес</div><div class="v">40.0 КГ</div></div></div>
+            <div class="tick done"></div>
+          </div>
+          <div class="setrow">
+            <div class="setno">03.1<small>сброс 1</small></div>
+            <div class="setbody active"><div class="cell"><div class="k">.повторы</div><div class="v">9</div></div><div class="cell"><div class="k">.вес</div><div class="v">16.25 КГ</div></div></div>
+            <div class="tick"></div>
+          </div>
+
+          <div class="keys" style="margin-top:14px">
+            <div class="key">−2.5</div><div class="key">−1.25</div><div class="key accent">+1.25</div><div class="key">+2.5</div>
+          </div>
+          <div class="keys">
+            <div class="key">−1 повтор</div><div class="key accent">+1 повтор</div><div class="key">⊙ блины</div>
+          </div>
+
+          <div class="cta">
+            <div class="primary">отметить сброс 1</div>
+          </div>
+          <p class="note">Клавиши правят ту строку, которая подсвечена. Тап по соседней строке переносит правку на неё.</p>
+        </div>
+      </div>
+      <div>
+        <ul class="pros">
+          <li><span class="m">+</span><span>Ни одного нового элемента: язык списка и язык ввода совпадают.</span></li>
+          <li><span class="m">+</span><span>Видно всю группу целиком, а не вырванный из неё один сброс.</span></li>
+          <li><span class="m">+</span><span>Правка любой строки без закрытия шторки.</span></li>
+          <li class="minus"><span class="m">−</span><span>Числа мельче, чем в A: строка держит две величины сразу.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">В</span> Своя клавиатура</h2>
+    <p class="why">Вес набирается цифрами, а не подгоняется шагами. Системная клавиатура не всплывает, экран не прыгает, «.» и «5» рядом — 16.25 набирается за четыре касания.</p>
+    <div class="row">
+      <div class="phone">
+        <div class="dim">
+          <div class="line"></div><div class="line short"></div>
+        </div>
+        <div class="sheet">
+          <div class="grabber"></div>
+          <div class="eyebrow">сброс 1 · вес</div>
+          <div class="title">16.25<span style="font-family:var(--mono);font-size:18px;color:var(--outline)"> кг</span></div>
+          <div class="context">повторы 9 · тап, чтобы переключиться на них</div>
+
+          <div class="pad">
+            <div>1</div><div>2</div><div>3</div>
+            <div>4</div><div>5</div><div>6</div>
+            <div>7</div><div>8</div><div>9</div>
+            <div>.</div><div>0</div><div>⌫</div>
+            <div class="wide accent">записать</div><div>⊙</div>
+          </div>
+          <p class="note">Кольцо «⊙» открывает калькулятор: гриф, левая и правая стороны.</p>
+        </div>
+      </div>
+      <div>
+        <ul class="pros">
+          <li><span class="m">+</span><span>Любое число за секунды, включая 17.5 и 63.75.</span></li>
+          <li><span class="m">+</span><span>Экран не скачет от системной клавиатуры.</span></li>
+          <li class="minus"><span class="m">−</span><span>Больше касаний там, где хватило бы «+2.5».</span></li>
+          <li class="minus"><span class="m">−</span><span>Повторы и вес нельзя видеть одновременно.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">•</span> Что я советую</h2>
+    <p class="why" style="max-width:60ch">Взять <b>Б</b> как основу и занять у <b>A</b> клавиши под числами. Тогда ввод живёт в том же языке, что список подходов, группа видна целиком, а шаги веса подписаны. Клавиатуру из <b>В</b> оставить на долгий тап по числу — для редких точных значений вроде 63.75.</p>
+  </section>
+</div>

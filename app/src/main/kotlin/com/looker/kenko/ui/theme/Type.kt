@@ -15,6 +15,8 @@
 package com.looker.kenko.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -35,10 +37,17 @@ val bodyFont = FontFamily(
     Font(R.font.spacemono_normal, weight = FontWeight.Normal),
 )
 
-fun Typography.header() = displayLarge.copy(
-    fontSize = 78.sp,
-    lineHeight = 70.sp,
-)
+/**
+ * The size comes from a resource: Russian words are longer, and at 78sp they break mid-word.
+ */
+@Composable
+fun Typography.header(): TextStyle {
+    val size = integerResource(R.integer.header_font_size)
+    return displayLarge.copy(
+        fontSize = size.sp,
+        lineHeight = (size * 0.9F).sp,
+    )
+}
 
 fun TextStyle.numbers() = copy(fontFamily = FontFamily.Numbers)
 
