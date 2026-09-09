@@ -66,6 +66,36 @@ interface SessionDao {
     )
     suspend fun getSessionId(date: EpochDays): Int?
 
+    @Query(
+        """
+        SELECT dayIndex
+        FROM sessions
+        WHERE date = :date
+        """,
+    )
+    suspend fun getDayIndex(date: EpochDays): Int?
+
+    @Query(
+        """
+        SELECT dayIndex
+        FROM sessions
+        WHERE date < :date
+        AND dayIndex IS NOT NULL
+        ORDER BY date DESC
+        LIMIT 1
+        """,
+    )
+    suspend fun getLastDayIndexBefore(date: EpochDays): Int?
+
+    @Query(
+        """
+        UPDATE sessions
+        SET dayIndex = :dayIndex
+        WHERE id = :sessionId
+        """,
+    )
+    suspend fun setDayIndex(sessionId: Int, dayIndex: Int)
+
     @Transaction
     @Query(
         """

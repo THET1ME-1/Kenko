@@ -50,6 +50,11 @@ data class SessionDataEntity(
     val date: EpochDays,
     @ColumnInfo(index = true)
     val planId: Int?,
+    /**
+     * Day of the plan this session went through, so the next one knows what follows.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val dayIndex: Int? = null,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 )
@@ -57,6 +62,7 @@ data class SessionDataEntity(
 fun Session.data(): SessionDataEntity = SessionDataEntity(
     date = EpochDays(date.toEpochDays().toInt()),
     planId = planId,
+    dayIndex = dayIndex,
     id = id ?: 0,
 )
 
@@ -68,5 +74,6 @@ fun SessionEntity.toExternal(
     planId = data.planId,
     date = LocalDate.fromEpochDays(data.date.value),
     sets = setsMap,
+    dayIndex = data.dayIndex,
     id = data.id,
 )

@@ -227,4 +227,19 @@
     <string name="label_add_superset">+ суперсет</string>
     <string name="label_drop_in_plan">дропсет</string>
     <string name="label_no_plans_yet">Программ пока нет</string>
+    <string name="label_color_scheme_amethyst">Аметист</string>
+    <string name="label_body_front">спереди</string>
+    <string name="label_body_back">сзади</string>
+    <string name="label_primary_muscle">основная мышца</string>
+    <string name="label_secondary_muscles">работают ещё</string>
+    <string name="label_photo">фото</string>
+    <string name="label_add_photo">добавить фото</string>
+    <string name="label_replace_photo">заменить</string>
+    <string name="label_remove_photo">убрать</string>
+    <string name="label_pick_muscle_hint">Жми по телу: первый тап ставит основную мышцу, следующие добавляют помогающие.</string>
+    <string name="error_exercise_name_exists">Упражнение с таким названием уже есть</string>
+    <string name="label_day_number">День %1$d</string>
+    <string name="label_days_in_plan">дней в программе: %1$d</string>
+    <string name="label_week_mode">Дни недели</string>
+    <string name="label_week_mode_desc">Выключено — программа идёт день за днём, когда бы вы ни пришли.</string>
 </resources>

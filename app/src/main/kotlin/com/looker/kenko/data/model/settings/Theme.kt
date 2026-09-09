@@ -17,6 +17,7 @@ package com.looker.kenko.data.model.settings
 import androidx.annotation.StringRes
 import com.looker.kenko.R
 import com.looker.kenko.ui.theme.colorSchemes.ColorSchemes
+import com.looker.kenko.ui.theme.colorSchemes.amethystColorSchemes
 import com.looker.kenko.ui.theme.colorSchemes.defaultColorSchemes
 import com.looker.kenko.ui.theme.colorSchemes.sereneColorSchemes
 import com.looker.kenko.ui.theme.colorSchemes.twilightColorSchemes
@@ -30,6 +31,7 @@ enum class Theme(@StringRes val nameRes: Int) {
 
 enum class ColorPalettes(val scheme: ColorSchemes?) {
     Dynamic(null),
+    Amethyst(amethystColorSchemes),
     Default(defaultColorSchemes),
     Zestful(zestfulColorSchemes),
     Serene(sereneColorSchemes),

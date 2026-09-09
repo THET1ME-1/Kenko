@@ -371,9 +371,9 @@ private fun LegBadge(
     val colors = MaterialTheme.colorScheme
     val background = when (index % 4) {
         0 -> colors.primary
-        1 -> colors.tertiary
+        1 -> colors.error
         2 -> colors.secondary
-        else -> colors.error
+        else -> colors.tertiary
     }
     Box(
         modifier = modifier

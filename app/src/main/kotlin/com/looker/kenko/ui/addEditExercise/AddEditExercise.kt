@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 LooKeR & Contributors
+ * Copyright (C) 2025 LooKeR & Contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,15 +14,23 @@
 
 package com.looker.kenko.ui.addEditExercise
 
-import androidx.compose.foundation.clickable
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -34,6 +42,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -43,6 +52,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,13 +63,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.model.MuscleGroups
 import com.looker.kenko.ui.components.BackButton
+import com.looker.kenko.ui.components.DashedAddButton
 import com.looker.kenko.ui.components.ErrorSnackbar
-import com.looker.kenko.ui.components.FlowTargets
 import com.looker.kenko.ui.components.KenkoButton
-import com.looker.kenko.ui.components.TargetChip
+import com.looker.kenko.ui.components.MuscleMap
 import com.looker.kenko.ui.components.kenkoTextFieldColor
+import com.looker.kenko.ui.components.rememberPhoto
 import com.looker.kenko.ui.exercises.string
-import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -66,277 +77,308 @@ import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 
 @Composable
 fun AddEditExercise(
+    viewModel: AddEditExerciseViewModel,
     onDone: () -> Unit,
     onBackPress: () -> Unit,
-    viewModel: AddEditExerciseViewModel,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
     AddEditExercise(
-        exerciseName = viewModel.exerciseName,
-        exerciseReference = viewModel.reference,
         state = state,
+        name = viewModel.exerciseName,
+        reference = viewModel.reference,
         snackbarState = viewModel.snackbarState,
-        onSelectTarget = viewModel::setTargetMuscle,
-        onSelectIsometric = viewModel::setIsometric,
         onNameChange = viewModel::setName,
         onReferenceChange = viewModel::addReference,
+        onMuscleClick = viewModel::toggleMuscle,
+        onPhotoChange = viewModel::setPhoto,
+        onIsometricChange = viewModel::setIsometric,
+        onSaveClick = { viewModel.addNewExercise(onDone) },
         onBackPress = onBackPress,
-        onDone = { viewModel.addNewExercise(onDone) },
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddEditExercise(
-    exerciseName: String,
-    exerciseReference: String,
     state: AddEditExerciseUiState,
-    snackbarState: SnackbarHostState,
-    onSelectTarget: (MuscleGroups) -> Unit,
-    onSelectIsometric: (Boolean) -> Unit,
-    onNameChange: (String) -> Unit,
-    onReferenceChange: (String) -> Unit,
-    onDone: () -> Unit,
-    onBackPress: () -> Unit,
+    name: String,
+    reference: String,
+    snackbarState: SnackbarHostState = remember { SnackbarHostState() },
+    onNameChange: (String) -> Unit = {},
+    onReferenceChange: (String) -> Unit = {},
+    onMuscleClick: (MuscleGroups) -> Unit = {},
+    onPhotoChange: (Uri?) -> Unit = {},
+    onIsometricChange: (Boolean) -> Unit = {},
+    onSaveClick: () -> Unit = {},
+    onBackPress: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                navigationIcon = { BackButton(onBackPress) },
+                navigationIcon = { BackButton(onClick = onBackPress) },
                 title = {
                     Text(
                         text = stringResource(
-                            if (exerciseName.isBlank()) {
-                                R.string.label_new_exercise
-                            } else {
+                            if (state.isReadOnly) {
                                 R.string.label_edit_exercise
-                            }
+                            } else {
+                                R.string.label_add_exercise_header
+                            },
                         ),
                     )
-                }
+                },
             )
         },
         snackbarHost = {
-            SnackbarHost(hostState = snackbarState) {
-                ErrorSnackbar(data = it)
-            }
+            SnackbarHost(hostState = snackbarState) { ErrorSnackbar(data = it) }
         },
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(PaddingValues(horizontal = 16.dp) + innerPadding),
+                .padding(horizontal = 16.dp),
         ) {
-            ExerciseTextField(
-                exerciseName = exerciseName,
-                onNameChange = onNameChange,
+            PhotoBlock(
+                photoUri = state.photoUri,
+                onPick = onPhotoChange,
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = name,
+                onValueChange = onNameChange,
                 isError = state.isError,
-                isReadOnly = state.isReadOnly,
-                modifier = Modifier.fillMaxWidth()
+                singleLine = true,
+                shape = MaterialTheme.shapes.large,
+                colors = kenkoTextFieldColor(),
+                placeholder = { Text(text = stringResource(R.string.label_name)) },
+                leadingIcon = { Icon(painter = KenkoIcons.Rename, contentDescription = null) },
+                supportingText = if (state.isError) {
+                    { Text(text = stringResource(R.string.error_exercise_name_exists)) }
+                } else {
+                    null
+                },
             )
-            Text(
-                modifier = Modifier.padding(vertical = 8.dp),
-                text = stringResource(R.string.label_target),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.outline
+
+            Spacer(Modifier.height(20.dp))
+
+            MuscleSection(
+                primary = state.targetMuscle,
+                secondary = state.secondaryMuscles,
+                onMuscleClick = onMuscleClick,
             )
-            FlowTargets {
-                TargetChip(
-                    selected = state.targetMuscle == it,
-                    onClick = { onSelectTarget(it) },
-                    text = stringResource(it.string),
-                )
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            IsIsometricButton(isIsometric = state.isIsometric, onChange = onSelectIsometric)
-            Spacer(modifier = Modifier.height(18.dp))
-            ReferenceTextField(
-                reference = exerciseReference,
-                onReferenceChange = onReferenceChange,
+
+            Spacer(Modifier.height(20.dp))
+
+            IsometricSwitch(
+                checked = state.isIsometric,
+                onCheckedChange = onIsometricChange,
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = reference,
+                onValueChange = onReferenceChange,
                 isError = state.isReferenceInvalid,
-                modifier = Modifier.fillMaxWidth()
+                singleLine = true,
+                shape = MaterialTheme.shapes.large,
+                colors = kenkoTextFieldColor(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+                placeholder = { Text(text = stringResource(R.string.label_reference)) },
+                leadingIcon = { Icon(painter = KenkoIcons.Lightbulb, contentDescription = null) },
+                supportingText = {
+                    Text(
+                        text = stringResource(
+                            if (state.isReferenceInvalid) {
+                                R.string.error_invalid_reference_format
+                            } else {
+                                R.string.label_reference_optional
+                            },
+                        ),
+                    )
+                },
             )
-            Spacer(modifier = Modifier.height(18.dp))
+
+            Spacer(Modifier.height(24.dp))
+
             KenkoButton(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .navigationBarsPadding(),
-                onClick = onDone,
-                label = {
+                onClick = onSaveClick,
+                label = { Text(text = stringResource(R.string.label_save)) },
+                icon = {
                     Icon(
+                        modifier = Modifier.size(18.dp),
                         painter = KenkoIcons.Save,
                         contentDescription = null,
                     )
                 },
-                icon = {
-                    Text(stringResource(R.string.label_save))
-                }
             )
-            Spacer(
-                modifier = Modifier
-                    .navigationBarsPadding()
-                    .padding(bottom = 8.dp)
-            )
+
+            Spacer(Modifier.height(32.dp))
         }
     }
 }
 
+/**
+ * The picture of the movement: an empty slot until one is picked, then the photo itself.
+ */
 @Composable
-private fun ReferenceTextField(
-    reference: String,
-    isError: Boolean,
-    onReferenceChange: (String) -> Unit,
+private fun PhotoBlock(
+    photoUri: String?,
+    onPick: (Uri?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    TextField(
-        modifier = modifier,
-        value = reference,
-        onValueChange = onReferenceChange,
-        colors = kenkoTextFieldColor(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-        shape = MaterialTheme.shapes.large,
-        supportingText = {
-            Text(text = stringResource(R.string.label_reference_optional))
-        },
-        label = {
-            Text(text = stringResource(R.string.label_reference))
-        },
-        isError = isError,
-        leadingIcon = {
-            Icon(painter = KenkoIcons.Lightbulb, contentDescription = null)
-        }
+    val picker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> uri?.let(onPick) },
     )
-}
-
-@Composable
-private fun ExerciseTextField(
-    exerciseName: String,
-    isError: Boolean,
-    isReadOnly: Boolean,
-    onNameChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    TextField(
-        modifier = modifier,
-        value = exerciseName,
-        onValueChange = onNameChange,
-        colors = kenkoTextFieldColor(),
-        readOnly = isReadOnly,
-        shape = MaterialTheme.shapes.large,
-        label = {
-            Text(text = stringResource(R.string.label_name))
-        },
-        isError = isError,
-        leadingIcon = {
-            Icon(painter = KenkoIcons.Rename, contentDescription = null)
-        },
-        supportingText = {
-            if (isError) {
-                Text(text = stringResource(R.string.label_exercise_exists))
+    val request = remember {
+        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+    }
+    val photo = rememberPhoto(photoUri)
+    Column(modifier = modifier.fillMaxWidth()) {
+        if (photo != null) {
+            Image(
+                bitmap = photo,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(16F / 10F)
+                    .clip(MaterialTheme.shapes.extraLarge)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                TextButton(onClick = { picker.launch(request) }) {
+                    Text(text = stringResource(R.string.label_replace_photo))
+                }
+                TextButton(onClick = { onPick(null) }) {
+                    Text(text = stringResource(R.string.label_remove_photo))
+                }
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(16F / 10F),
+                contentAlignment = Alignment.Center,
+            ) {
+                DashedAddButton(
+                    label = stringResource(R.string.label_add_photo),
+                    onClick = { picker.launch(request) },
+                    modifier = Modifier.fillMaxWidth(),
+                    accent = true,
+                )
             }
         }
-    )
+    }
+}
+
+/**
+ * Muscles are picked on the body, not from a list of chips.
+ */
+@Composable
+private fun MuscleSection(
+    primary: MuscleGroups,
+    secondary: Set<MuscleGroups>,
+    onMuscleClick: (MuscleGroups) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = Modifier.weight(1F)) {
+                Text(
+                    text = stringResource(R.string.label_primary_muscle).uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+                Text(
+                    text = stringResource(primary.string),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+            val secondaryNames = secondary.map { stringResource(it.string) }
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = stringResource(R.string.label_secondary_muscles).uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+                Text(
+                    text = secondaryNames.joinToString(" · ").ifEmpty { "—" },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        MuscleMap(
+            primary = primary,
+            secondary = secondary,
+            onZoneClick = onMuscleClick,
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.label_pick_muscle_hint),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+    }
 }
 
 @Composable
-private fun IsIsometricButton(isIsometric: Boolean, onChange: (Boolean) -> Unit) {
+private fun IsometricSwitch(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable { onChange(!isIsometric) }
     ) {
         Column(modifier = Modifier.weight(1F)) {
             Text(
                 text = stringResource(R.string.label_is_isometric),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.titleMedium,
             )
             Text(
                 text = stringResource(R.string.label_is_isometric_DESC),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
             )
         }
-        Switch(checked = isIsometric, onCheckedChange = onChange)
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 
 @Preview
 @Composable
-private fun ReferenceTextFieldPreview(
+private fun AddEditExercisePreview(
     @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
 ) {
-    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
-        ReferenceTextField(
-            reference = "https://youtu.be",
-            onReferenceChange = {},
-            isError = false,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun IsIsometricButtonPreview(
-    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
-) {
-    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
-        var isIso by remember {
-            mutableStateOf(false)
-        }
-        IsIsometricButton(isIsometric = isIso, onChange = { isIso = !isIso })
-    }
-}
-
-@Preview
-@Composable
-private fun NameTextFieldPreview(
-    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
-) {
-    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
-        ExerciseTextField(
-            exerciseName = "Bench Press",
-            onNameChange = {},
-            isError = false,
-            isReadOnly = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun ErrorNameTextFieldPreview(
-    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
-) {
-    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
-        ExerciseTextField(
-            exerciseName = "Bench Press",
-            onNameChange = {},
-            isError = true,
-            isReadOnly = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun AddEditPreview(
-    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
-) {
+    var name by remember { mutableStateOf("Bench Press") }
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         AddEditExercise(
-            exerciseName = "BenchPress",
-            exerciseReference = "yt.be",
-            state = AddEditExerciseUiState(MuscleGroups.Chest, false, false, false, false),
-            snackbarState = SnackbarHostState(),
-            onSelectTarget = {},
-            onSelectIsometric = {},
-            onNameChange = {},
-            onReferenceChange = {},
-            onDone = {},
-            onBackPress = {}
+            state = AddEditExerciseUiState(
+                targetMuscle = MuscleGroups.Chest,
+                secondaryMuscles = setOf(MuscleGroups.Triceps, MuscleGroups.Shoulders),
+                photoUri = null,
+                isIsometric = false,
+                isError = false,
+                isReadOnly = false,
+                isReferenceInvalid = false,
+            ),
+            name = name,
+            reference = "",
+            onNameChange = { name = it },
         )
     }
 }

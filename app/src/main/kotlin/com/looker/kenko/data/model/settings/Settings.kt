@@ -18,6 +18,11 @@ import kotlin.time.Instant
 
 data class Settings(
     val isOnboardingDone: Boolean,
+    /**
+     * True — the plan runs on days of the week; false — its days follow one another
+     * whenever the lifter shows up.
+     */
+    val isWeekMode: Boolean,
     val theme: Theme,
     val colorPalette: ColorPalettes,
     val lastSetTime: Instant?,

@@ -22,6 +22,10 @@ data class Session(
     val date: LocalDate,
     val sets: List<Set>,
     val planId: Int?,
+    /**
+     * Which day of the plan was performed. Null for sessions written before days were numbered.
+     */
+    val dayIndex: Int? = null,
     val id: Int? = null,
 ) {
     val performExercises: List<Exercise>

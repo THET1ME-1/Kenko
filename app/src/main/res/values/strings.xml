@@ -278,4 +278,19 @@
     <string name="label_add_superset">+ superset</string>
     <string name="label_drop_in_plan">drop set</string>
     <string name="label_no_plans_yet">No plans yet</string>
+    <string name="label_color_scheme_amethyst">Amethyst</string>
+    <string name="label_body_front">front</string>
+    <string name="label_body_back">back</string>
+    <string name="label_primary_muscle">main muscle</string>
+    <string name="label_secondary_muscles">also works</string>
+    <string name="label_photo">photo</string>
+    <string name="label_add_photo">add a photo</string>
+    <string name="label_replace_photo">replace</string>
+    <string name="label_remove_photo">remove</string>
+    <string name="label_pick_muscle_hint">Tap the body: first tap sets the main muscle, the next ones add the helpers.</string>
+    <string name="error_exercise_name_exists">An exercise with this name is already there</string>
+    <string name="label_day_number">Day %1$d</string>
+    <string name="label_days_in_plan">%1$d days in the plan</string>
+    <string name="label_week_mode">Days of the week</string>
+    <string name="label_week_mode_desc">Off — the plan runs day after day, whenever you train.</string>
 </resources>

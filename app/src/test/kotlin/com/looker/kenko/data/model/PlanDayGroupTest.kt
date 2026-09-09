@@ -14,7 +14,6 @@
 
 package com.looker.kenko.data.model
 
-import kotlinx.datetime.DayOfWeek
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -31,7 +30,7 @@ class PlanDayGroupTest {
         supersetId: Int? = null,
         order: Int = id.toInt(),
     ) = PlanItem(
-        dayOfWeek = DayOfWeek.MONDAY,
+        dayIndex = 1,
         exercise = exercise,
         planId = 1,
         supersetId = supersetId,
@@ -101,7 +100,7 @@ class PlanDaySummaryTest {
         restSeconds: Int = 90,
         dropCount: Int = 0,
     ) = PlanItem(
-        dayOfWeek = DayOfWeek.MONDAY,
+        dayIndex = 1,
         exercise = exercise,
         planId = 1,
         targetSets = targetSets,

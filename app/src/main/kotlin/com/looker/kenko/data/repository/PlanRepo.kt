@@ -22,7 +22,6 @@ import com.looker.kenko.data.model.Labels.Time
 import com.looker.kenko.data.model.Plan
 import com.looker.kenko.data.model.PlanItem
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.DayOfWeek
 
 interface PlanRepo {
 
@@ -32,13 +31,13 @@ interface PlanRepo {
 
     val planItems: Flow<List<PlanItem>>
 
-    fun planItems(day: DayOfWeek): Flow<List<PlanItem>>
+    fun planItemsForDay(day: Int): Flow<List<PlanItem>>
 
     fun planItems(id: Int): Flow<List<PlanItem>>
 
-    fun planItems(id: Int, day: DayOfWeek): Flow<List<PlanItem>>
+    fun planItems(id: Int, day: Int): Flow<List<PlanItem>>
 
-    fun activeExercises(day: DayOfWeek): Flow<List<Exercise>>
+    fun activeExercises(day: Int): Flow<List<Exercise>>
 
     suspend fun plan(id: Int): Plan?
 
@@ -46,7 +45,12 @@ interface PlanRepo {
 
     suspend fun getPlanItems(id: Int): List<PlanItem>
 
-    suspend fun getPlanItems(id: Int, day: DayOfWeek): List<PlanItem>
+    suspend fun getPlanItems(id: Int, day: Int): List<PlanItem>
+
+    /**
+     * Highest day number the plan uses, so the cycle knows where to wrap.
+     */
+    suspend fun dayCount(planId: Int): Int
 
     suspend fun createPlan(
         name: String,

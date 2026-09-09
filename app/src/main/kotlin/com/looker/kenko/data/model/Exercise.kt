@@ -42,6 +42,14 @@ data class Exercise(
     val target: MuscleGroups,
     val reference: String? = null,
     val isIsometric: Boolean = false,
+    /**
+     * Picture of the movement, kept in the app's own folder.
+     */
+    val photoUri: String? = null,
+    /**
+     * Muscles that work along with [target].
+     */
+    val secondaryTargets: List<MuscleGroups> = emptyList(),
     val id: Int? = null,
 )
 

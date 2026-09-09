@@ -33,6 +33,11 @@ interface SettingsRepo {
 
     suspend fun setTheme(theme: Theme)
 
+    /**
+     * Switches the plan between days of the week and a free cycle of days.
+     */
+    suspend fun setWeekMode(enabled: Boolean)
+
     suspend fun setBackupUri(uri: String?)
 
     suspend fun setBackupInterval(interval: BackupInterval)

@@ -21,10 +21,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -54,6 +58,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.MuscleGroups
+import com.looker.kenko.ui.components.BackButton
+import com.looker.kenko.ui.components.ExerciseCard
 import com.looker.kenko.ui.components.LazyTargets
 import com.looker.kenko.ui.components.TargetChip
 import com.looker.kenko.ui.components.disableScrollConnection
@@ -72,17 +78,26 @@ import com.looker.kenko.ui.theme.start
 fun SelectExercise(
     onDone: (Exercise) -> Unit,
     onRequestNewExercise: (name: String?, target: MuscleGroups?) -> Unit,
+    modifier: Modifier = Modifier,
+    onBackPress: (() -> Unit)? = null,
 ) {
     val viewModel: SelectExerciseViewModel = hiltViewModel()
 
     Column(
-        modifier = Modifier
-            .nestedScroll(disableScrollConnection())
-            .wrapContentHeight(),
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+            .statusBarsPadding(),
     ) {
         val target by viewModel.targetMuscle.collectAsStateWithLifecycle()
         val searchResult by viewModel.searchResult.collectAsStateWithLifecycle()
 
+        if (onBackPress != null) {
+            BackButton(
+                onClick = onBackPress,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp),
+            )
+        }
         AddExerciseHeader(modifier = Modifier.padding(horizontal = 16.dp))
         ExerciseSearchField(
             modifier = Modifier.padding(horizontal = 16.dp),
@@ -102,7 +117,7 @@ fun SelectExercise(
 
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.height(240.dp),
+            modifier = Modifier.weight(1F),
         ) {
             when (searchResult) {
                 SearchResult.Loading -> ContainedLoadingIndicator()
@@ -124,11 +139,14 @@ private fun SearchResult(
     searchResult: SearchResult.Success,
     onClick: (Exercise) -> Unit,
 ) {
-    LazyColumn(Modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+    ) {
         items(searchResult.exercises) { exercise ->
-            ExerciseItem(
+            ExerciseCard(
                 exercise = exercise,
-                modifier = Modifier.clickable { onClick(exercise) },
+                onClick = { onClick(exercise) },
             )
         }
     }

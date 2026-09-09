@@ -21,7 +21,7 @@ import com.looker.kenko.data.model.settings.Theme
 import com.looker.kenko.data.repository.PerformanceRepo
 import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.ui.theme.colorSchemes.ColorSchemes
-import com.looker.kenko.ui.theme.colorSchemes.zestfulColorSchemes
+import com.looker.kenko.ui.theme.colorSchemes.amethystColorSchemes
 import com.looker.kenko.ui.theme.dynamicColorSchemes
 import com.looker.kenko.utils.asStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,8 +41,8 @@ class MainViewModel @Inject constructor(
         .asStateFlow(Theme.System)
 
     val colorScheme: StateFlow<ColorSchemes> = repo.stream
-        .map { it.colorPalette.scheme ?: dynamicColorSchemes(context) ?: zestfulColorSchemes }
-        .asStateFlow(zestfulColorSchemes)
+        .map { it.colorPalette.scheme ?: dynamicColorSchemes(context) ?: amethystColorSchemes }
+        .asStateFlow(amethystColorSchemes)
 
     init {
         viewModelScope.launch {

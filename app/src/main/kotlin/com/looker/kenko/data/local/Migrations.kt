@@ -362,3 +362,16 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
         db.execSQL("ALTER TABLE plan_day ADD COLUMN dropPercent INTEGER NOT NULL DEFAULT 20")
     }
 }
+
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE exercises ADD COLUMN photoUri TEXT DEFAULT NULL")
+        db.execSQL("ALTER TABLE exercises ADD COLUMN secondaryTargets TEXT NOT NULL DEFAULT ''")
+    }
+}
+
+val MIGRATION_8_9 = object : Migration(8, 9) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE sessions ADD COLUMN dayIndex INTEGER DEFAULT NULL")
+    }
+}

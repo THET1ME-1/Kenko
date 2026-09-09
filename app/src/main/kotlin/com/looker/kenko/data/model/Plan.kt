@@ -25,7 +25,6 @@ import com.looker.kenko.data.model.Labels.Focus
 import com.looker.kenko.data.model.Labels.Time
 import kotlin.time.Clock
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -44,7 +43,10 @@ data class Plan(
 
 @Immutable
 data class PlanItem(
-    val dayOfWeek: DayOfWeek,
+    /**
+     * Day of the plan, counted from one. In week mode it doubles as the ISO day of week.
+     */
+    val dayIndex: Int,
     val exercise: Exercise,
     val planId: Int,
     /**

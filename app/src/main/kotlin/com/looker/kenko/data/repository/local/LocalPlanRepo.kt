@@ -34,8 +34,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.isoDayNumber
 
 class LocalPlanRepo @Inject constructor(
     private val dao: PlanDao,
@@ -68,8 +66,8 @@ class LocalPlanRepo @Inject constructor(
             }
         }
 
-    override fun planItems(day: DayOfWeek): Flow<List<PlanItem>> =
-        dao.currentPlanItemsByDayFlow(day.isoDayNumber).map { planDays ->
+    override fun planItemsForDay(day: Int): Flow<List<PlanItem>> =
+        dao.currentPlanItemsByDayFlow(day).map { planDays ->
             planDays.map { planDay ->
                 planDay.toExternal { exerciseId ->
                     exerciseDao.get(exerciseId)?.toExternal()
@@ -94,8 +92,8 @@ class LocalPlanRepo @Inject constructor(
             }
         }
 
-    override fun planItems(id: Int, day: DayOfWeek): Flow<List<PlanItem>> =
-        dao.planItemsByPlanIdAndDayFlow(id, day.isoDayNumber).map {
+    override fun planItems(id: Int, day: Int): Flow<List<PlanItem>> =
+        dao.planItemsByPlanIdAndDayFlow(id, day).map {
             it.map { planDay ->
                 planDay.toExternal { exerciseId ->
                     exerciseDao.get(exerciseId)?.toExternal()
@@ -103,8 +101,8 @@ class LocalPlanRepo @Inject constructor(
             }
         }
 
-    override fun activeExercises(day: DayOfWeek): Flow<List<Exercise>> =
-        dao.currentPlanItemsByDayFlow(day.isoDayNumber).map {
+    override fun activeExercises(day: Int): Flow<List<Exercise>> =
+        dao.currentPlanItemsByDayFlow(day).map {
             it.mapNotNull { planDay ->
                 exerciseDao.get(planDay.exerciseId)?.toExternal()
             }
@@ -117,8 +115,8 @@ class LocalPlanRepo @Inject constructor(
             }
         }
 
-    override suspend fun getPlanItems(id: Int, day: DayOfWeek): List<PlanItem> =
-        dao.getPlanItemsByPlanIdAndDay(id, day.isoDayNumber).map {
+    override suspend fun getPlanItems(id: Int, day: Int): List<PlanItem> =
+        dao.getPlanItemsByPlanIdAndDay(id, day).map {
             it.toExternal { exerciseId ->
                 exerciseDao.get(exerciseId)?.toExternal()
             }
@@ -145,6 +143,9 @@ class LocalPlanRepo @Inject constructor(
         ),
     ).toInt()
 
+    override suspend fun dayCount(planId: Int): Int =
+        dao.getPlanItemsByPlanId(planId).maxOfOrNull { it.dayOfWeek } ?: 0
+
     override suspend fun updatePlan(plan: Plan) {
         dao.upsertPlan(plan.toEntity())
     }
@@ -166,7 +167,7 @@ class LocalPlanRepo @Inject constructor(
     }
 
     override suspend fun addItem(planItem: PlanItem) {
-        val order = dao.getMaxOrder(planItem.planId, planItem.dayOfWeek.isoDayNumber)?.plus(1) ?: 0
+        val order = dao.getMaxOrder(planItem.planId, planItem.dayIndex)?.plus(1) ?: 0
         dao.insertPlanItem(planItem.toEntity().copy(order = order))
     }
 

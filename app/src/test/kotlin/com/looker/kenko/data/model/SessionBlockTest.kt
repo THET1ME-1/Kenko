@@ -15,7 +15,6 @@
 package com.looker.kenko.data.model
 
 import com.looker.kenko.data.local.model.SetType
-import kotlinx.datetime.DayOfWeek
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -109,7 +108,7 @@ class SessionBlockTest {
         targetSets: Int = 3,
         id: Long = exercise.id!!.toLong(),
     ) = PlanItem(
-        dayOfWeek = DayOfWeek.MONDAY,
+        dayIndex = 1,
         exercise = exercise,
         planId = 1,
         supersetId = supersetId,

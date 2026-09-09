@@ -49,6 +49,7 @@ class SettingsViewModel @Inject constructor(
         _backupState,
     ) { settings, backupState ->
         SettingsUiData(
+            isWeekMode = settings.isWeekMode,
             selectedTheme = settings.theme,
             selectedColorPalette = settings.colorPalette,
             backupUri = settings.backupUri,
@@ -60,6 +61,7 @@ class SettingsViewModel @Inject constructor(
         )
     }.asStateFlow(
         SettingsUiData(
+            isWeekMode = false,
             selectedTheme = Theme.System,
             selectedColorPalette = ColorPalettes.Default,
             backupUri = null,
@@ -70,6 +72,12 @@ class SettingsViewModel @Inject constructor(
             backupMessage = null,
         ),
     )
+
+    fun updateWeekMode(enabled: Boolean) {
+        viewModelScope.launch {
+            repo.setWeekMode(enabled)
+        }
+    }
 
     fun updateTheme(theme: Theme) {
         viewModelScope.launch {
@@ -165,6 +173,7 @@ enum class BackupMessage {
 
 @Stable
 data class SettingsUiData(
+    val isWeekMode: Boolean,
     val selectedTheme: Theme,
     val selectedColorPalette: ColorPalettes,
     val backupUri: String?,

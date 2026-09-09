@@ -14,6 +14,7 @@
 
 package com.looker.kenko.ui.addEditExercise
 
+import android.net.Uri
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -23,6 +24,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.looker.kenko.R
+import com.looker.kenko.data.PhotoStore
 import com.looker.kenko.data.StringHandler
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.MuscleGroups
@@ -49,6 +51,7 @@ import kotlinx.coroutines.launch
 class AddEditExerciseViewModel @AssistedInject constructor(
     private val repo: ExerciseRepo,
     private val stringHandler: StringHandler,
+    private val photoStore: PhotoStore,
     @Assisted private val routeData: Routes.AddEditExercise,
 ) : ViewModel() {
 
@@ -64,6 +67,10 @@ class AddEditExerciseViewModel @AssistedInject constructor(
     private val targetMuscle = MutableStateFlow(MuscleGroups.Chest)
 
     private val isIsometric = MutableStateFlow(false)
+
+    private val secondaryMuscles = MutableStateFlow(emptySet<MuscleGroups>())
+
+    private val photoUri = MutableStateFlow<String?>(null)
 
     private val isReadOnly: Boolean = exerciseId != null
 
@@ -84,14 +91,18 @@ class AddEditExerciseViewModel @AssistedInject constructor(
         .mapLatest { repo.isExerciseAvailable(it) && !isReadOnly }
 
     val state = combine(
-        targetMuscle,
+        combine(targetMuscle, secondaryMuscles, photoUri) { target, secondary, photo ->
+            Triple(target, secondary, photo)
+        },
         isIsometric,
         flowOf(isReadOnly),
         exerciseAlreadyExistError,
         isReferenceInvalid,
-    ) { target, isometric, readOnly, alreadyExist, referenceInvalid ->
+    ) { muscles, isometric, readOnly, alreadyExist, referenceInvalid ->
         AddEditExerciseUiState(
-            targetMuscle = target,
+            targetMuscle = muscles.first,
+            secondaryMuscles = muscles.second,
+            photoUri = muscles.third,
             isIsometric = isometric,
             isReadOnly = readOnly,
             isError = alreadyExist,
@@ -100,12 +111,51 @@ class AddEditExerciseViewModel @AssistedInject constructor(
     }.asStateFlow(
         AddEditExerciseUiState(
             targetMuscle = MuscleGroups.Chest,
+            secondaryMuscles = emptySet(),
+            photoUri = null,
             isIsometric = false,
             isError = false,
             isReadOnly = false,
             isReferenceInvalid = false,
         ),
     )
+
+    /**
+     * One tap on the body: an untouched muscle becomes the main one, the main one steps aside
+     * into the helpers, and a helper tapped again drops out.
+     */
+    fun toggleMuscle(muscle: MuscleGroups) {
+        viewModelScope.launch {
+            when {
+                targetMuscle.value == muscle -> {
+                    secondaryMuscles.emit(secondaryMuscles.value - muscle)
+                }
+
+                muscle in secondaryMuscles.value -> {
+                    secondaryMuscles.emit(secondaryMuscles.value - muscle)
+                }
+
+                else -> {
+                    secondaryMuscles.emit(secondaryMuscles.value + targetMuscle.value - muscle)
+                    targetMuscle.emit(muscle)
+                }
+            }
+        }
+    }
+
+    fun setPhoto(uri: Uri?) {
+        viewModelScope.launch {
+            if (uri == null) {
+                photoStore.delete(photoUri.value)
+                photoUri.emit(null)
+                return@launch
+            }
+            photoStore.save(uri)?.let { path ->
+                photoStore.delete(photoUri.value)
+                photoUri.emit(path)
+            }
+        }
+    }
 
     fun setName(value: String) {
         exerciseName = value
@@ -143,6 +193,8 @@ class AddEditExerciseViewModel @AssistedInject constructor(
                     target = targetMuscle.value,
                     reference = reference.ifBlank { null },
                     isIsometric = isIsometric.value,
+                    photoUri = photoUri.value,
+                    secondaryTargets = secondaryMuscles.value.toList(),
                     id = exerciseId,
                 ),
             )
@@ -159,6 +211,8 @@ class AddEditExerciseViewModel @AssistedInject constructor(
                     addReference(it.reference ?: "")
                     setIsometric(it.isIsometric)
                     setTargetMuscle(it.target)
+                    secondaryMuscles.emit(it.secondaryTargets.toSet())
+                    photoUri.emit(it.photoUri)
                 }
             } else {
                 if (routeData.name != null) setName(routeData.name)
@@ -171,6 +225,8 @@ class AddEditExerciseViewModel @AssistedInject constructor(
 @Stable
 data class AddEditExerciseUiState(
     val targetMuscle: MuscleGroups,
+    val secondaryMuscles: Set<MuscleGroups>,
+    val photoUri: String?,
     val isIsometric: Boolean,
     val isError: Boolean,
     val isReadOnly: Boolean,

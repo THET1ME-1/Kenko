@@ -301,13 +301,7 @@ private fun RestBar(
                     Text(text = "+$REST_SHIFT_SECONDS")
                 }
                 Spacer(Modifier.width(8.dp))
-                Button(
-                    onClick = onStop,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.onTertiary,
-                    ),
-                ) {
+                Button(onClick = onStop) {
                     Text(
                         text = stringResource(
                             if (rest.isDone) R.string.label_done else R.string.label_skip_rest,

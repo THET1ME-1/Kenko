@@ -28,6 +28,7 @@ import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.PlanRepo
+import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.ui.navigation.Routes
 import com.looker.kenko.utils.asStateFlow
 import com.looker.kenko.utils.nextLocalDateTime
@@ -52,12 +53,14 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.isoDayNumber
 
 @HiltViewModel(assistedFactory = PlanEditViewModel.Factory::class)
 class PlanEditViewModel @AssistedInject constructor(
     private val repo: PlanRepo,
     private val stringHandler: StringHandler,
     private val sessionRepo: com.looker.kenko.data.repository.SessionRepo,
+    private val settingsRepo: SettingsRepo,
     @Assisted private val routeData: Routes.PlanEdit,
 ) : ViewModel() {
 
@@ -80,7 +83,7 @@ class PlanEditViewModel @AssistedInject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _planItemsStream = planIdStream.flatMapLatest { repo.planItems(it) }
 
-    private val _dayOfWeek: MutableStateFlow<DayOfWeek> = MutableStateFlow(localDate.dayOfWeek)
+    private val _dayIndex: MutableStateFlow<Int> = MutableStateFlow(1)
 
     private val _isSheetVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -105,22 +108,30 @@ class PlanEditViewModel @AssistedInject constructor(
 
     val state: StateFlow<PlanEditState> = combine(
         _planItemsStream,
-        _dayOfWeek,
+        _dayIndex,
         _fullDaySelection,
         _isSheetVisible,
-        combine(_selectedItems, _supersetMode) { selected, mode -> selected to mode },
+        combine(
+            _selectedItems,
+            _supersetMode,
+            settingsRepo.get { isWeekMode },
+        ) { selected, mode, weekMode -> Triple(selected, mode, weekMode) },
     ) { items, day, daySelection, sheetVisible, selection ->
         PlanEditState(
             currentDay = day,
+            dayCount = items.maxOfOrNull { it.dayIndex } ?: 0,
+            isWeekMode = selection.third,
             selectionMode = daySelection,
             exerciseSheetVisible = sheetVisible,
-            items = items.filter { it.dayOfWeek == day },
+            items = items.filter { it.dayIndex == day },
             selectedItems = selection.first,
             supersetMode = selection.second,
         )
     }.asStateFlow(
         PlanEditState(
-            currentDay = localDate.dayOfWeek,
+            currentDay = 1,
+            dayCount = 0,
+            isWeekMode = false,
             selectionMode = false,
             exerciseSheetVisible = false,
             items = emptyList(),
@@ -171,7 +182,7 @@ class PlanEditViewModel @AssistedInject constructor(
 
     fun breakSuperset(supersetId: Int) {
         viewModelScope.launch {
-            val ids = repo.getPlanItems(planIdStream.value, _dayOfWeek.value)
+            val ids = repo.getPlanItems(planIdStream.value, _dayIndex.value)
                 .filter { it.supersetId == supersetId }
                 .mapNotNull { it.id }
             repo.setSuperset(ids, null)
@@ -221,9 +232,9 @@ class PlanEditViewModel @AssistedInject constructor(
         }
     }
 
-    fun setCurrentDay(dayOfWeek: DayOfWeek) {
+    fun setCurrentDay(day: Int) {
         viewModelScope.launch {
-            _dayOfWeek.emit(dayOfWeek)
+            _dayIndex.emit(day.coerceAtLeast(1))
             if (_fullDaySelection.value) {
                 _fullDaySelection.emit(false)
             }
@@ -252,7 +263,7 @@ class PlanEditViewModel @AssistedInject constructor(
         viewModelScope.launch {
             repo.addItem(
                 PlanItem(
-                    dayOfWeek = _dayOfWeek.value,
+                    dayIndex = _dayIndex.value,
                     exercise = exercise,
                     planId = planIdStream.value,
                 ),
@@ -299,7 +310,7 @@ class PlanEditViewModel @AssistedInject constructor(
             while (sessionsAdded < sessions) {
                 val date = rand.nextLocalDateTime(now - (sessions * 2).days, now).date
 
-                val items = repo.getPlanItems(planId, date.dayOfWeek).ifEmpty { continue }
+                val items = repo.getPlanItems(planId, date.dayOfWeek.isoDayNumber).ifEmpty { continue }
                 sessionsAdded++
 
                 val sessionId = sessionRepo.getSessionIdOrCreate(date)
@@ -334,7 +345,9 @@ enum class PlanEditStage {
 
 @Stable
 data class PlanEditState(
-    val currentDay: DayOfWeek,
+    val currentDay: Int,
+    val dayCount: Int,
+    val isWeekMode: Boolean,
     val selectionMode: Boolean,
     val exerciseSheetVisible: Boolean,
     val items: List<PlanItem>,

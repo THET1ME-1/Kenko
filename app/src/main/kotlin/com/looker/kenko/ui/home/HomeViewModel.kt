@@ -16,18 +16,22 @@ package com.looker.kenko.ui.home
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
+import com.looker.kenko.data.PlanDayResolver
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.utils.asStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     planRepo: PlanRepo,
     sessionRepo: SessionRepo,
+    private val dayResolver: PlanDayResolver,
 ) : ViewModel() {
 
     private val planStream = planRepo.current
@@ -36,7 +40,10 @@ class HomeViewModel @Inject constructor(
 
     private val sessionsStream = sessionRepo.stream
 
-    private val planItemStream = planRepo.planItems(localDate.dayOfWeek)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val planItemStream = planRepo.current.flatMapLatest { plan ->
+        planRepo.planItemsForDay(dayResolver.dayFor(localDate, plan?.id))
+    }
 
     val state = combine(
         planStream,

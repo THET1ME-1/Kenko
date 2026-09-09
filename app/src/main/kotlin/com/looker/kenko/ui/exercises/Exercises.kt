@@ -55,6 +55,7 @@ import com.looker.kenko.data.model.ExercisesPreviewParameter
 import com.looker.kenko.data.model.MuscleGroups
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.ErrorSnackbar
+import com.looker.kenko.ui.components.ExerciseCard
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.LazyTargets
 import com.looker.kenko.ui.components.SecondaryKenkoButton
@@ -155,13 +156,13 @@ private fun ExercisesList(
                 modifier = Modifier.animateItem(),
                 onDismiss = { onRemove(exerciseId) }
             ) {
-                ExerciseItem(
+                ExerciseCard(
                     exercise = exercise,
                     onClick = { onExerciseClick(exerciseId) },
-                    referenceButton = {
+                    trailing = {
                         if (exercise.reference != null) {
                             FilledTonalIconButton(
-                                modifier = Modifier.size(56.dp),
+                                modifier = Modifier.size(48.dp),
                                 shape = MaterialTheme.shapes.extraLarge,
                                 onClick = { onReferenceClick(exercise.reference) }
                             ) {
@@ -200,46 +201,6 @@ private fun Header(
             )
         }
         HorizontalDivider(thickness = KenkoBorderWidth)
-    }
-}
-
-@Composable
-private fun ExerciseItem(
-    exercise: Exercise,
-    onClick: () -> Unit,
-    referenceButton: @Composable () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    @StringRes
-    val targetName: Int = remember { exercise.target.stringRes }
-    Surface(
-        modifier = modifier,
-        onClick = onClick,
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Column(
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(
-                    text = exercise.name,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    text = stringResource(targetName),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.outline,
-                )
-            }
-            Box(modifier = Modifier.size(56.dp)) {
-                referenceButton()
-            }
-        }
     }
 }
 

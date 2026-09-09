@@ -70,6 +70,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -169,10 +170,14 @@ fun PlanEdit(
     }
 
     if (state.exerciseSheetVisible) {
-        AddExerciseSheet(
-            onDismiss = viewModel::closeSheet,
-            onDone = viewModel::addExercise,
-            onAddNewExerciseClick = onAddNewExerciseClick,
+        SelectExercise(
+            modifier = Modifier.fillMaxSize(),
+            onBackPress = viewModel::closeSheet,
+            onRequestNewExercise = onAddNewExerciseClick,
+            onDone = { exercise ->
+                viewModel.addExercise(exercise)
+                viewModel.closeSheet()
+            },
         )
     }
 
@@ -329,7 +334,7 @@ private fun NameEdit(
 @Composable
 private fun PlanEdit(
     state: PlanEditState,
-    onSelectDay: (DayOfWeek) -> Unit,
+    onSelectDay: (Int) -> Unit,
     onRemoveItemClick: (PlanItem) -> Unit,
     onFullDaySelection: () -> Unit,
     onItemClick: (PlanItem) -> Unit,
@@ -346,28 +351,11 @@ private fun PlanEdit(
     PlanExercise(
         modifier = Modifier.fillMaxSize(),
         header = {
-            Header(
-                isExpandedView = state.selectionMode,
-                daySelector = {
-                    HorizontalDaySelector(
-                        item = { dayOfWeek ->
-                            DaySelectorChip(
-                                selected = dayOfWeek == state.currentDay,
-                                onClick = { onSelectDay(dayOfWeek) },
-                            ) {
-                                Text(kenkoDayName(dayOfWeek))
-                            }
-                        },
-                    )
-                },
-                daySwitcher = {
-                    DaySwitcher(
-                        selected = state.currentDay,
-                        onNext = { onSelectDay(state.currentDay + 1) },
-                        onPrevious = { onSelectDay(state.currentDay - 1) },
-                        onClick = onFullDaySelection,
-                    )
-                },
+            DayHeader(
+                day = state.currentDay,
+                dayCount = state.dayCount,
+                isWeekMode = state.isWeekMode,
+                onSelectDay = onSelectDay,
             )
         },
         items = {
@@ -480,6 +468,67 @@ private fun PlanEdit(
             }
         },
     )
+}
+
+/**
+ * Days of a plan are just numbers: one, two, three, and a new one whenever it is needed.
+ * In week mode the same number reads as a day of the week.
+ */
+@Composable
+private fun DayHeader(
+    day: Int,
+    dayCount: Int,
+    isWeekMode: Boolean,
+    onSelectDay: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface),
+    ) {
+        Text(
+            text = stringResource(R.string.heading_select_plan_items),
+            style = MaterialTheme.typography.displayMedium,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+        Spacer(Modifier.height(8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            FilledTonalIconButton(
+                onClick = { onSelectDay(day - 1) },
+                enabled = day > 1,
+            ) {
+                Icon(painter = KenkoIcons.KeyboardArrowLeft, contentDescription = null)
+            }
+            Text(
+                modifier = Modifier
+                    .weight(1F)
+                    .padding(horizontal = 8.dp),
+                text = if (isWeekMode) {
+                    kenkoDayName(DayOfWeek(day.coerceIn(1, 7)))
+                } else {
+                    stringResource(R.string.label_day_number, day)
+                },
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center,
+            )
+            FilledTonalIconButton(
+                onClick = { onSelectDay(day + 1) },
+                enabled = !isWeekMode || day < 7,
+            ) {
+                Icon(painter = KenkoIcons.KeyboardArrowRight, contentDescription = null)
+            }
+        }
+        if (!isWeekMode && dayCount > 0) {
+            Text(
+                text = stringResource(R.string.label_days_in_plan, dayCount),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+    }
 }
 
 /**
@@ -761,30 +810,6 @@ private fun StepperRow(
         FilledTonalIconButton(onClick = onIncrease) {
             Icon(painter = KenkoIcons.Add, contentDescription = null)
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun AddExerciseSheet(
-    onDismiss: () -> Unit,
-    onDone: (Exercise) -> Unit,
-    onAddNewExerciseClick: (name: String?, target: MuscleGroups?) -> Unit,
-) {
-    val scope = rememberCoroutineScope()
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    ModalBottomSheet(sheetState = state, onDismissRequest = onDismiss) {
-        SelectExercise(
-            onRequestNewExercise = onAddNewExerciseClick,
-            onDone = { exercise ->
-                scope.launch {
-                    onDone(exercise)
-                    state.hide()
-                }.invokeOnCompletion {
-                    if (!state.isVisible) onDismiss()
-                }
-            },
-        )
     }
 }
 

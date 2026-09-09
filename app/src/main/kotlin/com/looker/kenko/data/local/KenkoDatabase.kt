@@ -33,7 +33,7 @@ import com.looker.kenko.data.local.model.SetEntity
 import com.looker.kenko.data.local.model.SetTypeEntity
 
 @Database(
-    version = 7,
+    version = 9,
     entities = [
         SessionDataEntity::class,
         ExerciseEntity::class,
@@ -67,5 +67,7 @@ fun kenkoDatabase(context: Context) = Room
         MIGRATION_4_5,
         MIGRATION_5_6,
         MIGRATION_6_7,
+        MIGRATION_7_8,
+        MIGRATION_8_9,
     )
     .build()

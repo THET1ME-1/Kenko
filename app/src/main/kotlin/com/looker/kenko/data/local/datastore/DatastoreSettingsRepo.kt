@@ -81,6 +81,10 @@ class DatastoreSettingsRepo @Inject constructor(
         }
     }
 
+    override suspend fun setWeekMode(enabled: Boolean) {
+        WEEK_MODE.update(enabled)
+    }
+
     private suspend inline fun <T> Preferences.Key<T>.update(value: T) {
         dataStore.edit { preference ->
             preference[this] = value
@@ -89,14 +93,16 @@ class DatastoreSettingsRepo @Inject constructor(
 
     private fun mapSettings(preferences: Preferences): Settings {
         val isOnboardingDone = preferences[ONBOARDING_DONE] ?: false
+        val isWeekMode = preferences[WEEK_MODE] ?: false
         val theme = preferences[THEME] ?: Theme.System.name
-        val colorPalettes = preferences[COLOR_PALETTE] ?: ColorPalettes.Zestful.name
+        val colorPalettes = preferences[COLOR_PALETTE] ?: ColorPalettes.Amethyst.name
         val lastSetTime = preferences[LAST_SET_TIME_SECONDS]
         val backupUri = preferences[BACKUP_URI]
         val backupInterval = preferences[BACKUP_INTERVAL] ?: BackupInterval.Off.name
         val lastBackupTime = preferences[LAST_BACKUP_TIME_SECONDS]
         return Settings(
             isOnboardingDone = isOnboardingDone,
+            isWeekMode = isWeekMode,
             theme = Theme.valueOf(theme),
             colorPalette = ColorPalettes.valueOf(colorPalettes),
             lastSetTime = lastSetTime?.let { Instant.fromEpochSeconds(it) },
@@ -108,6 +114,7 @@ class DatastoreSettingsRepo @Inject constructor(
 
     private companion object Keys {
         val ONBOARDING_DONE: Preferences.Key<Boolean> = booleanPreferencesKey("onboarding_done")
+        val WEEK_MODE: Preferences.Key<Boolean> = booleanPreferencesKey("week_mode")
         val THEME: Preferences.Key<String> = stringPreferencesKey("theme")
         val COLOR_PALETTE: Preferences.Key<String> = stringPreferencesKey("color_palette")
         val LAST_SET_TIME_SECONDS: Preferences.Key<Long> =

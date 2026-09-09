@@ -55,6 +55,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SingleChoiceSegmentedButtonRowScope
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -106,6 +107,7 @@ fun Settings(
     val state by viewModel.state.collectAsStateWithLifecycle()
     Settings(
         state = state,
+        onWeekModeChange = viewModel::updateWeekMode,
         onSelectTheme = viewModel::updateTheme,
         onSelectColorPalette = viewModel::updateColorPalette,
         onSelectBackupLocation = viewModel::setBackupLocation,
@@ -121,6 +123,7 @@ fun Settings(
 @Composable
 private fun Settings(
     state: SettingsUiData,
+    onWeekModeChange: (Boolean) -> Unit,
     onSelectTheme: (Theme) -> Unit,
     onSelectColorPalette: (ColorPalettes) -> Unit,
     onSelectBackupLocation: (Uri) -> Unit,
@@ -168,6 +171,28 @@ private fun Settings(
         ) {
             HorizontalDivider(thickness = KenkoBorderWidth)
             Spacer(modifier = Modifier.height(16.dp))
+            CategoryHeader(title = stringResource(R.string.label_plans_title))
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1F)) {
+                    Text(
+                        text = stringResource(R.string.label_week_mode),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        text = stringResource(R.string.label_week_mode_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.outline,
+                    )
+                }
+                Switch(checked = state.isWeekMode, onCheckedChange = onWeekModeChange)
+            }
+            Spacer(modifier = Modifier.height(24.dp))
             CategoryHeader(title = stringResource(R.string.label_theme))
             Spacer(modifier = Modifier.height(4.dp))
             ThemeButton(
@@ -707,6 +732,7 @@ private fun SettingsPreview(
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Settings(
             state = SettingsUiData(
+                isWeekMode = false,
                 selectedTheme = Theme.System,
                 selectedColorPalette = ColorPalettes.Default,
                 backupUri = null,
@@ -716,6 +742,7 @@ private fun SettingsPreview(
                 isRestoring = false,
                 backupMessage = null,
             ),
+            onWeekModeChange = {},
             onSelectTheme = {},
             onSelectColorPalette = {},
             onSelectBackupLocation = {},

@@ -14,6 +14,7 @@
 
 package com.looker.kenko.data.local.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.looker.kenko.data.model.Exercise
@@ -29,6 +30,16 @@ data class ExerciseEntity(
     val target: MuscleGroups,
     val reference: String? = null,
     val isIsometric: Boolean = false,
+    /**
+     * File the app copied into its own folder, so the picture survives the gallery.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val photoUri: String? = null,
+    /**
+     * Muscles that also work, written as names separated by commas.
+     */
+    @ColumnInfo(defaultValue = "''")
+    val secondaryTargets: String = "",
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0
 )
@@ -37,7 +48,9 @@ fun ExerciseEntity.toExternal(): Exercise = Exercise(
     name = name,
     target = target,
     reference = reference,
-    isIsometric = isIsometric
+    isIsometric = isIsometric,
+    photoUri = photoUri,
+    secondaryTargets = secondaryTargets.toMuscleGroups(),
 )
 
 fun Exercise.toEntity(): ExerciseEntity = ExerciseEntity(
@@ -45,5 +58,15 @@ fun Exercise.toEntity(): ExerciseEntity = ExerciseEntity(
     name = name,
     target = target,
     reference = reference,
-    isIsometric = isIsometric
+    isIsometric = isIsometric,
+    photoUri = photoUri,
+    secondaryTargets = secondaryTargets.asStored(),
 )
+
+private fun String.toMuscleGroups(): List<MuscleGroups> =
+    split(',')
+        .mapNotNull { name ->
+            MuscleGroups.entries.firstOrNull { it.name == name.trim() }
+        }
+
+private fun List<MuscleGroups>.asStored(): String = joinToString(",") { it.name }

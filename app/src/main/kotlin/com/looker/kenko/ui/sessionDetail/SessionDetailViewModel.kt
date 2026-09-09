@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.looker.kenko.R
+import com.looker.kenko.data.PlanDayResolver
 import com.looker.kenko.data.local.model.DEFAULT_REST_SECONDS
 import com.looker.kenko.data.model.DEFAULT_DROP_PERCENT
 import com.looker.kenko.data.model.Exercise
@@ -66,6 +67,7 @@ class SessionDetailViewModel @AssistedInject constructor(
     private val planRepo: PlanRepo,
     @Assisted private val routeData: Routes.SessionDetail,
     private val uriHandler: UriHandler,
+    private val dayResolver: PlanDayResolver,
 ) : ViewModel() {
 
     @AssistedFactory
@@ -87,13 +89,25 @@ class SessionDetailViewModel @AssistedInject constructor(
     private val sessionStream: Flow<Session?> = repo.streamByDate(sessionDate)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val plannedToday: Flow<List<PlanItem>> = sessionStream.flatMapLatest { session ->
-        when {
-            sessionDate.isToday -> planRepo.planItems(sessionDate.dayOfWeek)
-            session?.planId != null -> planRepo.planItems(session.planId, sessionDate.dayOfWeek)
-            else -> flowOf(emptyList())
+    private val plannedToday: Flow<List<PlanItem>> = combine(
+        sessionStream,
+        planRepo.current,
+    ) { session, activePlan -> session to activePlan }
+        .flatMapLatest { (session, activePlan) ->
+            val planId = session?.planId ?: activePlan?.id
+            val day = session?.dayIndex ?: dayResolver.dayFor(sessionDate, planId)
+            currentDayIndex = day
+            when {
+                planId != null -> planRepo.planItems(planId, day)
+                sessionDate.isToday -> planRepo.planItemsForDay(day)
+                else -> flowOf(emptyList())
+            }
         }
-    }
+
+    /**
+     * Day of the plan this screen is writing into.
+     */
+    private var currentDayIndex: Int = 1
 
     private val _sheetTarget: MutableStateFlow<SetSheetTarget?> = MutableStateFlow(null)
     val sheetTarget: StateFlow<SetSheetTarget?> = _sheetTarget

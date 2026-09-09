@@ -29,8 +29,6 @@ import com.looker.kenko.data.model.MuscleGroups
 import com.looker.kenko.data.model.Plan
 import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.PlanStat
-import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.isoDayNumber
 
 @Entity(tableName = "plans")
 data class PlanEntity(
@@ -121,7 +119,7 @@ fun PlanItem.toEntity() = PlanDayEntity(
     id = id ?: 0,
     planId = planId,
     exerciseId = requireNotNull(exercise.id) { "Exercise id cannot be null" },
-    dayOfWeek = dayOfWeek.isoDayNumber,
+    dayOfWeek = dayIndex,
     supersetId = supersetId,
     targetSets = targetSets,
     targetReps = targetReps,
@@ -133,7 +131,7 @@ fun PlanItem.toEntity() = PlanDayEntity(
 
 inline fun PlanDayEntity.toExternal(block: (exerciseId: Int) -> Exercise?) = PlanItem(
     planId = planId,
-    dayOfWeek = DayOfWeek(dayOfWeek),
+    dayIndex = dayOfWeek,
     exercise = block(exerciseId) ?: DefaultExercise,
     supersetId = supersetId,
     targetSets = targetSets,

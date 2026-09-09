@@ -20,7 +20,7 @@ import com.looker.kenko.ui.theme.colorSchemes.ColorSchemes
 import com.looker.kenko.ui.theme.colorSchemes.defaultColorSchemes
 import com.looker.kenko.ui.theme.colorSchemes.sereneColorSchemes
 import com.looker.kenko.ui.theme.colorSchemes.twilightColorSchemes
-import com.looker.kenko.ui.theme.colorSchemes.zestfulColorSchemes
+import com.looker.kenko.ui.theme.colorSchemes.amethystColorSchemes
 
 data class KenkoThemeConfig(
     val colorSchemes: ColorSchemes,
@@ -29,8 +29,8 @@ data class KenkoThemeConfig(
 
 class KenkoThemePreviewParameter : PreviewParameterProvider<KenkoThemeConfig> {
     override val values = sequenceOf(
-        KenkoThemeConfig(zestfulColorSchemes, Theme.Light),
-        KenkoThemeConfig(zestfulColorSchemes, Theme.Dark),
+        KenkoThemeConfig(amethystColorSchemes, Theme.Light),
+        KenkoThemeConfig(amethystColorSchemes, Theme.Dark),
         KenkoThemeConfig(defaultColorSchemes, Theme.Light),
         KenkoThemeConfig(defaultColorSchemes, Theme.Dark),
         KenkoThemeConfig(sereneColorSchemes, Theme.Light),

@@ -14,6 +14,7 @@
 
 package com.looker.kenko.data.repository.local
 
+import com.looker.kenko.data.PlanDayResolver
 import com.looker.kenko.data.local.dao.ExerciseDao
 import com.looker.kenko.data.local.dao.PlanHistoryDao
 import com.looker.kenko.data.local.dao.SessionDao
@@ -43,6 +44,7 @@ import kotlinx.datetime.LocalDate
 
 class LocalSessionRepo @Inject constructor(
     private val dao: SessionDao,
+    private val dayResolver: dagger.Lazy<PlanDayResolver>,
     private val setsDao: SetsDao,
     private val historyDao: PlanHistoryDao,
     private val exerciseDao: ExerciseDao,
@@ -228,7 +230,14 @@ class LocalSessionRepo @Inject constructor(
         if (existingId != null) {
             return existingId
         }
-        return dao.insert(SessionDataEntity(date.toLocalEpochDays(), currentPlanId)).toInt()
+        val day = dayResolver.get().dayFor(date, currentPlanId)
+        return dao.insert(
+            SessionDataEntity(
+                date = date.toLocalEpochDays(),
+                planId = currentPlanId,
+                dayIndex = day,
+            ),
+        ).toInt()
     }
 
     override fun streamByDate(date: LocalDate): Flow<Session?> {
