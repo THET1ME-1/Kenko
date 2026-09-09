@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -101,10 +102,19 @@ fun BodyHeatMap(
             .height(height),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
+        val colors = MaterialTheme.colorScheme
         BodySide.entries.forEach { side ->
             BodyFigure(
                 side = side,
-                load = load,
+                fillOf = { muscle ->
+                    heatOf(
+                        intensity = load[muscle] ?: 0F,
+                        cold = colors.surfaceVariant,
+                        warm = colors.primaryContainer,
+                        hot = colors.primary,
+                        peak = colors.error,
+                    )
+                },
                 selected = selected,
                 onMuscleClick = onMuscleClick,
                 modifier = Modifier.weight(1F),
@@ -113,21 +123,87 @@ fun BodyHeatMap(
     }
 }
 
+/**
+ * The body as a picker: the muscle an exercise trains is filled with the accent, the ones that
+ * help are tinted, everything else waits. Tapping a muscle hands it back.
+ */
+@Composable
+fun BodyPicker(
+    primary: MuscleGroups?,
+    secondary: Set<MuscleGroups>,
+    onMuscleClick: (MuscleGroups) -> Unit,
+    modifier: Modifier = Modifier,
+    height: Dp = 300.dp,
+) {
+    val colors = MaterialTheme.colorScheme
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(height),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        BodySide.entries.forEach { side ->
+            BodyFigure(
+                side = side,
+                fillOf = { muscle ->
+                    when (muscle) {
+                        primary -> colors.primary
+                        in secondary -> colors.primaryContainer
+                        else -> colors.surfaceVariant
+                    }
+                },
+                selected = primary,
+                onMuscleClick = onMuscleClick,
+                modifier = Modifier.weight(1F),
+            )
+        }
+    }
+}
+
+/**
+ * One muscle on a small figure, the way a list row needs it: the side it shows on, the body
+ * quiet, the muscle itself in colour.
+ */
+@Composable
+fun MuscleIcon(
+    muscle: MuscleGroups,
+    modifier: Modifier = Modifier,
+    height: Dp = 44.dp,
+    tint: Color = MaterialTheme.colorScheme.error,
+    body: Color = MaterialTheme.colorScheme.surfaceBright,
+) {
+    val quiet = body
+    Box(modifier = modifier.height(height)) {
+        BodyFigure(
+            side = muscle.bodySide,
+            fillOf = { if (it == muscle) tint else quiet },
+            selected = null,
+            onMuscleClick = null,
+            outlines = false,
+            modifier = Modifier
+                .height(height)
+                .width(height * BODY_ICON_RATIO),
+        )
+    }
+}
+
+/**
+ * A figure is about twice as tall as it is wide.
+ */
+private const val BODY_ICON_RATIO = 0.62F
+
 @Composable
 private fun BodyFigure(
     side: BodySide,
-    load: Map<MuscleGroups, Float>,
+    fillOf: (MuscleGroups?) -> Color,
     selected: MuscleGroups?,
     onMuscleClick: ((MuscleGroups) -> Unit)?,
     modifier: Modifier = Modifier,
+    outlines: Boolean = true,
 ) {
     val colors = MaterialTheme.colorScheme
-    val neutral = colors.surfaceContainerHighest
-    val cold = colors.surfaceVariant
-    val warm = colors.primaryContainer
-    val hot = colors.primary
-    val peak = colors.error
-    val outline = colors.outline
+    val neutral = if (outlines) colors.surfaceContainerHighest else fillOf(null)
+    val outline = if (outlines) colors.outline else colors.outlineVariant
     val ring = colors.onSurface
 
     val regions = remember(side) {
@@ -180,30 +256,30 @@ private fun BodyFigure(
                         )
                         regions.filter { it.region.muscle == null }.forEach { drawn ->
                             drawPath(path = drawn.path, color = neutral)
-                            drawPath(
-                                path = drawn.path,
-                                color = outline,
-                                style = Stroke(width = OUTLINE_WIDTH),
-                            )
+                            if (outlines) {
+                                drawPath(
+                                    path = drawn.path,
+                                    color = outline,
+                                    style = Stroke(width = OUTLINE_WIDTH),
+                                )
+                            }
                         }
                         regions.filter { it.region.muscle != null }.forEach { drawn ->
-                            val muscle = drawn.region.muscle
-                            val heat = muscle?.let { load[it] } ?: 0F
-                            drawPath(
-                                path = drawn.path,
-                                color = heatOf(heat, cold, warm, hot, peak),
-                            )
-                            drawPath(
-                                path = drawn.path,
-                                color = if (muscle == selected) ring else outline,
-                                style = Stroke(
-                                    width = if (muscle == selected) {
-                                        OUTLINE_WIDTH * 2.5F
-                                    } else {
-                                        OUTLINE_WIDTH
-                                    },
-                                ),
-                            )
+                            val muscle = drawn.region.muscle ?: return@forEach
+                            drawPath(path = drawn.path, color = fillOf(muscle))
+                            if (outlines || muscle == selected) {
+                                drawPath(
+                                    path = drawn.path,
+                                    color = if (muscle == selected) ring else outline,
+                                    style = Stroke(
+                                        width = if (muscle == selected) {
+                                            OUTLINE_WIDTH * 2.5F
+                                        } else {
+                                            OUTLINE_WIDTH
+                                        },
+                                    ),
+                                )
+                            }
                         }
                     }
                 }

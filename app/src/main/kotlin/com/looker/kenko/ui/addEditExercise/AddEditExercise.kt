@@ -68,7 +68,7 @@ import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.DashedAddButton
 import com.looker.kenko.ui.components.ErrorSnackbar
 import com.looker.kenko.ui.components.KenkoButton
-import com.looker.kenko.ui.components.MuscleMap
+import com.looker.kenko.ui.components.BodyPicker
 import com.looker.kenko.ui.components.kenkoTextFieldColor
 import com.looker.kenko.ui.components.rememberPhoto
 import com.looker.kenko.ui.exercises.string
@@ -341,10 +341,10 @@ private fun MuscleSection(
             }
         }
         Spacer(Modifier.height(12.dp))
-        MuscleMap(
+        BodyPicker(
             primary = primary,
             secondary = secondary,
-            onZoneClick = onMuscleClick,
+            onMuscleClick = onMuscleClick,
         )
         Spacer(Modifier.height(8.dp))
         Text(

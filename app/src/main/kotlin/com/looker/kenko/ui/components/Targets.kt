@@ -29,6 +29,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -85,11 +86,26 @@ fun TargetChip(
     onClick: () -> Unit,
     text: String,
     modifier: Modifier = Modifier,
+    muscle: MuscleGroups? = null,
 ) {
     FilterChip(
         selected = selected,
         onClick = onClick,
         label = { Text(text = text) },
+        leadingIcon = muscle?.let {
+            {
+                MuscleIcon(
+                    muscle = it,
+                    height = 30.dp,
+                    tint = if (selected) {
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    },
+                    body = MaterialTheme.colorScheme.surfaceContainerHighest,
+                )
+            }
+        },
         modifier = modifier,
     )
 }
@@ -110,10 +126,11 @@ fun HorizontalTargetChips(
         Spacer(modifier = Modifier.width(contentPadding.calculateStartPadding(LocalLayoutDirection.current)))
         val sortedTargets = remember { Targets.sortedBy { it?.string } }
         sortedTargets.forEachIndexed { index, muscle ->
-            FilterChip(
+            TargetChip(
                 selected = target == muscle,
                 onClick = { onSelect(muscle) },
-                label = { Text(text = stringResource(muscle.string)) },
+                text = stringResource(muscle.string),
+                muscle = muscle,
             )
             if (sortedTargets.lastIndex != index) {
                 Spacer(modifier = Modifier.width(8.dp))

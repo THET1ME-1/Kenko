@@ -198,6 +198,7 @@ private fun Header(
                 selected = target == it,
                 onClick = { onSelect(it) },
                 text = stringResource(it.string),
+                muscle = it,
             )
         }
         HorizontalDivider(thickness = KenkoBorderWidth)

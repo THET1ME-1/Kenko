@@ -64,6 +64,7 @@ import com.looker.kenko.data.model.StatsSummary
 import com.looker.kenko.ui.components.BodyHeatMap
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.KenkoBorderWidth
+import com.looker.kenko.ui.components.MuscleIcon
 import com.looker.kenko.ui.components.heatColor
 import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.theme.KenkoIcons
@@ -571,13 +572,13 @@ private fun MuscleRow(
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(12.dp)
-                .clip(CircleShape)
-                .background(heatColor(intensity)),
+        MuscleIcon(
+            muscle = load.muscle,
+            height = 54.dp,
+            tint = heatColor(intensity),
+            body = MaterialTheme.colorScheme.surfaceContainerHighest,
         )
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1F)) {
             Text(
                 text = stringResource(load.muscle.stringRes),

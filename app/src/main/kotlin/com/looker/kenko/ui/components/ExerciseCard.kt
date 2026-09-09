@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.exercises.string
-import com.looker.kenko.ui.theme.numbers
 
 /**
  * How an exercise reads in any list: picture, name, the muscle it works and the ones that help.
@@ -114,10 +113,12 @@ fun ExercisePhoto(
                 modifier = Modifier.size(size),
             )
         } else {
-            Text(
-                text = exercise.displayName().take(2).uppercase(),
-                style = MaterialTheme.typography.titleMedium.numbers(),
-                color = MaterialTheme.colorScheme.outline,
+            // Без снимка карточка показывает мышцу: движение так узнаётся быстрее, чем по буквам.
+            MuscleIcon(
+                muscle = exercise.target,
+                height = size * 0.86F,
+                tint = MaterialTheme.colorScheme.primary,
+                body = MaterialTheme.colorScheme.surfaceBright,
             )
         }
     }

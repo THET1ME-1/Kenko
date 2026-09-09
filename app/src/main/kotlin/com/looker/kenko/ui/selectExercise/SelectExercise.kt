@@ -139,6 +139,7 @@ fun SelectExercise(
                 selected = target == it,
                 onClick = { viewModel.setTarget(it) },
                 text = stringResource(it.string),
+                muscle = it,
             )
         }
 
