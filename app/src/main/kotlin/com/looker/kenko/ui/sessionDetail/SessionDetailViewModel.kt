@@ -259,12 +259,30 @@ class SessionDetailViewModel @AssistedInject constructor(
     }
 
     fun showAddDropSheet(chain: SetChain) {
-        if (chain.set.id == null || chain.set.exercise.id == null) return
+        showDropStepSheet(chain, chain.performedSteps)
+    }
+
+    /**
+     * Opens the sheet on one cut of the group: the computed weight is only a suggestion,
+     * the lifter can put in whatever the rack actually has.
+     */
+    fun showDropStepSheet(chain: SetChain, stepIndex: Int) {
+        val parentId = chain.set.id ?: return
+        val exerciseId = chain.set.exercise.id ?: return
+        val step = chain.steps.getOrNull(stepIndex) ?: return
         viewModelScope.launch {
             _sheetTarget.emit(
                 SetSheetTarget(
                     exerciseName = chain.set.exercise.name,
-                    target = dropTargetOf(chain.set, chain.drops.lastOrNull()),
+                    target = AddSetTarget(
+                        exerciseId = exerciseId,
+                        parentSetId = parentId,
+                        dropIndex = stepIndex,
+                        suggestion = AddSetTarget.Suggestion(
+                            reps = step.reps,
+                            weight = step.weight,
+                        ),
+                    ),
                 ),
             )
         }

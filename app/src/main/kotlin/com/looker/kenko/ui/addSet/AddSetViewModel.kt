@@ -106,6 +106,7 @@ class AddSetViewModel @AssistedInject constructor(
                     weight = weightFloat,
                     reps = reps,
                     rir = RepsInReserve(2),
+                    dropIndex = target.dropIndex,
                 )
                 return@launch
             }

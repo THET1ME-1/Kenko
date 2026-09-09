@@ -54,6 +54,7 @@ interface SessionRepo {
         weight: Float,
         reps: Int,
         rir: RepsInReserve,
+        dropIndex: Int = 0,
     )
 
     /**

@@ -149,6 +149,7 @@ fun SessionDetails(
             onMarkStep = viewModel::markDropStep,
             onMarkGroup = viewModel::markDropGroup,
             onUndoDrops = viewModel::undoDrops,
+            onEditStep = viewModel::showDropStepSheet,
             onCloseRound = viewModel::closeSupersetRound,
             onUndoRound = viewModel::undoSupersetRound,
         ),
@@ -443,6 +444,7 @@ data class GroupActions(
     val onMarkStep: (SetChain, Int) -> Unit = { _, _ -> },
     val onMarkGroup: (SetChain) -> Unit = {},
     val onUndoDrops: (SetChain) -> Unit = {},
+    val onEditStep: (SetChain, Int) -> Unit = { _, _ -> },
     val onCloseRound: (SessionBlock.Superset) -> Unit = {},
     val onUndoRound: (SessionBlock.Superset) -> Unit = {},
 )
@@ -518,6 +520,7 @@ private fun LazyGridScope.singleExerciseBlock(
                     onMarkStep = { groupActions.onMarkStep(chain, it) },
                     onMarkGroup = { groupActions.onMarkGroup(chain) },
                     onUndo = { groupActions.onUndoDrops(chain) },
+                    onEditStep = { stepIndex -> groupActions.onEditStep(chain, stepIndex) },
                 )
             } else {
                 DropSetRow(

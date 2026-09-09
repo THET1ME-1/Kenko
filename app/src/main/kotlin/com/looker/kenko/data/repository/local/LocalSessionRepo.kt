@@ -110,9 +110,11 @@ class LocalSessionRepo @Inject constructor(
         weight: Float,
         reps: Int,
         rir: RepsInReserve,
+        dropIndex: Int,
     ) {
         val parent = requireNotNull(setsDao.get(parentSetId)) { "Parent set is gone" }
         require(parent.parentSetId == null) { "A drop cannot hang under another drop" }
+        val index = dropIndex.takeIf { it > 0 } ?: ((setsDao.getMaxDropIndex(parentSetId) ?: 0) + 1)
         setsDao.insert(
             parent.copy(
                 id = 0,
@@ -121,7 +123,8 @@ class LocalSessionRepo @Inject constructor(
                 type = SetType.Drop,
                 rir = rir.value,
                 parentSetId = parentSetId,
-                dropIndex = (setsDao.getMaxDropIndex(parentSetId) ?: 0) + 1,
+                dropIndex = index,
+                dropCount = 0,
             ),
         )
         if (parent.type != SetType.Drop) {

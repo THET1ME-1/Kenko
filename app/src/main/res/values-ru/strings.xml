@@ -339,4 +339,5 @@
     <string name="label_remove">удалить</string>
     <string name="label_weight_calculator">калькулятор веса</string>
     <string name="label_only_gym">только зал</string>
+    <string name="label_drop_hint_editable">Веса считает приложение: %1$s кг. Тап по сбросу — поставить свой.</string>
 </resources>

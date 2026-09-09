@@ -79,6 +79,7 @@ fun DropSetCard(
     onMarkGroup: () -> Unit,
     onUndo: () -> Unit,
     modifier: Modifier = Modifier,
+    onEditStep: (Int) -> Unit = {},
     /**
      * In a plan there is nothing to tick off yet: the group only shows what is coming.
      */
@@ -175,6 +176,8 @@ fun DropSetCard(
                     number = number,
                     isNext = !isPlan && !step.isPerformed && step.index == performed,
                     onTick = { onMarkStep(step.index) }.takeIf { isEditable && !isPlan },
+                    onEdit = { onEditStep(step.index) }
+                        .takeIf { isEditable && !isPlan && !step.isPerformed && step.index > 0 },
                     showTick = !isPlan,
                 )
             }
@@ -214,7 +217,7 @@ fun DropSetCard(
                 .padding(horizontal = 15.dp, vertical = 12.dp),
         ) {
             Text(
-                text = stringResource(R.string.label_drop_hint, steps.chainLabel()),
+                text = stringResource(R.string.label_drop_hint_editable, steps.chainLabel()),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -234,6 +237,7 @@ private fun DropStepRow(
     isNext: Boolean,
     onTick: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    onEdit: (() -> Unit)? = null,
     showTick: Boolean = true,
 ) {
     val alpha = when {
@@ -279,6 +283,7 @@ private fun DropStepRow(
                         MaterialTheme.colorScheme.surfaceContainerHigh
                     },
                 )
+                .then(if (onEdit != null) Modifier.clickable(onClick = onEdit) else Modifier)
                 .padding(horizontal = 14.dp, vertical = 9.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom,

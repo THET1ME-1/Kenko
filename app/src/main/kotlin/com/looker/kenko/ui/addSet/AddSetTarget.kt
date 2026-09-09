@@ -26,6 +26,10 @@ import kotlin.math.roundToInt
 data class AddSetTarget(
     val exerciseId: Int,
     val parentSetId: Int? = null,
+    /**
+     * Position of the cut inside the group, so a weight of one's own lands in the right row.
+     */
+    val dropIndex: Int = 0,
     val supersetId: Int? = null,
     val dropCount: Int = 0,
     val dropPercent: Int = DEFAULT_DROP_PERCENT,

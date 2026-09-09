@@ -377,4 +377,5 @@
     <string name="label_remove">remove</string>
     <string name="label_weight_calculator">weight calculator</string>
     <string name="label_only_gym">only this gym</string>
+    <string name="label_drop_hint_editable">The app does the weights: %1$s kg. Tap a drop to set your own.</string>
 </resources>
