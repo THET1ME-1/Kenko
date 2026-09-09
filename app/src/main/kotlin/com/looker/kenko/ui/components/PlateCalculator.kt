@@ -145,7 +145,7 @@ fun PlateCalculator(
             Spacer(Modifier.width(6.dp))
             Text(
                 modifier = Modifier.padding(bottom = 8.dp),
-                text = stringResource(R.string.label_kg).lowercase(),
+                text = stringResource(R.string.label_kg),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.outline,
             )

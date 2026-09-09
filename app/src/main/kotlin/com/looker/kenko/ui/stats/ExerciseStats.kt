@@ -176,7 +176,7 @@ fun ExerciseStats(
 @Composable
 private fun setTypeCaption(row: SetRow): String = when {
     row.set.parentSetId != null ->
-        stringResource(R.string.label_drop_number, row.set.dropIndex).lowercase()
+        stringResource(R.string.label_drop_number, row.set.dropIndex)
     else -> stringResource(R.string.label_set_type_standard)
 }
 
