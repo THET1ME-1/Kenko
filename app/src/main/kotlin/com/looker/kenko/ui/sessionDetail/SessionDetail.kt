@@ -60,12 +60,17 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -95,7 +100,11 @@ import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
 import com.looker.kenko.ui.sessionDetail.components.AddDropRow
 import com.looker.kenko.ui.sessionDetail.components.DropRow
+import com.looker.kenko.ui.sessionDetail.components.DropSetCard
+import com.looker.kenko.ui.sessionDetail.components.DropSetRow
 import com.looker.kenko.ui.sessionDetail.components.SetItem
+import com.looker.kenko.ui.sessionDetail.components.SupersetCard
+import com.looker.kenko.ui.sessionDetail.components.SupersetRow
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -103,6 +112,7 @@ import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.ui.theme.numbers
 import com.looker.kenko.utils.DateFormat
 import com.looker.kenko.utils.formatDate
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -128,6 +138,15 @@ fun SessionDetails(
         onAddSetClick = { exercise, supersetId ->
             viewModel.showAddSetSheet(exercise, supersetId)
         },
+        groupActions = GroupActions(
+            onDropsChange = viewModel::setDropCount,
+            onPercentChange = viewModel::setDropPercent,
+            onMarkStep = viewModel::markDropStep,
+            onMarkGroup = viewModel::markDropGroup,
+            onUndoDrops = viewModel::undoDrops,
+            onCloseRound = viewModel::closeSupersetRound,
+            onUndoRound = viewModel::undoSupersetRound,
+        ),
         onAddDropClick = viewModel::showAddDropSheet,
         onHistoryClick = { onHistoryClick(viewModel.previousSessionDate) },
     )
@@ -154,6 +173,7 @@ private fun SessionDetail(
     onAddSetClick: (Exercise, Int?) -> Unit = { _, _ -> },
     onAddDropClick: (SetChain) -> Unit = {},
     onHistoryClick: () -> Unit = {},
+    groupActions: GroupActions = GroupActions(),
 ) {
     when (state) {
         is SessionDetailState.Error -> {
@@ -205,6 +225,7 @@ private fun SessionDetail(
                 onAddSetClick = onAddSetClick,
                 onAddDropClick = onAddDropClick,
                 onHistoryClick = onHistoryClick,
+                groupActions = groupActions,
             )
             if (rest != null) {
                 RestBar(
@@ -313,7 +334,9 @@ private fun SetsList(
     onAddSetClick: (Exercise, Int?) -> Unit,
     onAddDropClick: (SetChain) -> Unit,
     onHistoryClick: () -> Unit,
+    groupActions: GroupActions,
 ) {
+    val expanded = rememberSaveable(saver = expandedSaver) { mutableStateMapOf() }
     LazyVerticalGrid(
         columns = GridCells.Adaptive(360.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -346,37 +369,63 @@ private fun SetsList(
                 },
             )
         }
-        blocks.forEach { block ->
+        blocks.forEachIndexed { blockIndex, block ->
             when (block) {
                 is SessionBlock.SingleExercise -> singleExerciseBlock(
                     block = block,
                     isEditable = isEditable,
+                    expanded = expanded,
                     onRemoveSet = onRemoveSet,
                     onReferenceClick = onReferenceClick,
                     onAddSetClick = onAddSetClick,
-                    onAddDropClick = onAddDropClick,
+                    groupActions = groupActions,
                 )
 
                 is SessionBlock.Superset -> supersetBlock(
                     block = block,
+                    number = blockIndex + 1,
                     isEditable = isEditable,
-                    onRemoveSet = onRemoveSet,
+                    expanded = expanded,
                     onAddSetClick = onAddSetClick,
-                    onAddDropClick = onAddDropClick,
+                    groupActions = groupActions,
                 )
             }
         }
     }
 }
 
+/**
+ * What a group block can do. Kept together so the list does not grow a tail of callbacks.
+ */
+@Immutable
+data class GroupActions(
+    val onDropsChange: (SetChain, Int) -> Unit = { _, _ -> },
+    val onPercentChange: (SetChain, Int) -> Unit = { _, _ -> },
+    val onMarkStep: (SetChain, Int) -> Unit = { _, _ -> },
+    val onMarkGroup: (SetChain) -> Unit = {},
+    val onUndoDrops: (SetChain) -> Unit = {},
+    val onCloseRound: (SessionBlock.Superset) -> Unit = {},
+    val onUndoRound: (SessionBlock.Superset) -> Unit = {},
+)
+
+private val expandedSaver = listSaver<SnapshotStateMap<String, Boolean>, String>(
+    save = { map -> map.filterValues { it }.keys.toList() },
+    restore = { keys ->
+        mutableStateMapOf<String, Boolean>().apply {
+            keys.forEach { key -> put(key, true) }
+        }
+    },
+)
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 private fun LazyGridScope.singleExerciseBlock(
     block: SessionBlock.SingleExercise,
     isEditable: Boolean,
+    expanded: SnapshotStateMap<String, Boolean>,
     onRemoveSet: (Int?) -> Unit,
     onReferenceClick: (String) -> Unit,
     onAddSetClick: (Exercise, Int?) -> Unit,
-    onAddDropClick: (SetChain) -> Unit,
+    groupActions: GroupActions,
 ) {
     val exercise = block.exercise
     item(
@@ -414,14 +463,39 @@ private fun LazyGridScope.singleExerciseBlock(
         items = block.chains,
         span = { _, _ -> GridItemSpan(maxLineSpan) },
     ) { index, chain ->
-        ChainItem(
-            chain = chain,
-            number = index + 1,
-            isEditable = isEditable,
-            onRemoveSet = onRemoveSet,
-            onAddDropClick = onAddDropClick,
-            modifier = Modifier.animateItem(),
-        )
+        val number = index + 1
+        val key = "drop-${chain.set.id}"
+        if (chain.isDropSet) {
+            val isOpen = expanded[key] ?: (isEditable && chain.performedSteps <= chain.set.dropCount)
+            if (isOpen) {
+                DropSetCard(
+                    modifier = Modifier.animateItem(),
+                    chain = chain,
+                    number = number,
+                    isEditable = isEditable,
+                    onCollapse = { expanded[key] = false },
+                    onDropsChange = { groupActions.onDropsChange(chain, it) },
+                    onPercentChange = { groupActions.onPercentChange(chain, it) },
+                    onMarkStep = { groupActions.onMarkStep(chain, it) },
+                    onMarkGroup = { groupActions.onMarkGroup(chain) },
+                    onUndo = { groupActions.onUndoDrops(chain) },
+                )
+            } else {
+                DropSetRow(
+                    modifier = Modifier.animateItem(),
+                    chain = chain,
+                    number = number,
+                    onExpand = { expanded[key] = true },
+                )
+            }
+        } else {
+            ChainItem(
+                chain = chain,
+                number = number,
+                onRemoveSet = onRemoveSet,
+                modifier = Modifier.animateItem(),
+            )
+        }
     }
     val plan = block.plan
     if (isEditable && plan != null && block.setsLeft > 0) {
@@ -436,65 +510,42 @@ private fun LazyGridScope.singleExerciseBlock(
             )
         }
     }
+    if (block.chains.isNotEmpty()) {
+        item(
+            span = { GridItemSpan(maxLineSpan) },
+        ) {
+            VolumeCard(block = block)
+        }
+    }
 }
 
 private fun LazyGridScope.supersetBlock(
     block: SessionBlock.Superset,
+    number: Int,
     isEditable: Boolean,
-    onRemoveSet: (Int?) -> Unit,
+    expanded: SnapshotStateMap<String, Boolean>,
     onAddSetClick: (Exercise, Int?) -> Unit,
-    onAddDropClick: (SetChain) -> Unit,
+    groupActions: GroupActions,
 ) {
     item(
         span = { GridItemSpan(maxLineSpan) },
     ) {
-        StickyHeader(
-            name = stringResource(R.string.label_superset),
-            subtitle = buildString {
-                append(block.exercises.joinToString(" + ") { it.name })
-                if (block.roundsLeft > 0) {
-                    append(" · ")
-                    append(stringResource(R.string.label_rounds_left, block.roundsLeft))
-                }
-            },
-        )
-    }
-    block.rounds.forEach { round ->
-        item(
-            span = { GridItemSpan(maxLineSpan) },
-        ) {
-            RoundLabel(number = round.index + 1)
-        }
-        items(
-            items = round.chains,
-            span = { GridItemSpan(maxLineSpan) },
-        ) { chain ->
-            ChainItem(
-                chain = chain,
-                number = null,
+        val key = "superset-${block.id}"
+        val isOpen = expanded[key] ?: (isEditable && block.roundsLeft > 0)
+        if (isOpen) {
+            SupersetCard(
+                block = block,
                 isEditable = isEditable,
-                onRemoveSet = onRemoveSet,
-                onAddDropClick = onAddDropClick,
+                onCollapse = { expanded[key] = false },
+                onCloseRound = { groupActions.onCloseRound(block) },
+                onUndo = { groupActions.onUndoRound(block) },
             )
-        }
-    }
-    if (isEditable && block.roundsLeft > 0) {
-        item(
-            span = { GridItemSpan(maxLineSpan) },
-        ) {
-            RoundLabel(number = block.rounds.size + 1)
-        }
-        block.plan.forEach { planItem ->
-            item(
-                span = { GridItemSpan(maxLineSpan) },
-            ) {
-                PlannedSetRow(
-                    number = null,
-                    name = planItem.exercise.name,
-                    reps = planItem.targetReps,
-                    onClick = { onAddSetClick(planItem.exercise, block.id) },
-                )
-            }
+        } else {
+            SupersetRow(
+                block = block,
+                number = number,
+                onExpand = { expanded[key] = true },
+            )
         }
     }
     if (isEditable) {
@@ -523,40 +574,60 @@ private fun LazyGridScope.supersetBlock(
     }
 }
 
+/**
+ * What the exercise added up to, drop sets counted separately.
+ */
+@Composable
+private fun VolumeCard(
+    block: SessionBlock.SingleExercise,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(MaterialTheme.shapes.extraLarge)
+            .border(OnSurfaceVariantBorder, MaterialTheme.shapes.extraLarge)
+            .padding(horizontal = 20.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1F)) {
+            Text(
+                text = stringResource(R.string.label_exercise_volume),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
+            Text(
+                text = stringResource(R.string.label_volume_kg, block.volume.roundToInt()),
+                style = MaterialTheme.typography.headlineMedium.numbers(),
+            )
+        }
+        if (block.dropVolume > 0F) {
+            Text(
+                text = stringResource(R.string.label_of_them_drop, block.dropVolume.roundToInt()),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
+        }
+    }
+}
+
 @Composable
 private fun ChainItem(
     chain: SetChain,
-    number: Int?,
-    isEditable: Boolean,
+    number: Int,
     onRemoveSet: (Int?) -> Unit,
-    onAddDropClick: (SetChain) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
-        SwipeToDeleteBox(
-            onDismiss = { onRemoveSet(chain.set.id) },
-        ) {
-            SetItem(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                set = chain.set,
-                title = {
-                    Text(text = if (number == null) chain.set.exercise.name.take(2) else normalizeInt(number))
-                },
-            )
-        }
-        chain.drops.forEach { drop ->
-            SwipeToDeleteBox(
-                onDismiss = { onRemoveSet(drop.id) },
-            ) {
-                DropRow(drop = drop, modifier = Modifier.padding(vertical = 3.dp))
-            }
-        }
-        if (isEditable && chain.set.type == SetType.Drop) {
-            AddDropRow(
-                onClick = { onAddDropClick(chain) },
-                modifier = Modifier.padding(vertical = 3.dp),
-            )
-        }
+    SwipeToDeleteBox(
+        modifier = modifier,
+        onDismiss = { onRemoveSet(chain.set.id) },
+    ) {
+        SetItem(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+            set = chain.set,
+            title = { Text(text = normalizeInt(number)) },
+        )
     }
 }
 

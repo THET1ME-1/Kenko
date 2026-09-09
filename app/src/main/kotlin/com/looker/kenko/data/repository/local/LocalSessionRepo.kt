@@ -23,9 +23,14 @@ import com.looker.kenko.data.local.model.SetEntity
 import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.local.model.toEntity
 import com.looker.kenko.data.local.model.toExternal
+import com.looker.kenko.data.model.MAX_DROP_COUNT
+import com.looker.kenko.data.model.MAX_DROP_PERCENT
+import com.looker.kenko.data.model.MIN_DROP_PERCENT
+import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.Set
+import com.looker.kenko.data.model.buildDropChain
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.utils.toLocalEpochDays
@@ -66,6 +71,8 @@ class LocalSessionRepo @Inject constructor(
         setType: SetType,
         rir: RepsInReserve,
         supersetId: Int?,
+        dropCount: Int,
+        dropPercent: Int,
     ) {
         setsDao.insert(
             SetEntity(
@@ -80,8 +87,18 @@ class LocalSessionRepo @Inject constructor(
                 roundIndex = supersetId?.let {
                     setsDao.getSupersetSetCount(sessionId, exerciseId, it)
                 },
+                dropCount = dropCount,
+                dropPercent = dropPercent,
             ),
         )
+    }
+
+    override suspend fun clearLastSupersetRound(sessionId: Int, supersetId: Int) {
+        val performed = setsDao.getSupersetSets(sessionId, supersetId)
+        val lastRound = performed.maxOfOrNull { it.roundIndex ?: 0 } ?: return
+        performed
+            .filter { (it.roundIndex ?: 0) == lastRound }
+            .forEach { setsDao.delete(it.id) }
     }
 
     override suspend fun addDrop(
@@ -107,6 +124,93 @@ class LocalSessionRepo @Inject constructor(
             setsDao.updateType(parentSetId, SetType.Drop)
         }
     }
+
+    override suspend fun setDropSettings(setId: Int, count: Int, percent: Int) {
+        setsDao.updateDropSettings(
+            setId = setId,
+            count = count.coerceIn(0, MAX_DROP_COUNT),
+            percent = percent.coerceIn(MIN_DROP_PERCENT, MAX_DROP_PERCENT),
+            type = if (count > 0) SetType.Drop else SetType.Standard,
+        )
+        val extra = setsDao.getDrops(setId).filter { it.dropIndex > count }
+        for (drop in extra) {
+            setsDao.delete(drop.id)
+        }
+    }
+
+    override suspend fun markDropStep(parentSetId: Int, stepIndex: Int) {
+        val parent = requireNotNull(setsDao.get(parentSetId)) { "Parent set is gone" }
+        val performed = setsDao.getDrops(parentSetId)
+        if (performed.any { it.dropIndex == stepIndex }) return
+        val step = chainOf(parent).getOrNull(stepIndex) ?: return
+        setsDao.insert(
+            parent.copy(
+                id = 0,
+                repsOrDuration = step.reps,
+                weight = step.weight,
+                type = SetType.Drop,
+                parentSetId = parentSetId,
+                dropIndex = stepIndex,
+                dropCount = 0,
+            ),
+        )
+    }
+
+    override suspend fun markWholeDropGroup(parentSetId: Int) {
+        val parent = requireNotNull(setsDao.get(parentSetId)) { "Parent set is gone" }
+        val done = setsDao.getDrops(parentSetId).map { it.dropIndex }.toSet()
+        chainOf(parent).drop(1).forEach { step ->
+            if (step.index !in done) {
+                markDropStep(parentSetId, step.index)
+            }
+        }
+    }
+
+    override suspend fun clearDrops(parentSetId: Int) {
+        setsDao.deleteDrops(parentSetId)
+    }
+
+    override suspend fun closeSupersetRound(
+        sessionId: Int,
+        supersetId: Int,
+        items: List<PlanItem>,
+    ) {
+        if (items.isEmpty()) return
+        val performed = setsDao.getSupersetSets(sessionId, supersetId)
+        val round = performed
+            .groupBy { it.roundIndex ?: 0 }
+            .entries
+            .sortedBy { it.key }
+            .lastOrNull { (_, sets) -> sets.size < items.size }
+            ?.key
+            ?: performed.size.let { if (it == 0) 0 else (performed.maxOf { set -> set.roundIndex ?: 0 } + 1) }
+        val alreadyIn = performed.filter { (it.roundIndex ?: 0) == round }.map { it.exerciseId }.toSet()
+        for (item in items) {
+            val exerciseId = item.exercise.id ?: continue
+            if (exerciseId in alreadyIn) continue
+            val weight = setsDao.getLastSetByExerciseId(exerciseId)?.weight ?: 0F
+            setsDao.insert(
+                SetEntity(
+                    repsOrDuration = item.targetReps,
+                    weight = weight,
+                    type = SetType.Standard,
+                    order = nextOrder(sessionId),
+                    sessionId = sessionId,
+                    exerciseId = exerciseId,
+                    rir = RepsInReserve(2).value,
+                    supersetId = supersetId,
+                    roundIndex = round,
+                ),
+            )
+        }
+    }
+
+    private fun chainOf(parent: SetEntity) = buildDropChain(
+        base = parent.weight,
+        drops = parent.dropCount,
+        reps = parent.repsOrDuration,
+        percent = parent.dropPercent,
+    )
 
     private suspend fun nextOrder(sessionId: Int): Int =
         setsDao.getMaxOrder(sessionId)?.plus(1) ?: 0

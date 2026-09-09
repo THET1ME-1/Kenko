@@ -320,3 +320,18 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
         db.execSQL("UPDATE plan_day SET `order` = id")
     }
 }
+
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE sets ADD COLUMN dropCount INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE sets ADD COLUMN dropPercent INTEGER NOT NULL DEFAULT 20")
+        db.execSQL("UPDATE sets SET dropCount = (SELECT COUNT(*) FROM sets AS drops WHERE drops.parentSetId = sets.id)")
+    }
+}
+
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE plan_day ADD COLUMN dropCount INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE plan_day ADD COLUMN dropPercent INTEGER NOT NULL DEFAULT 20")
+    }
+}

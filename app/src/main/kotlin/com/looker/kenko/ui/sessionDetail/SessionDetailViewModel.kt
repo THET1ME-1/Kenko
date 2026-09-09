@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.looker.kenko.R
 import com.looker.kenko.data.local.model.DEFAULT_REST_SECONDS
+import com.looker.kenko.data.model.DEFAULT_DROP_PERCENT
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.RestTimer
@@ -124,6 +125,23 @@ class SessionDetailViewModel @AssistedInject constructor(
         }
     }.asStateFlow(null)
 
+    private var plannedItems: List<PlanItem> = emptyList()
+
+    private fun restSecondsFor(exercise: Exercise?): Int =
+        plannedItems.firstOrNull { it.exercise.id == exercise?.id }?.restSeconds
+            ?: DEFAULT_REST_SECONDS
+
+    private suspend fun startRest(exerciseName: String, seconds: Int) {
+        if (seconds <= 0) return
+        _restTimer.emit(
+            RestTimer(
+                exerciseName = exerciseName,
+                totalSeconds = seconds,
+                endsAt = Clock.System.now() + seconds.seconds,
+            ),
+        )
+    }
+
     fun shiftRest(bySeconds: Int) {
         val timer = _restTimer.value ?: return
         viewModelScope.launch {
@@ -145,6 +163,7 @@ class SessionDetailViewModel @AssistedInject constructor(
             var knownCount: Int? = null
             combine(sessionStream, plannedToday) { session, planned -> session to planned }
                 .collect { (session, planned) ->
+                    plannedItems = planned
                     val sets = session?.sets.orEmpty()
                     val previous = knownCount
                     knownCount = sets.size
@@ -152,18 +171,10 @@ class SessionDetailViewModel @AssistedInject constructor(
                         return@collect
                     }
                     val last = sets.maxByOrNull { it.id ?: 0 } ?: return@collect
-                    val seconds = planned
-                        .firstOrNull { it.exercise.id == last.exercise.id }
-                        ?.restSeconds
-                        ?: DEFAULT_REST_SECONDS
-                    if (seconds <= 0) return@collect
-                    _restTimer.emit(
-                        RestTimer(
-                            exerciseName = last.exercise.name,
-                            totalSeconds = seconds,
-                            endsAt = Clock.System.now() + seconds.seconds,
-                        ),
-                    )
+                    // Внутри группы и круга отдыха нет: таймер стартует, когда группа закрыта.
+                    if (last.parentSetId != null || last.supersetId != null) return@collect
+                    if (last.dropCount > 0) return@collect
+                    startRest(last.exercise.name, restSecondsFor(last.exercise))
                 }
         }
     }
@@ -214,11 +225,17 @@ class SessionDetailViewModel @AssistedInject constructor(
 
     fun showAddSetSheet(exercise: Exercise, supersetId: Int? = null) {
         val exerciseId = exercise.id ?: return
+        val plan = plannedItems.firstOrNull { it.exercise.id == exerciseId }
         viewModelScope.launch {
             _sheetTarget.emit(
                 SetSheetTarget(
                     exerciseName = exercise.name,
-                    target = AddSetTarget(exerciseId = exerciseId, supersetId = supersetId),
+                    target = AddSetTarget(
+                        exerciseId = exerciseId,
+                        supersetId = supersetId,
+                        dropCount = plan?.dropCount ?: 0,
+                        dropPercent = plan?.dropPercent ?: DEFAULT_DROP_PERCENT,
+                    ),
                 ),
             )
         }
@@ -233,6 +250,61 @@ class SessionDetailViewModel @AssistedInject constructor(
                     target = dropTargetOf(chain.set, chain.drops.lastOrNull()),
                 ),
             )
+        }
+    }
+
+    fun setDropCount(chain: SetChain, count: Int) {
+        val id = chain.set.id ?: return
+        viewModelScope.launch {
+            repo.setDropSettings(id, count, chain.set.dropPercent)
+        }
+    }
+
+    fun setDropPercent(chain: SetChain, percent: Int) {
+        val id = chain.set.id ?: return
+        viewModelScope.launch {
+            repo.setDropSettings(id, chain.set.dropCount, percent)
+        }
+    }
+
+    fun markDropStep(chain: SetChain, stepIndex: Int) {
+        val id = chain.set.id ?: return
+        if (stepIndex == 0) return
+        viewModelScope.launch {
+            repo.markDropStep(id, stepIndex)
+        }
+    }
+
+    fun markDropGroup(chain: SetChain) {
+        val id = chain.set.id ?: return
+        viewModelScope.launch {
+            repo.markWholeDropGroup(id)
+            startRest(chain.set.exercise.name, restSecondsFor(chain.set.exercise))
+        }
+    }
+
+    fun undoDrops(chain: SetChain) {
+        val id = chain.set.id ?: return
+        viewModelScope.launch {
+            repo.clearDrops(id)
+        }
+    }
+
+    fun closeSupersetRound(block: SessionBlock.Superset) {
+        viewModelScope.launch {
+            val sessionId = repo.getSessionIdOrCreate(sessionDate)
+            repo.closeSupersetRound(sessionId, block.id, block.plan)
+            startRest(
+                exerciseName = block.exercises.firstOrNull()?.name.orEmpty(),
+                seconds = block.plan.maxOfOrNull { it.restSeconds } ?: DEFAULT_REST_SECONDS,
+            )
+        }
+    }
+
+    fun undoSupersetRound(block: SessionBlock.Superset) {
+        viewModelScope.launch {
+            val sessionId = repo.getSessionIdOrCreate(sessionDate)
+            repo.clearLastSupersetRound(sessionId, block.id)
         }
     }
 

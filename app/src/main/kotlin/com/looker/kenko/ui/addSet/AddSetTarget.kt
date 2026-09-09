@@ -15,6 +15,7 @@
 package com.looker.kenko.ui.addSet
 
 import androidx.compose.runtime.Immutable
+import com.looker.kenko.data.model.DEFAULT_DROP_PERCENT
 import com.looker.kenko.data.model.Set
 import kotlin.math.roundToInt
 
@@ -26,6 +27,8 @@ data class AddSetTarget(
     val exerciseId: Int,
     val parentSetId: Int? = null,
     val supersetId: Int? = null,
+    val dropCount: Int = 0,
+    val dropPercent: Int = DEFAULT_DROP_PERCENT,
     val suggestion: Suggestion? = null,
 ) {
     @Immutable

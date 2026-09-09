@@ -55,8 +55,18 @@ data class PlanItem(
     val targetReps: Int = DEFAULT_TARGET_REPS,
     val restSeconds: Int = DEFAULT_REST_SECONDS,
     val order: Int = 0,
+    /**
+     * Drops the plan asks for on every set of this exercise. Zero means plain sets.
+     */
+    val dropCount: Int = 0,
+    val dropPercent: Int = DEFAULT_DROP_PERCENT,
     val id: Long? = null,
-)
+) {
+    /**
+     * Sets this item adds to the day, drops counted in.
+     */
+    val setCount: Int get() = targetSets * (dropCount + 1)
+}
 
 val localDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 

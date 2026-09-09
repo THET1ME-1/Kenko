@@ -89,3 +89,55 @@ class PlanDayGroupTest {
         assertTrue(emptyList<PlanItem>().toDayGroups().isEmpty())
     }
 }
+
+class PlanDaySummaryTest {
+
+    private val bench = Exercise("Bench Press", MuscleGroups.Chest, id = 1)
+    private val curl = Exercise("Curls", MuscleGroups.Biceps, id = 2)
+
+    private fun item(
+        exercise: Exercise,
+        targetSets: Int = 3,
+        restSeconds: Int = 90,
+        dropCount: Int = 0,
+    ) = PlanItem(
+        dayOfWeek = DayOfWeek.MONDAY,
+        exercise = exercise,
+        planId = 1,
+        targetSets = targetSets,
+        restSeconds = restSeconds,
+        dropCount = dropCount,
+        id = exercise.id!!.toLong(),
+    )
+
+    @Test
+    fun `an empty day adds up to nothing`() {
+        val summary = emptyList<PlanItem>().daySummary()
+
+        assertEquals(0, summary.exercises)
+        assertEquals(0, summary.sets)
+        assertEquals(0, summary.minutes)
+    }
+
+    @Test
+    fun `sets count every exercise of the day`() {
+        val summary = listOf(item(bench, targetSets = 4), item(curl, targetSets = 3)).daySummary()
+
+        assertEquals(2, summary.exercises)
+        assertEquals(7, summary.sets)
+    }
+
+    @Test
+    fun `a drop set counts as its whole group`() {
+        val summary = listOf(item(curl, targetSets = 3, dropCount = 3)).daySummary()
+
+        assertEquals(12, summary.sets)
+    }
+
+    @Test
+    fun `time counts the work and the rest`() {
+        val summary = listOf(item(bench, targetSets = 4, restSeconds = 120)).daySummary()
+
+        assertEquals(11, summary.minutes)
+    }
+}

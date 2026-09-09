@@ -24,7 +24,10 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -73,13 +76,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.BuildConfig
 import com.looker.kenko.R
+import com.looker.kenko.data.model.DROP_PERCENT_STEP
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.ExercisesPreviewParameter
+import com.looker.kenko.data.model.MAX_DROP_COUNT
+import com.looker.kenko.data.model.MAX_DROP_PERCENT
+import com.looker.kenko.data.model.MIN_DROP_PERCENT
 import com.looker.kenko.data.model.MuscleGroups
 import com.looker.kenko.data.model.PlanDayGroup
 import com.looker.kenko.data.model.PlanItem
+import com.looker.kenko.data.model.daySummary
 import com.looker.kenko.data.model.toDayGroups
 import com.looker.kenko.ui.components.BackButton
+import com.looker.kenko.ui.components.DashedAddButton
 import com.looker.kenko.ui.components.DaySelectorChip
 import com.looker.kenko.ui.components.ErrorSnackbar
 import com.looker.kenko.ui.components.HorizontalDaySelector
@@ -152,6 +161,8 @@ fun PlanEdit(
                     onMakeSuperset = viewModel::makeSuperset,
                     onBreakSuperset = viewModel::breakSuperset,
                     onClearSelection = viewModel::clearSelection,
+                    onAddExercise = viewModel::openSheet,
+                    onStartSupersetMode = viewModel::startSupersetMode,
                 )
             }
         }
@@ -170,7 +181,9 @@ fun PlanEdit(
         TargetsSheet(
             item = item,
             onDismiss = { viewModel.editTargets(null) },
-            onSave = { sets, reps, rest -> viewModel.saveTargets(item, sets, reps, rest) },
+            onSave = { sets, reps, rest, drops, percent ->
+                viewModel.saveTargets(item, sets, reps, rest, drops, percent)
+            },
         )
     }
 }
@@ -324,6 +337,8 @@ private fun PlanEdit(
     onMakeSuperset: () -> Unit,
     onBreakSuperset: (Int) -> Unit,
     onClearSelection: () -> Unit,
+    onAddExercise: () -> Unit,
+    onStartSupersetMode: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
     val isCurrentDayBlank by remember(state.items) { derivedStateOf { state.items.isEmpty() } }
@@ -356,8 +371,10 @@ private fun PlanEdit(
             )
         },
         items = {
-            item { Spacer(Modifier.height(12.dp)) }
-            if (state.selectedItems.isNotEmpty()) {
+            item {
+                DaySummaryRow(items = state.items)
+            }
+            if (state.selectedItems.isNotEmpty() || state.supersetMode) {
                 item {
                     SelectionBar(
                         count = state.selectedItems.size,
@@ -400,7 +417,13 @@ private fun PlanEdit(
                                         item = group.item,
                                         position = position,
                                         selected = group.item.id in state.selectedItems,
-                                        onClick = { onItemClick(group.item) },
+                                        onClick = {
+                                            if (state.supersetMode) {
+                                                onItemLongClick(group.item)
+                                            } else {
+                                                onItemClick(group.item)
+                                            }
+                                        },
                                         onLongClick = { onItemLongClick(group.item) },
                                     )
                                 }
@@ -412,6 +435,8 @@ private fun PlanEdit(
                             item(key = "superset-${group.id}") {
                                 SupersetGroup(
                                     modifier = Modifier.animateItem(),
+                                    number = positions.first(),
+                                    rounds = group.items.minOfOrNull { it.targetSets } ?: 0,
                                     onBreak = { onBreakSuperset(group.id) },
                                 ) {
                                     group.items.forEachIndexed { index, item ->
@@ -419,7 +444,13 @@ private fun PlanEdit(
                                             item = item,
                                             position = positions[index],
                                             selected = item.id in state.selectedItems,
-                                            onClick = { onItemClick(item) },
+                                            onClick = {
+                                                if (state.supersetMode) {
+                                                    onItemLongClick(item)
+                                                } else {
+                                                    onItemClick(item)
+                                                }
+                                            },
                                             onLongClick = { onItemLongClick(item) },
                                         )
                                     }
@@ -429,8 +460,47 @@ private fun PlanEdit(
                     }
                 }
             }
-            item { Spacer(Modifier.height(12.dp)) }
+            item {
+                Row(
+                    modifier = Modifier.padding(top = 12.dp, bottom = 24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    DashedAddButton(
+                        modifier = Modifier.weight(1F),
+                        label = stringResource(R.string.label_add_exercise_short),
+                        onClick = onAddExercise,
+                    )
+                    DashedAddButton(
+                        modifier = Modifier.weight(1F),
+                        label = stringResource(R.string.label_add_superset),
+                        accent = true,
+                        onClick = onStartSupersetMode,
+                    )
+                }
+            }
         },
+    )
+}
+
+/**
+ * How much work the day holds, right under its title.
+ */
+@Composable
+private fun DaySummaryRow(
+    items: List<PlanItem>,
+    modifier: Modifier = Modifier,
+) {
+    val summary = remember(items) { items.daySummary() }
+    Text(
+        text = stringResource(
+            R.string.label_day_summary,
+            summary.exercises,
+            summary.sets,
+            summary.minutes,
+        ),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.outline,
+        modifier = modifier.padding(bottom = 12.dp),
     )
 }
 
@@ -446,12 +516,15 @@ private fun PlanItemRow(
     ExerciseItem(
         modifier = modifier,
         exercise = item.exercise,
-        subtitle = stringResource(
-            R.string.label_targets,
-            item.targetSets,
-            item.targetReps,
-            formatRest(item.restSeconds),
-        ),
+        subtitle = buildString {
+            append(stringResource(item.exercise.target.stringRes))
+            if (item.dropCount > 0) {
+                append(" · ")
+                append(stringResource(R.string.label_drop_short, item.dropCount))
+            }
+            append(" · ")
+            append(stringResource(R.string.label_rest_short, formatRest(item.restSeconds)))
+        },
         selected = selected,
         onClick = onClick,
         onLongClick = onLongClick,
@@ -461,11 +534,37 @@ private fun PlanItemRow(
                 style = LocalTextStyle.current.numbers(),
             )
         },
+        trailing = {
+            PresetPill(item = item, onClick = onClick)
+        },
+    )
+}
+
+/**
+ * `3×10` — the preset of the day, edited by tapping it.
+ */
+@Composable
+private fun PresetPill(
+    item: PlanItem,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = "${item.targetSets}×${item.targetReps}",
+        style = MaterialTheme.typography.labelLarge.numbers(),
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
+        modifier = modifier
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 6.dp),
     )
 }
 
 @Composable
 private fun SupersetGroup(
+    number: Int,
+    rounds: Int,
     onBreak: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
@@ -483,15 +582,22 @@ private fun SupersetGroup(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, top = 8.dp, end = 8.dp),
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = stringResource(R.string.label_superset).uppercase(),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary,
+                text = normalizeInt(number),
+                style = MaterialTheme.typography.titleMedium.numbers(),
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
-            Spacer(Modifier.weight(1F))
+            Spacer(Modifier.width(10.dp))
+            Text(
+                text = stringResource(R.string.label_superset_rounds, rounds),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.weight(1F),
+            )
             TextButton(onClick = onBreak) {
                 Text(text = stringResource(R.string.label_break_superset))
             }
@@ -542,12 +648,14 @@ private fun formatRest(seconds: Int): String = when {
 private fun TargetsSheet(
     item: PlanItem,
     onDismiss: () -> Unit,
-    onSave: (sets: Int, reps: Int, restSeconds: Int) -> Unit,
+    onSave: (sets: Int, reps: Int, restSeconds: Int, dropCount: Int, dropPercent: Int) -> Unit,
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var sets by remember(item.id) { mutableIntStateOf(item.targetSets) }
     var reps by remember(item.id) { mutableIntStateOf(item.targetReps) }
     var rest by remember(item.id) { mutableIntStateOf(item.restSeconds) }
+    var drops by remember(item.id) { mutableIntStateOf(item.dropCount) }
+    var dropPercent by remember(item.id) { mutableIntStateOf(item.dropPercent) }
     ModalBottomSheet(
         sheetState = state,
         onDismissRequest = onDismiss,
@@ -585,10 +693,28 @@ private fun TargetsSheet(
                 onDecrease = { rest = (rest - REST_STEP_SECONDS).coerceAtLeast(0) },
                 onIncrease = { rest = (rest + REST_STEP_SECONDS).coerceAtMost(600) },
             )
+            StepperRow(
+                label = stringResource(R.string.label_drop_in_plan),
+                value = if (drops == 0) "—" else "×$drops",
+                onDecrease = { drops = (drops - 1).coerceAtLeast(0) },
+                onIncrease = { drops = (drops + 1).coerceAtMost(MAX_DROP_COUNT) },
+            )
+            if (drops > 0) {
+                StepperRow(
+                    label = stringResource(R.string.label_drop_step),
+                    value = "−$dropPercent%",
+                    onDecrease = {
+                        dropPercent = (dropPercent - DROP_PERCENT_STEP).coerceAtLeast(MIN_DROP_PERCENT)
+                    },
+                    onIncrease = {
+                        dropPercent = (dropPercent + DROP_PERCENT_STEP).coerceAtMost(MAX_DROP_PERCENT)
+                    },
+                )
+            }
             Spacer(Modifier.height(16.dp))
             KenkoButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                onClick = { onSave(sets, reps, rest) },
+                onClick = { onSave(sets, reps, rest, drops, dropPercent) },
                 label = { Text(stringResource(R.string.label_save)) },
                 icon = {
                     Icon(

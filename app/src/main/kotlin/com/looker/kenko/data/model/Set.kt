@@ -42,6 +42,14 @@ data class Set(
      * Round of the superset this set belongs to, starting at `0`.
      */
     val roundIndex: Int? = null,
+    /**
+     * How many cuts this working set is meant to have. Zero means a plain set.
+     */
+    val dropCount: Int = 0,
+    /**
+     * Percent taken off the bar on every cut.
+     */
+    val dropPercent: Int = DEFAULT_DROP_PERCENT,
     val id: Int? = null,
 )
 

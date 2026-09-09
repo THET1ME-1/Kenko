@@ -19,6 +19,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.looker.kenko.data.model.DEFAULT_DROP_PERCENT
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.Labels.Difficulty
 import com.looker.kenko.data.model.Labels.Equipment
@@ -82,6 +83,10 @@ data class PlanDayEntity(
     val restSeconds: Int = DEFAULT_REST_SECONDS,
     @ColumnInfo(defaultValue = "0")
     val order: Int = 0,
+    @ColumnInfo(defaultValue = "0")
+    val dropCount: Int = 0,
+    @ColumnInfo(defaultValue = "20")
+    val dropPercent: Int = DEFAULT_DROP_PERCENT,
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
 )
@@ -122,6 +127,8 @@ fun PlanItem.toEntity() = PlanDayEntity(
     targetReps = targetReps,
     restSeconds = restSeconds,
     order = order,
+    dropCount = dropCount,
+    dropPercent = dropPercent,
 )
 
 inline fun PlanDayEntity.toExternal(block: (exerciseId: Int) -> Exercise?) = PlanItem(
@@ -133,6 +140,8 @@ inline fun PlanDayEntity.toExternal(block: (exerciseId: Int) -> Exercise?) = Pla
     targetReps = targetReps,
     restSeconds = restSeconds,
     order = order,
+    dropCount = dropCount,
+    dropPercent = dropPercent,
     id = id,
 )
 

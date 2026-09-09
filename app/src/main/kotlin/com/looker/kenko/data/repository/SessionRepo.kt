@@ -15,6 +15,8 @@
 package com.looker.kenko.data.repository
 
 import com.looker.kenko.data.local.model.SetType
+import com.looker.kenko.data.model.DEFAULT_DROP_PERCENT
+import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.Set
@@ -39,6 +41,8 @@ interface SessionRepo {
         setType: SetType,
         rir: RepsInReserve,
         supersetId: Int? = null,
+        dropCount: Int = 0,
+        dropPercent: Int = DEFAULT_DROP_PERCENT,
     )
 
     /**
@@ -50,6 +54,36 @@ interface SessionRepo {
         reps: Int,
         rir: RepsInReserve,
     )
+
+    /**
+     * How many cuts the group is meant to have and how much weight each one takes off.
+     */
+    suspend fun setDropSettings(setId: Int, count: Int, percent: Int)
+
+    /**
+     * Writes down one cut with the weight the app computed for it.
+     */
+    suspend fun markDropStep(parentSetId: Int, stepIndex: Int)
+
+    /**
+     * Writes down every cut the group is still missing.
+     */
+    suspend fun markWholeDropGroup(parentSetId: Int)
+
+    /**
+     * Takes back the cuts of a group, leaving the working set alone.
+     */
+    suspend fun clearDrops(parentSetId: Int)
+
+    /**
+     * Writes a set for every exercise of the superset that the current round is missing.
+     */
+    suspend fun closeSupersetRound(sessionId: Int, supersetId: Int, items: List<PlanItem>)
+
+    /**
+     * Takes back the last round of a superset.
+     */
+    suspend fun clearLastSupersetRound(sessionId: Int, supersetId: Int)
 
     suspend fun removeSet(setId: Int)
 

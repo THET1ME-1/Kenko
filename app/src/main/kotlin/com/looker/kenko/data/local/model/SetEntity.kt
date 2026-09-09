@@ -19,6 +19,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.looker.kenko.data.model.DEFAULT_DROP_PERCENT
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.Set
@@ -67,6 +68,10 @@ data class SetEntity(
     val supersetId: Int? = null,
     @ColumnInfo(defaultValue = "NULL")
     val roundIndex: Int? = null,
+    @ColumnInfo(defaultValue = "0")
+    val dropCount: Int = 0,
+    @ColumnInfo(defaultValue = "20")
+    val dropPercent: Int = DEFAULT_DROP_PERCENT,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 )
@@ -81,6 +86,8 @@ fun SetEntity.toExternal(exercise: Exercise): Set = Set(
     dropIndex = dropIndex,
     supersetId = supersetId,
     roundIndex = roundIndex,
+    dropCount = dropCount,
+    dropPercent = dropPercent,
     id = id,
 )
 
@@ -97,4 +104,6 @@ fun Set.toEntity(sessionId: Int, order: Int): SetEntity = SetEntity(
     dropIndex = dropIndex,
     supersetId = supersetId,
     roundIndex = roundIndex,
+    dropCount = dropCount,
+    dropPercent = dropPercent,
 )

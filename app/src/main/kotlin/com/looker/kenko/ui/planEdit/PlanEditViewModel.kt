@@ -88,6 +88,8 @@ class PlanEditViewModel @AssistedInject constructor(
 
     private val _selectedItems: MutableStateFlow<Set<Long>> = MutableStateFlow(emptySet())
 
+    private val _supersetMode: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     private val _editedItem: MutableStateFlow<PlanItem?> = MutableStateFlow(null)
     val editedItem: StateFlow<PlanItem?> = _editedItem
 
@@ -106,14 +108,15 @@ class PlanEditViewModel @AssistedInject constructor(
         _dayOfWeek,
         _fullDaySelection,
         _isSheetVisible,
-        _selectedItems,
-    ) { items, day, daySelection, sheetVisible, selected ->
+        combine(_selectedItems, _supersetMode) { selected, mode -> selected to mode },
+    ) { items, day, daySelection, sheetVisible, selection ->
         PlanEditState(
             currentDay = day,
             selectionMode = daySelection,
             exerciseSheetVisible = sheetVisible,
             items = items.filter { it.dayOfWeek == day },
-            selectedItems = selected,
+            selectedItems = selection.first,
+            supersetMode = selection.second,
         )
     }.asStateFlow(
         PlanEditState(
@@ -137,6 +140,16 @@ class PlanEditViewModel @AssistedInject constructor(
     fun clearSelection() {
         viewModelScope.launch {
             _selectedItems.emit(emptySet())
+            _supersetMode.emit(false)
+        }
+    }
+
+    /**
+     * Turns the day list into a picker: tapping rows now gathers them into a superset.
+     */
+    fun startSupersetMode() {
+        viewModelScope.launch {
+            _supersetMode.emit(true)
         }
     }
 
@@ -152,6 +165,7 @@ class PlanEditViewModel @AssistedInject constructor(
             }
             repo.setSuperset(picked, repo.nextSupersetId(planIdStream.value))
             _selectedItems.emit(emptySet())
+            _supersetMode.emit(false)
         }
     }
 
@@ -170,13 +184,22 @@ class PlanEditViewModel @AssistedInject constructor(
         }
     }
 
-    fun saveTargets(item: PlanItem, sets: Int, reps: Int, restSeconds: Int) {
+    fun saveTargets(
+        item: PlanItem,
+        sets: Int,
+        reps: Int,
+        restSeconds: Int,
+        dropCount: Int,
+        dropPercent: Int,
+    ) {
         viewModelScope.launch {
             repo.updateItem(
                 item.copy(
                     targetSets = sets,
                     targetReps = reps,
                     restSeconds = restSeconds,
+                    dropCount = dropCount,
+                    dropPercent = dropPercent,
                 ),
             )
             _editedItem.emit(null)
@@ -316,6 +339,7 @@ data class PlanEditState(
     val exerciseSheetVisible: Boolean,
     val items: List<PlanItem>,
     val selectedItems: Set<Long> = emptySet(),
+    val supersetMode: Boolean = false,
 ) {
     val exercises: List<Exercise> get() = items.map(PlanItem::exercise)
 }

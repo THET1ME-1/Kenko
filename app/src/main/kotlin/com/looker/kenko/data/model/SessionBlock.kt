@@ -26,10 +26,51 @@ data class SetChain(
     val set: Set,
     val drops: List<Set> = emptyList(),
 ) {
-    val isDropSet: Boolean get() = drops.isNotEmpty()
+    val isDropSet: Boolean get() = set.dropCount > 0 || drops.isNotEmpty()
 
     val totalRating: Rating
         get() = drops.fold(set.rating) { total, drop -> total + drop.rating }
+
+    /**
+     * Volume of the whole group in kilograms, drops included.
+     */
+    val volume: Float
+        get() = set.repsOrDuration * set.weight +
+            drops.sumOf { (it.repsOrDuration * it.weight).toDouble() }.toFloat()
+
+    /**
+     * The group as it should be read on screen: what was performed, then what is still planned.
+     *
+     * Cuts nobody did yet carry the weight the app computed for them.
+     */
+    val steps: List<DropStep>
+        get() {
+            val planned = buildDropChain(
+                base = set.weight,
+                drops = maxOf(set.dropCount, drops.size),
+                reps = set.repsOrDuration,
+                percent = set.dropPercent,
+            )
+            return planned.mapIndexed { index, step ->
+                when {
+                    index == 0 -> step.copy(isPerformed = true)
+                    index <= drops.size -> {
+                        val drop = drops[index - 1]
+                        step.copy(
+                            weight = drop.weight,
+                            reps = drop.repsOrDuration,
+                            isPerformed = true,
+                        )
+                    }
+
+                    else -> step
+                }
+            }
+        }
+
+    val performedSteps: Int get() = drops.size + 1
+
+    val plannedSteps: Int get() = maxOf(set.dropCount, drops.size) + 1
 }
 
 /**
@@ -62,6 +103,18 @@ sealed interface SessionBlock {
          */
         val setsLeft: Int
             get() = ((plan?.targetSets ?: 0) - chains.size).coerceAtLeast(0)
+
+        /**
+         * Kilograms moved in this exercise, drops counted in.
+         */
+        val volume: Float
+            get() = chains.sumOf { it.volume.toDouble() }.toFloat()
+
+        /**
+         * Of that, how much came from drop sets.
+         */
+        val dropVolume: Float
+            get() = chains.filter { it.isDropSet }.sumOf { it.volume.toDouble() }.toFloat()
     }
 
     data class Superset(
@@ -72,13 +125,32 @@ sealed interface SessionBlock {
     ) : SessionBlock {
 
         /**
-         * Rounds of the plan still waiting to be performed.
+         * How many rounds the plan asks for, never fewer than what was already done.
          */
+        val plannedRounds: Int
+            get() = maxOf(plan.minOfOrNull { it.targetSets } ?: 0, rounds.size).coerceAtLeast(1)
+
+        /**
+         * A round counts as closed once every exercise of the group has a set in it.
+         */
+        val closedRounds: Int
+            get() = rounds.count { round -> round.chains.size >= exercises.size && exercises.isNotEmpty() }
+
         val roundsLeft: Int
-            get() {
-                val planned = plan.minOfOrNull { it.targetSets } ?: return 0
-                return (planned - rounds.size).coerceAtLeast(0)
-            }
+            get() = (plannedRounds - closedRounds).coerceAtLeast(0)
+
+        /**
+         * Kilograms of the last round that has any work in it.
+         */
+        val roundVolume: Float
+            get() = rounds.lastOrNull { it.chains.isNotEmpty() }
+                ?.chains
+                ?.sumOf { it.volume.toDouble() }
+                ?.toFloat()
+                ?: 0F
+
+        val totalVolume: Float
+            get() = rounds.sumOf { round -> round.chains.sumOf { it.volume.toDouble() } }.toFloat()
     }
 }
 

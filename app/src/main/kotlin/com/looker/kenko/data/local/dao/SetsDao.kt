@@ -175,6 +175,46 @@ interface SetsDao {
     )
     suspend fun updateType(setId: Int, type: SetType)
 
+    @Query(
+        """
+        UPDATE sets
+        SET dropCount = :count, dropPercent = :percent, type = :type
+        WHERE id = :setId
+        """,
+    )
+    suspend fun updateDropSettings(setId: Int, count: Int, percent: Int, type: SetType)
+
+    @Query(
+        """
+        SELECT *
+        FROM sets
+        WHERE parentSetId = :parentSetId
+        ORDER BY dropIndex
+        """,
+    )
+    suspend fun getDrops(parentSetId: Int): List<SetEntity>
+
+    @Query(
+        """
+        DELETE
+        FROM sets
+        WHERE parentSetId = :parentSetId
+        """,
+    )
+    suspend fun deleteDrops(parentSetId: Int)
+
+    @Query(
+        """
+        SELECT *
+        FROM sets
+        WHERE sessionId = :sessionId
+        AND supersetId = :supersetId
+        AND parentSetId IS NULL
+        ORDER BY roundIndex, `order`
+        """,
+    )
+    suspend fun getSupersetSets(sessionId: Int, supersetId: Int): List<SetEntity>
+
     @Insert
     suspend fun insert(set: SetEntity): Long
 

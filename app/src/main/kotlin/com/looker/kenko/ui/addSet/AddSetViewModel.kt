@@ -101,6 +101,11 @@ class AddSetViewModel @AssistedInject constructor(
                 setType = selectedSetType,
                 rir = RepsInReserve(2),
                 supersetId = target.supersetId,
+                dropCount = when {
+                    selectedSetType == SetType.Drop -> maxOf(1, target.dropCount)
+                    else -> target.dropCount
+                },
+                dropPercent = target.dropPercent,
             )
         }
     }
@@ -109,6 +114,9 @@ class AddSetViewModel @AssistedInject constructor(
         get() = weights.text.toString().toFloatOrNull() ?: 0F
 
     init {
+        if (target.dropCount > 0) {
+            setSetType(SetType.Drop)
+        }
         val suggestion = target.suggestion
         if (suggestion != null) {
             reps = suggestion.reps

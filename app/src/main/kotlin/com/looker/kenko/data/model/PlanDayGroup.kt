@@ -60,3 +60,29 @@ fun List<PlanItem>.toDayGroups(): List<PlanDayGroup> {
     }
     return groups
 }
+
+/**
+ * What a day of the plan adds up to, shown under its title.
+ */
+@Immutable
+data class PlanDaySummary(
+    val exercises: Int,
+    val sets: Int,
+    val minutes: Int,
+)
+
+/**
+ * Seconds a working set takes before the rest starts.
+ */
+private const val SECONDS_PER_SET = 40
+
+fun List<PlanItem>.daySummary(): PlanDaySummary {
+    val seconds = sumOf { item ->
+        item.setCount * SECONDS_PER_SET + item.targetSets * item.restSeconds
+    }
+    return PlanDaySummary(
+        exercises = size,
+        sets = sumOf { it.setCount },
+        minutes = (seconds + 59) / 60,
+    )
+}
