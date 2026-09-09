@@ -75,6 +75,7 @@ class LocalSessionRepo @Inject constructor(
         supersetId: Int?,
         dropCount: Int,
         dropPercent: Int,
+        gripId: Int?,
     ) {
         setsDao.insert(
             SetEntity(
@@ -91,6 +92,7 @@ class LocalSessionRepo @Inject constructor(
                 },
                 dropCount = dropCount,
                 dropPercent = dropPercent,
+                gripId = gripId,
             ),
         )
     }

@@ -93,6 +93,8 @@ data class PlanDayEntity(
     val dropCount: Int = 0,
     @ColumnInfo(defaultValue = "20")
     val dropPercent: Int = DEFAULT_DROP_PERCENT,
+    @ColumnInfo(defaultValue = "NULL")
+    val gripId: Int? = null,
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
 )
@@ -140,6 +142,7 @@ fun PlanItem.toEntity() = PlanDayEntity(
     order = order,
     dropCount = dropCount,
     dropPercent = dropPercent,
+    gripId = gripId,
 )
 
 inline fun PlanDayEntity.toExternal(block: (exerciseId: Int) -> Exercise?) = PlanItem(
@@ -157,6 +160,7 @@ inline fun PlanDayEntity.toExternal(block: (exerciseId: Int) -> Exercise?) = Pla
     order = order,
     dropCount = dropCount,
     dropPercent = dropPercent,
+    gripId = gripId,
     id = id,
 )
 

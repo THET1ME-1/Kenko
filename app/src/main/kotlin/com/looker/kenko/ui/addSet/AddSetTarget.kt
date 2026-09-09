@@ -33,6 +33,10 @@ data class AddSetTarget(
      * Weight the plan starts from when this exercise has no history yet.
      */
     val planWeight: Float = 0F,
+    /**
+     * Handle the plan expects, preselected when the sheet opens.
+     */
+    val gripId: Int? = null,
     val suggestion: Suggestion? = null,
 ) {
     @Immutable

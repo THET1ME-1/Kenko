@@ -27,8 +27,10 @@ import com.looker.kenko.R
 import com.looker.kenko.data.PhotoStore
 import com.looker.kenko.data.StringHandler
 import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.model.Grip
 import com.looker.kenko.data.model.MuscleGroups
 import com.looker.kenko.data.repository.ExerciseRepo
+import com.looker.kenko.data.repository.GripRepo
 import com.looker.kenko.ui.navigation.Routes
 import com.looker.kenko.utils.asStateFlow
 import com.looker.kenko.utils.isValidUrl
@@ -40,6 +42,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOf
@@ -50,6 +53,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class AddEditExerciseViewModel @AssistedInject constructor(
     private val repo: ExerciseRepo,
+    private val gripRepo: GripRepo,
     private val stringHandler: StringHandler,
     private val photoStore: PhotoStore,
     @Assisted private val routeData: Routes.AddEditExercise,
@@ -140,6 +144,46 @@ class AddEditExerciseViewModel @AssistedInject constructor(
                     targetMuscle.emit(muscle)
                 }
             }
+        }
+    }
+
+    /**
+     * Handles of this exercise. Empty until the lifter adds one.
+     */
+    val grips: StateFlow<List<Grip>> =
+        if (exerciseId == null) {
+            MutableStateFlow(emptyList())
+        } else {
+            gripRepo.grips(exerciseId).asStateFlow(emptyList())
+        }
+
+    fun addGrip(name: String) {
+        val id = exerciseId ?: return
+        if (name.isBlank()) return
+        viewModelScope.launch {
+            gripRepo.upsert(Grip(exerciseId = id, name = name.trim()))
+        }
+    }
+
+    fun setGripPhoto(grip: Grip, uri: Uri?) {
+        viewModelScope.launch {
+            if (uri == null) {
+                photoStore.delete(grip.photoUri)
+                gripRepo.upsert(grip.copy(photoUri = null))
+                return@launch
+            }
+            photoStore.save(uri)?.let { path ->
+                photoStore.delete(grip.photoUri)
+                gripRepo.upsert(grip.copy(photoUri = path))
+            }
+        }
+    }
+
+    fun removeGrip(grip: Grip) {
+        val id = grip.id ?: return
+        viewModelScope.launch {
+            photoStore.delete(grip.photoUri)
+            gripRepo.delete(id)
         }
     }
 

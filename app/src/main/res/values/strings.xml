@@ -353,4 +353,24 @@
         <item quantity="one">%1$d round</item>
         <item quantity="other">%1$d rounds</item>
     </plurals>
+    <string name="label_gyms">Gyms</string>
+    <string name="label_gym">Gym</string>
+    <string name="label_gym_name">Gym name</string>
+    <string name="label_new_gym">+ new gym</string>
+    <string name="label_gym_any">Any gym</string>
+    <string name="label_gym_any_desc">every exercise is available</string>
+    <string name="label_gym_hint">A gym holds the equipment it actually has. Exercises, plans and swaps then offer only what you can do there.</string>
+    <string name="label_gym_equipment">Equipment</string>
+    <string name="label_gym_all_on">all</string>
+    <string name="label_gym_all_off">none</string>
+    <string name="label_not_in_gym">not in this gym</string>
+    <string name="label_add_to_gym">add to gym</string>
+    <string name="label_copy_from_gym">copy from</string>
+    <string name="label_show_all_exercises">show everything</string>
+    <string name="label_grips">Handles</string>
+    <string name="label_grip_name">Handle name</string>
+    <string name="label_add_grip">+ handle</string>
+    <string name="label_grip_hint">Wide, close, rope — one exercise instead of three, with a photo for each.</string>
+    <string name="label_grip_default">default handle</string>
+    <string name="label_no_grip">no handle</string>
 </resources>

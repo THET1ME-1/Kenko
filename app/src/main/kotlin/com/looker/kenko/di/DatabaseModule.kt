@@ -17,6 +17,8 @@ package com.looker.kenko.di
 import android.content.Context
 import com.looker.kenko.data.local.KenkoDatabase
 import com.looker.kenko.data.local.dao.ExerciseDao
+import com.looker.kenko.data.local.dao.GripDao
+import com.looker.kenko.data.local.dao.GymDao
 import com.looker.kenko.data.local.dao.PerformanceDao
 import com.looker.kenko.data.local.dao.PlanDao
 import com.looker.kenko.data.local.dao.PlanHistoryDao
@@ -75,4 +77,16 @@ object DatabaseModule {
     fun providePerformanceDao(
         database: KenkoDatabase,
     ): PerformanceDao = database.performanceDao()
+
+    @Provides
+    @Singleton
+    fun provideGymDao(
+        database: KenkoDatabase,
+    ): GymDao = database.gymDao()
+
+    @Provides
+    @Singleton
+    fun provideGripDao(
+        database: KenkoDatabase,
+    ): GripDao = database.gripDao()
 }

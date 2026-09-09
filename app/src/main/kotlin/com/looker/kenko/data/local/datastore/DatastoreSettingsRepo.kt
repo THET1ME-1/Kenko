@@ -18,6 +18,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -85,6 +86,16 @@ class DatastoreSettingsRepo @Inject constructor(
         WEEK_MODE.update(enabled)
     }
 
+    override suspend fun setCurrentGym(gymId: Int?) {
+        dataStore.edit { preference ->
+            if (gymId == null) {
+                preference.remove(CURRENT_GYM)
+            } else {
+                preference[CURRENT_GYM] = gymId
+            }
+        }
+    }
+
     private suspend inline fun <T> Preferences.Key<T>.update(value: T) {
         dataStore.edit { preference ->
             preference[this] = value
@@ -94,6 +105,7 @@ class DatastoreSettingsRepo @Inject constructor(
     private fun mapSettings(preferences: Preferences): Settings {
         val isOnboardingDone = preferences[ONBOARDING_DONE] ?: false
         val isWeekMode = preferences[WEEK_MODE] ?: false
+        val currentGymId = preferences[CURRENT_GYM]
         val theme = preferences[THEME] ?: Theme.System.name
         val colorPalettes = preferences[COLOR_PALETTE] ?: ColorPalettes.Amethyst.name
         val lastSetTime = preferences[LAST_SET_TIME_SECONDS]
@@ -103,6 +115,7 @@ class DatastoreSettingsRepo @Inject constructor(
         return Settings(
             isOnboardingDone = isOnboardingDone,
             isWeekMode = isWeekMode,
+            currentGymId = currentGymId?.takeIf { it > 0 },
             theme = Theme.valueOf(theme),
             colorPalette = ColorPalettes.valueOf(colorPalettes),
             lastSetTime = lastSetTime?.let { Instant.fromEpochSeconds(it) },
@@ -115,6 +128,7 @@ class DatastoreSettingsRepo @Inject constructor(
     private companion object Keys {
         val ONBOARDING_DONE: Preferences.Key<Boolean> = booleanPreferencesKey("onboarding_done")
         val WEEK_MODE: Preferences.Key<Boolean> = booleanPreferencesKey("week_mode")
+        val CURRENT_GYM: Preferences.Key<Int> = intPreferencesKey("current_gym")
         val THEME: Preferences.Key<String> = stringPreferencesKey("theme")
         val COLOR_PALETTE: Preferences.Key<String> = stringPreferencesKey("color_palette")
         val LAST_SET_TIME_SECONDS: Preferences.Key<Long> =

@@ -50,6 +50,10 @@ data class Set(
      * Percent taken off the bar on every cut.
      */
     val dropPercent: Int = DEFAULT_DROP_PERCENT,
+    /**
+     * Handle the set was done with, when the exercise has several.
+     */
+    val gripId: Int? = null,
     val id: Int? = null,
 )
 

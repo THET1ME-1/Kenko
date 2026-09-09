@@ -385,3 +385,40 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
         db.execSQL("UPDATE plan_day SET targetRepsMax = targetReps")
     }
 }
+
+val MIGRATION_10_11 = object : Migration(10, 11) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `gyms` (
+            `name` TEXT NOT NULL,
+            `note` TEXT DEFAULT NULL,
+            `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `gym_exercises` (
+            `gymId` INTEGER NOT NULL,
+            `exerciseId` INTEGER NOT NULL,
+            PRIMARY KEY(`gymId`, `exerciseId`),
+            FOREIGN KEY(`gymId`) REFERENCES `gyms`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
+            FOREIGN KEY(`exerciseId`) REFERENCES `exercises`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE)
+            """.trimIndent(),
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_gym_exercises_exerciseId` ON `gym_exercises` (`exerciseId`)")
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `exercise_grips` (
+            `exerciseId` INTEGER NOT NULL,
+            `name` TEXT NOT NULL,
+            `photoUri` TEXT DEFAULT NULL,
+            `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            FOREIGN KEY(`exerciseId`) REFERENCES `exercises`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE)
+            """.trimIndent(),
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_exercise_grips_exerciseId` ON `exercise_grips` (`exerciseId`)")
+        db.execSQL("ALTER TABLE sets ADD COLUMN gripId INTEGER DEFAULT NULL")
+        db.execSQL("ALTER TABLE plan_day ADD COLUMN gripId INTEGER DEFAULT NULL")
+    }
+}

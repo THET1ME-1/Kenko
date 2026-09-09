@@ -315,4 +315,24 @@
         <item quantity="many">%1$d кругов</item>
         <item quantity="other">%1$d круга</item>
     </plurals>
+    <string name="label_gyms">Залы</string>
+    <string name="label_gym">Зал</string>
+    <string name="label_gym_name">Название зала</string>
+    <string name="label_new_gym">+ новый зал</string>
+    <string name="label_gym_any">Любой зал</string>
+    <string name="label_gym_any_desc">доступны все упражнения</string>
+    <string name="label_gym_hint">Зал хранит то оборудование, которое в нём есть. Упражнения, программы и замены после этого предлагают только то, что ты можешь сделать.</string>
+    <string name="label_gym_equipment">Оборудование</string>
+    <string name="label_gym_all_on">все</string>
+    <string name="label_gym_all_off">ни одного</string>
+    <string name="label_not_in_gym">нет в этом зале</string>
+    <string name="label_add_to_gym">добавить в зал</string>
+    <string name="label_copy_from_gym">скопировать из</string>
+    <string name="label_show_all_exercises">показать все</string>
+    <string name="label_grips">Рукоятки</string>
+    <string name="label_grip_name">Название рукоятки</string>
+    <string name="label_add_grip">+ рукоятка</string>
+    <string name="label_grip_hint">Узкая, широкая, канат — одно упражнение вместо трёх, у каждой своё фото.</string>
+    <string name="label_grip_default">рукоятка по умолчанию</string>
+    <string name="label_no_grip">без рукоятки</string>
 </resources>

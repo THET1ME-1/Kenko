@@ -249,6 +249,7 @@ class SessionDetailViewModel @AssistedInject constructor(
                         dropCount = plan?.dropCount ?: 0,
                         dropPercent = plan?.dropPercent ?: DEFAULT_DROP_PERCENT,
                         planWeight = plan?.targetWeight ?: 0F,
+                        gripId = plan?.gripId,
                     ),
                 ),
             )

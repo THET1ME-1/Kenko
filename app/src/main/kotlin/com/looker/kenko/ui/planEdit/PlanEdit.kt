@@ -207,9 +207,11 @@ fun PlanEdit(
         )
     }
     editedItem?.let { item ->
+        val grips by viewModel.gripsOfEdited.collectAsStateWithLifecycle()
         TargetsScreen(
             modifier = Modifier.fillMaxSize(),
             item = item,
+            grips = grips,
             onBackPress = { viewModel.editTargets(null) },
             onSave = { targets -> viewModel.saveTargets(item, targets) },
         )

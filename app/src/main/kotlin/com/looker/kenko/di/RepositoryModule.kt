@@ -19,10 +19,14 @@ import com.looker.kenko.data.repository.ExerciseRepo
 import com.looker.kenko.data.repository.PerformanceRepo
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SessionRepo
+import com.looker.kenko.data.repository.GripRepo
+import com.looker.kenko.data.repository.GymRepo
 import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.data.repository.local.LocalExerciseRepo
 import com.looker.kenko.data.repository.local.LocalPerformanceRepo
 import com.looker.kenko.data.repository.local.LocalPlanRepo
+import com.looker.kenko.data.repository.local.LocalGripRepo
+import com.looker.kenko.data.repository.local.LocalGymRepo
 import com.looker.kenko.data.repository.local.LocalSessionRepo
 import dagger.Binds
 import dagger.Module
@@ -57,4 +61,14 @@ abstract class RepositoryModule {
     abstract fun bindSettingsRepo(
         repo: DatastoreSettingsRepo,
     ): SettingsRepo
+
+    @Binds
+    abstract fun bindGymRepo(
+        repo: LocalGymRepo,
+    ): GymRepo
+
+    @Binds
+    abstract fun bindGripRepo(
+        repo: LocalGripRepo,
+    ): GripRepo
 }

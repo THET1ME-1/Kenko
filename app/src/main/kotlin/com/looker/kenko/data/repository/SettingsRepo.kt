@@ -38,6 +38,11 @@ interface SettingsRepo {
      */
     suspend fun setWeekMode(enabled: Boolean)
 
+    /**
+     * Picks the gym whose equipment the app offers.
+     */
+    suspend fun setCurrentGym(gymId: Int?)
+
     suspend fun setBackupUri(uri: String?)
 
     suspend fun setBackupInterval(interval: BackupInterval)

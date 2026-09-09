@@ -43,6 +43,7 @@ interface SessionRepo {
         supersetId: Int? = null,
         dropCount: Int = 0,
         dropPercent: Int = DEFAULT_DROP_PERCENT,
+        gripId: Int? = null,
     )
 
     /**

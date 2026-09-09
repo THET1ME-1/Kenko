@@ -72,6 +72,8 @@ data class SetEntity(
     val dropCount: Int = 0,
     @ColumnInfo(defaultValue = "20")
     val dropPercent: Int = DEFAULT_DROP_PERCENT,
+    @ColumnInfo(defaultValue = "NULL")
+    val gripId: Int? = null,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 )
@@ -88,6 +90,7 @@ fun SetEntity.toExternal(exercise: Exercise): Set = Set(
     roundIndex = roundIndex,
     dropCount = dropCount,
     dropPercent = dropPercent,
+    gripId = gripId,
     id = id,
 )
 
@@ -106,4 +109,5 @@ fun Set.toEntity(sessionId: Int, order: Int): SetEntity = SetEntity(
     roundIndex = roundIndex,
     dropCount = dropCount,
     dropPercent = dropPercent,
+    gripId = gripId,
 )

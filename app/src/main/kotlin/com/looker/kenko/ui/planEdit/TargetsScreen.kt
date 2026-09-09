@@ -40,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
 import com.looker.kenko.data.model.DROP_PERCENT_STEP
+import com.looker.kenko.data.model.Grip
 import com.looker.kenko.data.model.MAX_DROP_COUNT
 import com.looker.kenko.data.model.MAX_DROP_PERCENT
 import com.looker.kenko.data.model.MIN_DROP_PERCENT
@@ -74,6 +76,7 @@ import com.looker.kenko.ui.theme.numbers
  * Everything the plan says about one exercise, carried in one piece.
  */
 data class PlanTargets(
+    val gripId: Int? = null,
     val sets: Int,
     val repsMin: Int,
     val repsMax: Int,
@@ -105,6 +108,7 @@ fun TargetsScreen(
     onSave: (targets: PlanTargets) -> Unit,
     onBackPress: () -> Unit,
     modifier: Modifier = Modifier,
+    grips: List<Grip> = emptyList(),
 ) {
     var sets by remember(item.id) { mutableIntStateOf(item.targetSets) }
     var repsMin by remember(item.id) { mutableIntStateOf(item.targetReps) }
@@ -115,6 +119,7 @@ fun TargetsScreen(
     var bar by remember(item.id) { mutableFloatStateOf(item.barWeight) }
     var left by remember(item.id) { mutableFloatStateOf(item.leftWeight) }
     var right by remember(item.id) { mutableFloatStateOf(item.rightWeight) }
+    var gripId by remember(item.id) { mutableStateOf(item.gripId) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -144,6 +149,30 @@ fun TargetsScreen(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
                     )
+                }
+            }
+
+            if (grips.isNotEmpty()) {
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.label_grip_default).uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+                Spacer(Modifier.height(6.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    RestPreset(
+                        label = stringResource(R.string.label_no_grip),
+                        selected = gripId == null,
+                        onClick = { gripId = null },
+                    )
+                    grips.forEach { grip ->
+                        RestPreset(
+                            label = grip.name,
+                            selected = gripId == grip.id,
+                            onClick = { gripId = grip.id },
+                        )
+                    }
                 }
             }
 
@@ -239,6 +268,7 @@ fun TargetsScreen(
                 onClick = {
                     onSave(
                         PlanTargets(
+                            gripId = gripId,
                             sets = sets,
                             repsMin = repsMin,
                             repsMax = repsMax,
@@ -322,12 +352,13 @@ private fun CounterKey(label: String, onClick: () -> Unit) {
 
 @Composable
 private fun RestPreset(
-    seconds: Int,
     selected: Boolean,
     onClick: () -> Unit,
+    seconds: Int? = null,
+    label: String? = null,
 ) {
     Text(
-        text = formatSeconds(seconds),
+        text = label ?: formatSeconds(seconds ?: 0),
         style = MaterialTheme.typography.labelLarge.numbers(),
         color = if (selected) {
             MaterialTheme.colorScheme.onPrimaryContainer

@@ -12,25 +12,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.looker.kenko.data.model.settings
+package com.looker.kenko.data.model
 
-import kotlin.time.Instant
+import androidx.compose.runtime.Immutable
 
-data class Settings(
-    val isOnboardingDone: Boolean,
-    /**
-     * True — the plan runs on days of the week; false — its days follow one another
-     * whenever the lifter shows up.
-     */
-    val isWeekMode: Boolean,
-    /**
-     * Gym the lifter trains at now. Null means no gym is chosen and everything is available.
-     */
-    val currentGymId: Int?,
-    val theme: Theme,
-    val colorPalette: ColorPalettes,
-    val lastSetTime: Instant?,
-    val backupUri: String?,
-    val backupInterval: BackupInterval,
-    val lastBackupTime: Instant?,
+/**
+ * A gym the lifter trains at, with the exercises it can actually do.
+ *
+ * Nothing is selected at first: until a gym is picked the app offers every exercise.
+ */
+@Immutable
+data class Gym(
+    val name: String,
+    val note: String? = null,
+    val exerciseCount: Int = 0,
+    val id: Int? = null,
+)
+
+/**
+ * A handle for an exercise — wide, close, rope — with its own photo.
+ */
+@Immutable
+data class Grip(
+    val exerciseId: Int,
+    val name: String,
+    val photoUri: String? = null,
+    val id: Int? = null,
 )

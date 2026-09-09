@@ -42,6 +42,7 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -107,6 +108,32 @@ fun SelectExercise(
                 onRequestNewExercise(viewModel.searchQuery.ifBlank { null }, target)
             },
         )
+        val gymName by viewModel.gymName.collectAsStateWithLifecycle()
+        val showEverything by viewModel.showEverything.collectAsStateWithLifecycle()
+        if (gymName != null) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.weight(1F),
+                    text = gymName.orEmpty(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+                TextButton(onClick = viewModel::toggleShowEverything) {
+                    Text(
+                        text = stringResource(
+                            if (showEverything) {
+                                R.string.label_gym
+                            } else {
+                                R.string.label_show_all_exercises
+                            },
+                        ),
+                    )
+                }
+            }
+        }
         LazyTargets(contentPadding = PaddingValues(horizontal = 8.dp)) {
             TargetChip(
                 selected = target == it,
@@ -127,7 +154,9 @@ fun SelectExercise(
 
                 is SearchResult.Success -> SearchResult(
                     searchResult = searchResult as SearchResult.Success,
+                    isGymChosen = gymName != null,
                     onClick = onDone,
+                    onAddToGym = viewModel::addToGym,
                 )
             }
         }
@@ -137,16 +166,26 @@ fun SelectExercise(
 @Composable
 private fun SearchResult(
     searchResult: SearchResult.Success,
+    isGymChosen: Boolean,
     onClick: (Exercise) -> Unit,
+    onAddToGym: (Exercise) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = WindowInsets.navigationBars.asPaddingValues(),
     ) {
         items(searchResult.exercises) { exercise ->
+            val missing = isGymChosen && exercise.id !in searchResult.availableIds
             ExerciseCard(
                 exercise = exercise,
                 onClick = { onClick(exercise) },
+                trailing = {
+                    if (missing) {
+                        TextButton(onClick = { onAddToGym(exercise) }) {
+                            Text(text = stringResource(R.string.label_add_to_gym))
+                        }
+                    }
+                },
             )
         }
     }

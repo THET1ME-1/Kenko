@@ -19,12 +19,17 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.looker.kenko.data.local.dao.ExerciseDao
+import com.looker.kenko.data.local.dao.GripDao
+import com.looker.kenko.data.local.dao.GymDao
 import com.looker.kenko.data.local.dao.PerformanceDao
 import com.looker.kenko.data.local.dao.PlanDao
 import com.looker.kenko.data.local.dao.PlanHistoryDao
 import com.looker.kenko.data.local.dao.SessionDao
 import com.looker.kenko.data.local.dao.SetsDao
 import com.looker.kenko.data.local.model.ExerciseEntity
+import com.looker.kenko.data.local.model.GripEntity
+import com.looker.kenko.data.local.model.GymEntity
+import com.looker.kenko.data.local.model.GymExerciseEntity
 import com.looker.kenko.data.local.model.PlanDayEntity
 import com.looker.kenko.data.local.model.PlanEntity
 import com.looker.kenko.data.local.model.PlanHistoryEntity
@@ -33,7 +38,7 @@ import com.looker.kenko.data.local.model.SetEntity
 import com.looker.kenko.data.local.model.SetTypeEntity
 
 @Database(
-    version = 10,
+    version = 11,
     entities = [
         SessionDataEntity::class,
         ExerciseEntity::class,
@@ -42,6 +47,9 @@ import com.looker.kenko.data.local.model.SetTypeEntity
         PlanDayEntity::class,
         SetEntity::class,
         SetTypeEntity::class,
+        GymEntity::class,
+        GymExerciseEntity::class,
+        GripEntity::class,
     ],
 )
 abstract class KenkoDatabase : RoomDatabase() {
@@ -51,6 +59,8 @@ abstract class KenkoDatabase : RoomDatabase() {
     abstract fun setsDao(): SetsDao
     abstract fun historyDao(): PlanHistoryDao
     abstract fun performanceDao(): PerformanceDao
+    abstract fun gymDao(): GymDao
+    abstract fun gripDao(): GripDao
 }
 
 fun kenkoDatabase(context: Context) = Room
@@ -70,5 +80,6 @@ fun kenkoDatabase(context: Context) = Room
         MIGRATION_7_8,
         MIGRATION_8_9,
         MIGRATION_9_10,
+        MIGRATION_10_11,
     )
     .build()

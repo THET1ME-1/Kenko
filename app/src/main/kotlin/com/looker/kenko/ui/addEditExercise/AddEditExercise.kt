@@ -20,6 +20,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,6 +62,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
+import com.looker.kenko.data.model.Grip
 import com.looker.kenko.data.model.MuscleGroups
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.DashedAddButton
@@ -82,8 +84,13 @@ fun AddEditExercise(
     onBackPress: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val grips by viewModel.grips.collectAsStateWithLifecycle()
     AddEditExercise(
         state = state,
+        grips = grips,
+        onAddGrip = viewModel::addGrip,
+        onGripPhoto = viewModel::setGripPhoto,
+        onRemoveGrip = viewModel::removeGrip,
         name = viewModel.exerciseName,
         reference = viewModel.reference,
         snackbarState = viewModel.snackbarState,
@@ -103,6 +110,10 @@ private fun AddEditExercise(
     state: AddEditExerciseUiState,
     name: String,
     reference: String,
+    grips: List<Grip> = emptyList(),
+    onAddGrip: (String) -> Unit = {},
+    onGripPhoto: (Grip, Uri?) -> Unit = { _, _ -> },
+    onRemoveGrip: (Grip) -> Unit = {},
     snackbarState: SnackbarHostState = remember { SnackbarHostState() },
     onNameChange: (String) -> Unit = {},
     onReferenceChange: (String) -> Unit = {},
@@ -177,6 +188,16 @@ private fun AddEditExercise(
                 checked = state.isIsometric,
                 onCheckedChange = onIsometricChange,
             )
+
+            if (state.isReadOnly) {
+                Spacer(Modifier.height(20.dp))
+                GripSection(
+                    grips = grips,
+                    onAdd = onAddGrip,
+                    onPhoto = onGripPhoto,
+                    onRemove = onRemoveGrip,
+                )
+            }
 
             Spacer(Modifier.height(16.dp))
 
@@ -331,6 +352,116 @@ private fun MuscleSection(
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.outline,
         )
+    }
+}
+
+/**
+ * Handles of the exercise: wide, close, rope. Each can carry its own photo.
+ */
+@Composable
+private fun GripSection(
+    grips: List<Grip>,
+    onAdd: (String) -> Unit,
+    onPhoto: (Grip, Uri?) -> Unit,
+    onRemove: (Grip) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var newName by remember { mutableStateOf("") }
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.label_grips).uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        Text(
+            text = stringResource(R.string.label_grip_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        Spacer(Modifier.height(10.dp))
+        grips.forEach { grip ->
+            GripRow(
+                grip = grip,
+                onPhoto = { uri -> onPhoto(grip, uri) },
+                onRemove = { onRemove(grip) },
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextField(
+                modifier = Modifier.weight(1F),
+                value = newName,
+                onValueChange = { newName = it },
+                singleLine = true,
+                shape = MaterialTheme.shapes.large,
+                colors = kenkoTextFieldColor(),
+                label = { Text(text = stringResource(R.string.label_grip_name)) },
+            )
+            TextButton(
+                onClick = {
+                    onAdd(newName)
+                    newName = ""
+                },
+            ) {
+                Text(text = stringResource(R.string.label_add))
+            }
+        }
+    }
+}
+
+@Composable
+private fun GripRow(
+    grip: Grip,
+    onPhoto: (Uri?) -> Unit,
+    onRemove: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val picker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> uri?.let(onPhoto) },
+    )
+    val request = remember {
+        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+    }
+    val photo = rememberPhoto(grip.photoUri)
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(MaterialTheme.shapes.medium)
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                .clickable { picker.launch(request) },
+            contentAlignment = Alignment.Center,
+        ) {
+            if (photo != null) {
+                Image(
+                    bitmap = photo,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(48.dp),
+                )
+            } else {
+                Icon(
+                    painter = KenkoIcons.Add,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.outline,
+                )
+            }
+        }
+        Spacer(Modifier.size(12.dp))
+        Text(
+            modifier = Modifier.weight(1F),
+            text = grip.name,
+            style = MaterialTheme.typography.titleMedium,
+        )
+        TextButton(onClick = onRemove) {
+            Text(text = stringResource(R.string.label_remove_photo))
+        }
     }
 }
 

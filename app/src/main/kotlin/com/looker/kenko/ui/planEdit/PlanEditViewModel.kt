@@ -24,9 +24,11 @@ import com.looker.kenko.R
 import com.looker.kenko.data.StringHandler
 import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.model.Grip
 import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.localDate
+import com.looker.kenko.data.repository.GripRepo
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.ui.navigation.Routes
@@ -51,6 +53,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
@@ -62,6 +65,7 @@ class PlanEditViewModel @AssistedInject constructor(
     private val stringHandler: StringHandler,
     private val sessionRepo: com.looker.kenko.data.repository.SessionRepo,
     private val settingsRepo: SettingsRepo,
+    private val gripRepo: GripRepo,
     @Assisted private val routeData: Routes.PlanEdit,
 ) : ViewModel() {
 
@@ -99,6 +103,17 @@ class PlanEditViewModel @AssistedInject constructor(
 
     private val _replacedItem: MutableStateFlow<PlanItem?> = MutableStateFlow(null)
     val replacedItem: StateFlow<PlanItem?> = _replacedItem
+
+    /**
+     * Handles of the exercise being set up, so the plan can ask for a particular one.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val gripsOfEdited: StateFlow<List<Grip>> = _editedItem
+        .flatMapLatest { item ->
+            val exerciseId = item?.exercise?.id
+            if (exerciseId == null) flowOf(emptyList()) else gripRepo.grips(exerciseId)
+        }
+        .asStateFlow(emptyList())
 
     @OptIn(FlowPreview::class)
     val isNameAlreadyUsed = snapshotFlow { planNameState.text.trim().toString() }
@@ -244,6 +259,7 @@ class PlanEditViewModel @AssistedInject constructor(
                     barWeight = targets.barWeight,
                     leftWeight = targets.leftWeight,
                     rightWeight = targets.rightWeight,
+                    gripId = targets.gripId,
                 ),
             )
             _editedItem.emit(null)

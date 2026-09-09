@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val repo: SettingsRepo,
+    gymRepo: com.looker.kenko.data.repository.GymRepo,
     private val backupManager: BackupManager,
 ) : ViewModel() {
 
@@ -47,8 +48,10 @@ class SettingsViewModel @Inject constructor(
     val state: StateFlow<SettingsUiData> = combine(
         repo.stream,
         _backupState,
-    ) { settings, backupState ->
+        gymRepo.current,
+    ) { settings, backupState, gym ->
         SettingsUiData(
+            currentGymName = gym?.name,
             isWeekMode = settings.isWeekMode,
             selectedTheme = settings.theme,
             selectedColorPalette = settings.colorPalette,
@@ -61,6 +64,7 @@ class SettingsViewModel @Inject constructor(
         )
     }.asStateFlow(
         SettingsUiData(
+            currentGymName = null,
             isWeekMode = false,
             selectedTheme = Theme.System,
             selectedColorPalette = ColorPalettes.Default,
@@ -173,6 +177,7 @@ enum class BackupMessage {
 
 @Stable
 data class SettingsUiData(
+    val currentGymName: String?,
     val isWeekMode: Boolean,
     val selectedTheme: Theme,
     val selectedColorPalette: ColorPalettes,

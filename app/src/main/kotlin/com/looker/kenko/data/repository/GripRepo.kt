@@ -12,25 +12,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.looker.kenko.data.model.settings
+package com.looker.kenko.data.repository
 
-import kotlin.time.Instant
+import com.looker.kenko.data.model.Grip
+import kotlinx.coroutines.flow.Flow
 
-data class Settings(
-    val isOnboardingDone: Boolean,
-    /**
-     * True — the plan runs on days of the week; false — its days follow one another
-     * whenever the lifter shows up.
-     */
-    val isWeekMode: Boolean,
-    /**
-     * Gym the lifter trains at now. Null means no gym is chosen and everything is available.
-     */
-    val currentGymId: Int?,
-    val theme: Theme,
-    val colorPalette: ColorPalettes,
-    val lastSetTime: Instant?,
-    val backupUri: String?,
-    val backupInterval: BackupInterval,
-    val lastBackupTime: Instant?,
-)
+/**
+ * Handles an exercise can be done with.
+ */
+interface GripRepo {
+
+    fun grips(exerciseId: Int): Flow<List<Grip>>
+
+    suspend fun getGrips(exerciseId: Int): List<Grip>
+
+    suspend fun get(gripId: Int): Grip?
+
+    suspend fun upsert(grip: Grip)
+
+    suspend fun delete(gripId: Int)
+}

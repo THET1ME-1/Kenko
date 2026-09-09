@@ -29,20 +29,25 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.looker.kenko.data.local.model.SetType
+import com.looker.kenko.data.model.Grip
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.localDate
+import com.looker.kenko.data.repository.GripRepo
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.ui.addSet.components.BoundReached
 import com.looker.kenko.ui.addSet.components.Direction
+import com.looker.kenko.utils.asStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = AddSetViewModel.AddSetViewModelFactory::class)
 class AddSetViewModel @AssistedInject constructor(
     private val sessionRepo: SessionRepo,
+    gripRepo: GripRepo,
     @Assisted private val target: AddSetTarget,
 ) : ViewModel() {
 
@@ -53,6 +58,18 @@ class AddSetViewModel @AssistedInject constructor(
 
     var selectedSetType by mutableStateOf(SetType.Standard)
         private set
+
+    /**
+     * Handles this exercise can be done with.
+     */
+    val grips: StateFlow<List<Grip>> = gripRepo.grips(target.exerciseId).asStateFlow(emptyList())
+
+    var selectedGripId: Int? by mutableStateOf(target.gripId)
+        private set
+
+    fun selectGrip(gripId: Int?) {
+        selectedGripId = gripId
+    }
 
     fun setSetType(type: SetType) {
         selectedSetType = type
@@ -106,6 +123,7 @@ class AddSetViewModel @AssistedInject constructor(
                     else -> target.dropCount
                 },
                 dropPercent = target.dropPercent,
+                gripId = selectedGripId,
             )
         }
     }

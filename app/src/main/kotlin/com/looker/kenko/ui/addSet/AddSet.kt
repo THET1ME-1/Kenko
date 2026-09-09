@@ -16,6 +16,10 @@ package com.looker.kenko.ui.addSet
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +30,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -55,12 +61,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -72,9 +80,11 @@ import androidx.compose.ui.unit.dp
 import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.RoundedPolygon
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.model.Grip
 import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.ui.addSet.components.ITEMS
 import com.looker.kenko.ui.addSet.components.ItemSize
@@ -82,6 +92,7 @@ import com.looker.kenko.ui.addSet.components.VerticalSelector
 import com.looker.kenko.ui.addSet.components.WeightStepper
 import com.looker.kenko.ui.addSet.components.WeightTextField
 import com.looker.kenko.ui.components.WeightCalculator
+import com.looker.kenko.ui.components.rememberPhoto
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -101,9 +112,13 @@ fun AddSet(
         ) {
             it.create(target)
         }
+    val grips by viewModel.grips.collectAsStateWithLifecycle()
     AddSetContent(
         exerciseName = exerciseName,
         isDrop = target.parentSetId != null,
+        grips = grips,
+        selectedGripId = viewModel.selectedGripId,
+        onSelectGrip = viewModel::selectGrip,
         weights = viewModel.weights,
         reps = viewModel.reps,
         selectedSetType = viewModel.selectedSetType,
@@ -121,6 +136,9 @@ fun AddSet(
 private fun AddSetContent(
     exerciseName: String,
     isDrop: Boolean = false,
+    grips: List<Grip> = emptyList(),
+    selectedGripId: Int? = null,
+    onSelectGrip: (Int?) -> Unit = {},
     weights: TextFieldState,
     reps: Int,
     selectedSetType: SetType,
@@ -153,6 +171,31 @@ private fun AddSetContent(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        if (grips.isNotEmpty()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(bottom = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                GripChip(
+                    label = stringResource(R.string.label_no_grip),
+                    photo = null,
+                    selected = selectedGripId == null,
+                    onClick = { onSelectGrip(null) },
+                )
+                grips.forEach { grip ->
+                    GripChip(
+                        label = grip.name,
+                        photo = grip.photoUri,
+                        selected = selectedGripId == grip.id,
+                        onClick = { onSelectGrip(grip.id) },
+                    )
+                }
+            }
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -218,6 +261,55 @@ private fun AddSetContent(
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+/**
+ * A handle to pick before the set: name, and its photo when there is one.
+ */
+@Composable
+private fun GripChip(
+    label: String,
+    photo: String?,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val bitmap = rememberPhoto(photo)
+    Row(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(
+                if (selected) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else {
+                    MaterialTheme.colorScheme.surfaceContainerHigh
+                },
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(28.dp)
+                    .clip(MaterialTheme.shapes.small),
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = if (selected) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+        )
     }
 }
 

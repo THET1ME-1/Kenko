@@ -43,6 +43,9 @@ import com.looker.kenko.ui.addEditExercise.AddEditExercise
 import com.looker.kenko.ui.addEditExercise.AddEditExerciseViewModel
 import com.looker.kenko.ui.exercises.Exercises
 import com.looker.kenko.ui.getStarted.GetStartedOld
+import com.looker.kenko.ui.gyms.GymEdit
+import com.looker.kenko.ui.gyms.GymEditViewModel
+import com.looker.kenko.ui.gyms.Gyms
 import com.looker.kenko.ui.home.Home
 import com.looker.kenko.ui.planEdit.PlanEdit
 import com.looker.kenko.ui.planEdit.PlanEditViewModel
@@ -114,7 +117,21 @@ fun KenkoNavHost(
                         viewModel = hiltViewModel(),
                     )
 
+                    is Routes.Gyms -> Gyms(
+                        onGymClick = { id -> backStack.add(Routes.GymEdit(id)) },
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        viewModel = hiltViewModel(),
+                    )
+
+                    is Routes.GymEdit -> GymEdit(
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        viewModel = hiltViewModel<GymEditViewModel, GymEditViewModel.Factory> {
+                            it.create(key)
+                        },
+                    )
+
                     is Routes.Settings -> Settings(
+                        onGymsClick = { backStack.add(Routes.Gyms) },
                         onBackPress = { backStack.removeAt(backStack.lastIndex) },
                         viewModel = hiltViewModel(),
                     )

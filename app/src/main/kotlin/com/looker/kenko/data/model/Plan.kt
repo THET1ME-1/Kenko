@@ -79,6 +79,10 @@ data class PlanItem(
      */
     val dropCount: Int = 0,
     val dropPercent: Int = DEFAULT_DROP_PERCENT,
+    /**
+     * Handle the plan expects for this exercise.
+     */
+    val gripId: Int? = null,
     val id: Long? = null,
 ) {
     /**

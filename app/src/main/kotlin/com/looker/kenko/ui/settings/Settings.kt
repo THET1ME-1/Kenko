@@ -102,11 +102,13 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun Settings(
     viewModel: SettingsViewModel,
+    onGymsClick: () -> Unit,
     onBackPress: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     Settings(
         state = state,
+        onGymsClick = onGymsClick,
         onWeekModeChange = viewModel::updateWeekMode,
         onSelectTheme = viewModel::updateTheme,
         onSelectColorPalette = viewModel::updateColorPalette,
@@ -123,6 +125,7 @@ fun Settings(
 @Composable
 private fun Settings(
     state: SettingsUiData,
+    onGymsClick: () -> Unit = {},
     onWeekModeChange: (Boolean) -> Unit,
     onSelectTheme: (Theme) -> Unit,
     onSelectColorPalette: (ColorPalettes) -> Unit,
@@ -171,6 +174,29 @@ private fun Settings(
         ) {
             HorizontalDivider(thickness = KenkoBorderWidth)
             Spacer(modifier = Modifier.height(16.dp))
+            CategoryHeader(title = stringResource(R.string.label_gym))
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onGymsClick)
+                    .padding(horizontal = 20.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1F)) {
+                    Text(
+                        text = state.currentGymName ?: stringResource(R.string.label_gym_any),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        text = stringResource(R.string.label_gym_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.outline,
+                    )
+                }
+                Icon(painter = KenkoIcons.KeyboardArrowRight, contentDescription = null)
+            }
+            Spacer(modifier = Modifier.height(24.dp))
             CategoryHeader(title = stringResource(R.string.label_plans_title))
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -732,6 +758,7 @@ private fun SettingsPreview(
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Settings(
             state = SettingsUiData(
+                currentGymName = null,
                 isWeekMode = false,
                 selectedTheme = Theme.System,
                 selectedColorPalette = ColorPalettes.Default,
