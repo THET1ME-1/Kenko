@@ -78,6 +78,7 @@ import com.looker.kenko.ui.theme.start
 fun Profile(
     viewModel: ProfileViewModel,
     onBackPress: () -> Unit,
+    onStatsClick: () -> Unit,
     onExercisesClick: () -> Unit,
     onAddExerciseClick: () -> Unit,
     onPlanClick: () -> Unit,
@@ -88,6 +89,7 @@ fun Profile(
     Profile(
         state = state,
         onBackPress = onBackPress,
+        onStatsClick = onStatsClick,
         onSettingsClick = onSettingsClick,
         onPlanEdit = onPlanEdit,
         onPlanClick = onPlanClick,
@@ -101,6 +103,7 @@ fun Profile(
 private fun Profile(
     state: ProfileUiState,
     onBackPress: () -> Unit,
+    onStatsClick: () -> Unit = {},
     onSettingsClick: () -> Unit,
     onPlanClick: () -> Unit,
     onPlanEdit: (Int) -> Unit,
@@ -145,6 +148,8 @@ private fun Profile(
                 onAddClick = onAddExerciseClick,
                 onExercisesClick = onExercisesClick,
             )
+            Spacer(modifier = Modifier.height(12.dp))
+            StatsCard(onClick = onStatsClick)
             if (state.totalLifts > 0) {
                 Spacer(modifier = Modifier.height(12.dp))
                 LiftsCard(state.totalLifts)
@@ -280,6 +285,43 @@ private fun ExerciseCard(
                 painter = KenkoIcons.Add,
                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 contentDescription = stringResource(R.string.label_add),
+            )
+        }
+    }
+}
+
+/**
+ * Way into the load screen: the body, the numbers of a period and the report behind them.
+ */
+@Composable
+private fun StatsCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.extraLarge,
+        border = SecondaryBorder,
+        onClick = onClick,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1F)) {
+                Text(
+                    text = stringResource(R.string.title_stats),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = stringResource(R.string.label_stats_card_hint),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+            }
+            Icon(
+                painter = KenkoIcons.ArrowForward,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
             )
         }
     }

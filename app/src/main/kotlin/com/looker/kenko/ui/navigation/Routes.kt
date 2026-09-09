@@ -52,6 +52,32 @@ sealed interface Routes : NavKey {
     data class SessionDetail(val epochDays: Int) : Routes
 
     @Serializable
+    data object Stats : Routes
+
+    @Serializable
+    data class MuscleStats(
+        val muscle: String,
+        val from: Int,
+        val to: Int,
+        val range: String,
+    ) : Routes
+
+    @Serializable
+    data class ExerciseStats(
+        val name: String,
+        val from: Int,
+        val to: Int,
+        val range: String,
+    ) : Routes
+
+    @Serializable
+    data class Report(
+        val from: Int,
+        val to: Int,
+        val range: String,
+    ) : Routes
+
+    @Serializable
     data class AddEditExercise(
         val id: Int? = null,
         val name: String? = null,

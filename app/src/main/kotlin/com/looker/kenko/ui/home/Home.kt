@@ -16,6 +16,8 @@ package com.looker.kenko.ui.home
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +29,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -61,6 +64,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -70,21 +74,25 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
+import com.looker.kenko.ui.components.BodyHeatMap
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.KenkoButton
 import com.looker.kenko.ui.components.LiftingQuotes
 import com.looker.kenko.ui.components.TertiaryKenkoButton
 import com.looker.kenko.ui.components.TickerText
+import com.looker.kenko.ui.stats.formatVolume
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
 import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.ui.theme.header
+import com.looker.kenko.ui.theme.numbers
 
 @Composable
 fun Home(
     viewModel: HomeViewModel,
     onProfileClick: () -> Unit,
+    onStatsClick: () -> Unit,
     onSelectPlanClick: () -> Unit,
     onAddExerciseClick: () -> Unit,
     onExploreSessionsClick: () -> Unit,
@@ -93,8 +101,11 @@ fun Home(
     onCurrentPlanClick: (Int) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val weekLoad by viewModel.weekLoad.collectAsStateWithLifecycle()
     Home(
         state = state,
+        weekLoad = weekLoad,
+        onStatsClick = onStatsClick,
         onProfileClick = onProfileClick,
         onSelectPlanClick = onSelectPlanClick,
         onAddExerciseClick = onAddExerciseClick,
@@ -109,6 +120,8 @@ fun Home(
 @Composable
 private fun Home(
     state: HomeUiData,
+    weekLoad: WeekLoad = WeekLoad(),
+    onStatsClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onSelectPlanClick: () -> Unit = {},
     onAddExerciseClick: () -> Unit = {},
@@ -209,8 +222,62 @@ private fun Home(
                     },
                 )
             }
+            WeekLoadCard(
+                load = weekLoad,
+                onClick = onStatsClick,
+                modifier = Modifier
+                    .align(CenterHorizontally)
+                    .widthIn(240.dp, 420.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            )
             LiftingQuotes(Modifier.align(CenterHorizontally))
         }
+    }
+}
+
+/**
+ * The running week in one card: where the load landed and how much of it there was.
+ *
+ * The body is the point — the numbers only say how big the week was.
+ */
+@Composable
+private fun WeekLoadCard(
+    load: WeekLoad,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1F)) {
+            Text(
+                text = stringResource(R.string.label_week_load).uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
+            Text(
+                text = formatVolume(load.volume),
+                style = MaterialTheme.typography.displaySmall.numbers(),
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+                text = pluralStringResource(R.plurals.plural_sets, load.sets, load.sets),
+                style = MaterialTheme.typography.labelMedium.numbers(),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Spacer(Modifier.width(12.dp))
+        BodyHeatMap(
+            load = load.heat,
+            height = 110.dp,
+            modifier = Modifier.width(120.dp),
+        )
     }
 }
 

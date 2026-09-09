@@ -55,6 +55,17 @@ import com.looker.kenko.ui.sessionDetail.SessionDetailViewModel
 import com.looker.kenko.ui.sessionDetail.SessionDetails
 import com.looker.kenko.ui.sessions.Sessions
 import com.looker.kenko.ui.settings.Settings
+import com.looker.kenko.ui.stats.ExerciseStats
+import com.looker.kenko.ui.stats.ExerciseStatsViewModel
+import com.looker.kenko.ui.stats.MuscleStats
+import com.looker.kenko.ui.stats.MuscleStatsViewModel
+import com.looker.kenko.ui.stats.Report
+import com.looker.kenko.ui.stats.ReportViewModel
+import com.looker.kenko.ui.stats.Stats
+import com.looker.kenko.ui.stats.exerciseRoute
+import com.looker.kenko.ui.stats.muscleRoute
+import com.looker.kenko.ui.stats.period
+import com.looker.kenko.ui.stats.reportRoute
 
 @Composable
 fun KenkoNavHost(
@@ -94,6 +105,7 @@ fun KenkoNavHost(
 
                     is Routes.Home -> Home(
                         onProfileClick = { backStack.add(Routes.Profile) },
+                        onStatsClick = { backStack.add(Routes.Stats) },
                         onSelectPlanClick = { backStack.add(Routes.Plan) },
                         onAddExerciseClick = { backStack.add(Routes.AddEditExercise()) },
                         onExploreSessionsClick = { backStack.add(Routes.Session) },
@@ -101,6 +113,47 @@ fun KenkoNavHost(
                         onStartSessionClick = { backStack.add(Routes.SessionDetail(-1)) },
                         onCurrentPlanClick = { id -> backStack.add(Routes.PlanEdit(id)) },
                         viewModel = hiltViewModel(),
+                    )
+
+                    is Routes.Stats -> Stats(
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        onMuscleClick = { muscle, period ->
+                            backStack.add(muscleRoute(muscle, period))
+                        },
+                        onExerciseClick = { name, period ->
+                            backStack.add(exerciseRoute(name, period))
+                        },
+                        onReportClick = { period -> backStack.add(reportRoute(period)) },
+                        viewModel = hiltViewModel(),
+                    )
+
+                    is Routes.MuscleStats -> MuscleStats(
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        onExerciseClick = { name ->
+                            backStack.add(exerciseRoute(name, key.period()))
+                        },
+                        viewModel = hiltViewModel<
+                            MuscleStatsViewModel,
+                            MuscleStatsViewModel.Factory,
+                            > { it.create(key) },
+                    )
+
+                    is Routes.ExerciseStats -> ExerciseStats(
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        onMuscleClick = { muscle ->
+                            backStack.add(muscleRoute(muscle, key.period()))
+                        },
+                        viewModel = hiltViewModel<
+                            ExerciseStatsViewModel,
+                            ExerciseStatsViewModel.Factory,
+                            > { it.create(key) },
+                    )
+
+                    is Routes.Report -> Report(
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        viewModel = hiltViewModel<ReportViewModel, ReportViewModel.Factory> {
+                            it.create(key)
+                        },
                     )
 
                     is Routes.Session -> Sessions(
@@ -137,6 +190,7 @@ fun KenkoNavHost(
                     )
 
                     is Routes.Profile -> Profile(
+                        onStatsClick = { backStack.add(Routes.Stats) },
                         onAddExerciseClick = { backStack.add(Routes.AddEditExercise()) },
                         onExercisesClick = { backStack.add(Routes.Exercises) },
                         onPlanClick = { backStack.add(Routes.Plan) },

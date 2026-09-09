@@ -68,6 +68,12 @@ private val builtInNames: Map<String, Int> = mapOf(
 fun Exercise.displayName(): String = localizedExerciseName(name)
 
 /**
+ * The string resource of a built-in name, for places that have a context but no composition —
+ * the report writer among them.
+ */
+fun exerciseNameRes(name: String): Int? = builtInNames[name.trim().lowercase()]
+
+/**
  * The same translation for a name that travels alone, without its exercise.
  */
 @Composable

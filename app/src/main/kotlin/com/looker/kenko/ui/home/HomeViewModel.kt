@@ -17,7 +17,11 @@ package com.looker.kenko.ui.home
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import com.looker.kenko.data.PlanDayResolver
+import com.looker.kenko.data.model.MuscleGroups
+import com.looker.kenko.data.model.StatsPeriod
+import com.looker.kenko.data.model.StatsRange
 import com.looker.kenko.data.model.localDate
+import com.looker.kenko.data.model.summarize
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.utils.asStateFlow
@@ -26,6 +30,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -44,6 +49,23 @@ class HomeViewModel @Inject constructor(
     private val planItemStream = planRepo.current.flatMapLatest { plan ->
         planRepo.planItemsForDay(dayResolver.dayFor(localDate, plan?.id))
     }
+
+    /**
+     * Load of the running week for the card on the home screen.
+     */
+    val weekLoad = sessionsStream.map { sessions ->
+        val period = StatsPeriod.of(StatsRange.Week, localDate)
+        val summary = sessions.summarize(period)
+        WeekLoad(
+            volume = summary.volume,
+            sets = summary.sets,
+            heat = MuscleGroups.entries.associateWith { muscle ->
+                val top = summary.muscles.maxOfOrNull { it.volume } ?: 0F
+                val own = summary.muscles.firstOrNull { it.muscle == muscle }?.volume ?: 0F
+                if (top <= 0F) 0F else (own / top).coerceIn(0F, 1F)
+            },
+        )
+    }.asStateFlow(WeekLoad())
 
     val state = combine(
         planStream,
@@ -68,6 +90,18 @@ class HomeViewModel @Inject constructor(
             currentPlanId = null,
         ),
     )
+}
+
+/**
+ * What the home card says about the running week: how much was moved and where it landed.
+ */
+@Immutable
+data class WeekLoad(
+    val volume: Float = 0F,
+    val sets: Int = 0,
+    val heat: Map<MuscleGroups, Float> = emptyMap(),
+) {
+    val isEmpty: Boolean get() = sets == 0
 }
 
 @Immutable
