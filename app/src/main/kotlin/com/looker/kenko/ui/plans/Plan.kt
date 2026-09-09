@@ -15,6 +15,8 @@
 package com.looker.kenko.ui.plans
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -44,6 +46,7 @@ import com.looker.kenko.R
 import com.looker.kenko.data.model.Plan
 import com.looker.kenko.data.model.PlanPreviewParameters
 import com.looker.kenko.ui.components.BackButton
+import com.looker.kenko.ui.components.EmptyPage
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.components.endItem
@@ -124,6 +127,21 @@ private fun Plan(
         floatingActionButton = { KenkoAddButton(onClick = { onPlanClick(-1) }) },
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
+        if (plans.isEmpty()) {
+            EmptyPage(
+                text = stringResource(R.string.label_no_plans_yet),
+                modifier = Modifier.padding(it),
+                hero = {
+                    Icon(
+                        painter = KenkoIcons.Plan,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = MaterialTheme.colorScheme.outlineVariant,
+                    )
+                },
+            )
+            return@Scaffold
+        }
         LazyColumn(
             contentPadding = it,
             verticalArrangement = Arrangement.spacedBy(1.dp),
