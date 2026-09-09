@@ -263,10 +263,22 @@ class SessionDetailViewModel @AssistedInject constructor(
                     planId = planId,
                     hasPreviousSession = previousSession,
                     ghosts = ghosts,
+                    sessionId = session?.id,
+                    finishedAt = session?.finishedAt,
                 ),
             )
         }.onStart { emit(SessionDetailState.Loading) }
             .asStateFlow(SessionDetailState.Loading)
+
+    /**
+     * Opens a closed session again — a forgotten set is worth more than a tidy record.
+     */
+    fun reopenSession() {
+        viewModelScope.launch {
+            val id = (state.value as? SessionDetailState.Success)?.data?.sessionId ?: return@launch
+            repo.reopenSession(id)
+        }
+    }
 
     fun removeSet(setId: Int?) {
         if (setId == null) return
@@ -461,7 +473,11 @@ data class SessionUiData(
      * The same exercises as they went last time, keyed by exercise name.
      */
     val ghosts: Map<String, Ghost> = emptyMap(),
+    val sessionId: Int? = null,
+    val finishedAt: Long? = null,
 ) {
+    val isFinished: Boolean get() = finishedAt != null
+
     /**
      * Kilograms this session is ahead of the last time the same exercises were done.
      *

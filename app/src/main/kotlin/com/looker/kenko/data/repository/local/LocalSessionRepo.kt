@@ -40,6 +40,7 @@ import com.looker.kenko.utils.toLocalEpochDays
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Clock
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -249,8 +250,31 @@ class LocalSessionRepo @Inject constructor(
                 planId = currentPlanId,
                 gymId = settingsRepo.stream.first().currentGymId,
                 dayIndex = day,
+                startedAt = Clock.System.now().epochSeconds,
             ),
         ).toInt()
+    }
+
+    override suspend fun finishSession(
+        sessionId: Int,
+        name: String?,
+        note: String?,
+        photoUri: String?,
+        finishedAt: Long,
+        minutes: Int,
+    ) {
+        dao.finishSession(
+            sessionId = sessionId,
+            name = name?.takeIf { it.isNotBlank() },
+            note = note?.takeIf { it.isNotBlank() },
+            photoUri = photoUri,
+            finishedAt = finishedAt,
+            startedAt = finishedAt - minutes.coerceAtLeast(0) * 60L,
+        )
+    }
+
+    override suspend fun reopenSession(sessionId: Int) {
+        dao.reopenSession(sessionId)
     }
 
     override fun streamByDate(date: LocalDate): Flow<Session?> {

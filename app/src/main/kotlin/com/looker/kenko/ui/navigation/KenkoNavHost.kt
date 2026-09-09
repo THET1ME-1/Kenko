@@ -53,6 +53,8 @@ import com.looker.kenko.ui.plans.Plan
 import com.looker.kenko.ui.profile.Profile
 import com.looker.kenko.ui.sessionDetail.SessionDetailViewModel
 import com.looker.kenko.ui.sessionDetail.SessionDetails
+import com.looker.kenko.ui.sessionSummary.SessionSummary
+import com.looker.kenko.ui.sessionSummary.SessionSummaryViewModel
 import com.looker.kenko.ui.sessions.Sessions
 import com.looker.kenko.data.model.StatsPeriod
 import com.looker.kenko.data.model.StatsRange
@@ -118,6 +120,18 @@ fun KenkoNavHost(
                         onStartSessionClick = { backStack.add(Routes.SessionDetail(-1)) },
                         onCurrentPlanClick = { id -> backStack.add(Routes.PlanEdit(id)) },
                         viewModel = hiltViewModel(),
+                    )
+
+                    is Routes.SessionSummary -> SessionSummary(
+                        onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        onSaved = {
+                            backStack.removeAll { it is Routes.SessionSummary }
+                            backStack.removeAll { it is Routes.SessionDetail }
+                        },
+                        viewModel = hiltViewModel<
+                            SessionSummaryViewModel,
+                            SessionSummaryViewModel.Factory,
+                            > { it.create(key) },
                     )
 
                     is Routes.Stats -> Stats(
@@ -245,6 +259,9 @@ fun KenkoNavHost(
 
                     is Routes.SessionDetail -> SessionDetails(
                         onBackPress = { backStack.removeAt(backStack.lastIndex) },
+                        onFinishClick = { date ->
+                            backStack.add(Routes.SessionSummary(date.toEpochDays().toInt()))
+                        },
                         onHistoryClick = { date ->
                             backStack.add(Routes.SessionDetail(date.toEpochDays().toInt()))
                         },

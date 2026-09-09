@@ -30,10 +30,36 @@ data class Session(
      * Gym the session was written in, so the same exercise can be told apart between gyms.
      */
     val gymId: Int? = null,
+    /**
+     * How the session is called: given by the lifter, or by the time of day it started.
+     */
+    val name: String? = null,
+    val note: String? = null,
+    val photoUri: String? = null,
+    /**
+     * Epoch seconds of the first set and of the moment the session was closed.
+     */
+    val startedAt: Long? = null,
+    val finishedAt: Long? = null,
     val id: Int? = null,
 ) {
     val performExercises: List<Exercise>
         get() = sets.map { it.exercise }.distinct()
+
+    /**
+     * A session stays open until it is closed by hand.
+     */
+    val isFinished: Boolean get() = finishedAt != null
+
+    /**
+     * Minutes between the first set and the closing, when both are known.
+     */
+    val minutes: Int?
+        get() {
+            val start = startedAt ?: return null
+            val end = finishedAt ?: return null
+            return ((end - start) / 60).toInt().coerceAtLeast(0)
+        }
 }
 
 fun Session(planId: Int, sets: List<Set>) = Session(planId = planId, date = localDate, sets = sets)

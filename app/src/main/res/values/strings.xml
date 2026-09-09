@@ -481,4 +481,24 @@
     <string name="label_weight_note_negatives">Negatives</string>
     <string name="label_weight_note_assisted">Assisted</string>
     <string name="label_weight_note_paused">Paused</string>
+    <string name="title_finish_session">Finish session</string>
+    <string name="label_save_session">Save</string>
+    <string name="label_session_name">Name</string>
+    <string name="label_session_note">Note</string>
+    <string name="label_session_note_hint">How did it go? Write it down while you remember.</string>
+    <string name="label_add_session_photo">Add a photo</string>
+    <string name="label_finished_at">Finished at</string>
+    <string name="label_session_length">Length</string>
+    <string name="label_records_of_session">Records of this session</string>
+    <string name="label_session_morning">Morning session</string>
+    <string name="label_session_afternoon">Afternoon session</string>
+    <string name="label_session_evening">Evening session</string>
+    <string name="label_session_night">Night session</string>
+    <string name="label_finish_session_action">Finish session</string>
+    <string name="label_session_finished">Session finished · %1$s</string>
+    <string name="label_reopen_session">Reopen</string>
+    <plurals name="plural_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
 </resources>

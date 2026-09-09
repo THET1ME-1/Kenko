@@ -52,6 +52,9 @@ sealed interface Routes : NavKey {
     data class SessionDetail(val epochDays: Int) : Routes
 
     @Serializable
+    data class SessionSummary(val epochDays: Int) : Routes
+
+    @Serializable
     data object Stats : Routes
 
     @Serializable

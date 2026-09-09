@@ -63,6 +63,25 @@ data class SessionDataEntity(
     @ColumnInfo(index = true, defaultValue = "NULL")
     val gymId: Int? = null,
     /**
+     * Name a lifter gave the session, when they gave one.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val name: String? = null,
+    @ColumnInfo(defaultValue = "NULL")
+    val note: String? = null,
+    @ColumnInfo(defaultValue = "NULL")
+    val photoUri: String? = null,
+    /**
+     * When the first set was written, in epoch seconds.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val startedAt: Long? = null,
+    /**
+     * When the session was closed. Until then the session is still running.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val finishedAt: Long? = null,
+    /**
      * Day of the plan this session went through, so the next one knows what follows.
      */
     @ColumnInfo(defaultValue = "NULL")
@@ -75,6 +94,11 @@ fun Session.data(): SessionDataEntity = SessionDataEntity(
     date = EpochDays(date.toEpochDays().toInt()),
     planId = planId,
     gymId = gymId,
+    name = name,
+    note = note,
+    photoUri = photoUri,
+    startedAt = startedAt,
+    finishedAt = finishedAt,
     dayIndex = dayIndex,
     id = id ?: 0,
 )
@@ -89,5 +113,10 @@ fun SessionEntity.toExternal(
     sets = setsMap,
     dayIndex = data.dayIndex,
     gymId = data.gymId,
+    name = data.name,
+    note = data.note,
+    photoUri = data.photoUri,
+    startedAt = data.startedAt,
+    finishedAt = data.finishedAt,
     id = data.id,
 )

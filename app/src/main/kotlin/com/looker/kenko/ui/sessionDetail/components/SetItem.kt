@@ -58,6 +58,8 @@ import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.ui.addSet.setTypeLabel
 import com.looker.kenko.ui.addSet.weightNoteLabel
 import com.looker.kenko.ui.theme.KenkoIcons
+import com.looker.kenko.ui.theme.setTypeColor
+import com.looker.kenko.ui.theme.weightNoteColor
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
 import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
@@ -77,13 +79,17 @@ fun SetItem(
             .then(modifier),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CompositionLocalProvider(
-            LocalContentColor provides MaterialTheme.colorScheme.outline,
-            LocalTextStyle provides MaterialTheme.typography.displayMedium.numbers(),
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+            CompositionLocalProvider(
+                LocalContentColor provides MaterialTheme.colorScheme.outline,
+                LocalTextStyle provides MaterialTheme.typography.displayMedium.numbers(),
+            ) {
                 title()
             }
+            SetKindLabel(set = set)
         }
         Spacer(modifier = Modifier.width(12.dp))
         Row(
@@ -107,30 +113,27 @@ fun SetItem(
 }
 
 /**
- * What kind of set this was, when it was not a plain one: a warm-up, an all-out set, a partner
- * on the bar.
- *
- * A plain working set says nothing — the line only appears when there is something to say.
+ * What kind of set this was, right under its number: a warm-up, an all-out set, a partner on
+ * the bar. Every kind has its own colour; a plain working set says nothing at all.
  */
 @Composable
-fun SetKindLine(set: Set, modifier: Modifier = Modifier) {
-    val parts = buildList {
-        if (set.type != SetType.Standard && set.type != SetType.Drop) {
-            add(setTypeLabel(set.type))
-        }
-        set.weightNote?.let { add(weightNoteLabel(it)) }
-    }
-    if (parts.isEmpty()) return
+fun SetKindLabel(set: Set, modifier: Modifier = Modifier) {
+    val kind = set.type.takeIf { it != SetType.Standard && it != SetType.Drop }
+    val note = set.weightNote
+    if (kind == null && note == null) return
     Text(
-        modifier = modifier.padding(start = 52.dp, top = 2.dp),
-        text = parts.joinToString(" · "),
+        modifier = modifier.padding(top = 2.dp),
+        text = kind?.let { setTypeLabel(it) } ?: weightNoteLabel(note!!),
         style = MaterialTheme.typography.labelSmall,
-        color = if (set.type == SetType.Warmup) {
-            MaterialTheme.colorScheme.outline
-        } else {
-            MaterialTheme.colorScheme.tertiary
-        },
+        color = kind?.let { setTypeColor(it) } ?: weightNoteColor(note!!),
     )
+    if (kind != null && note != null) {
+        Text(
+            text = weightNoteLabel(note),
+            style = MaterialTheme.typography.labelSmall,
+            color = weightNoteColor(note),
+        )
+    }
 }
 
 @Composable

@@ -125,4 +125,27 @@ interface SessionDao {
         """,
     )
     suspend fun getSession(date: EpochDays): SessionEntity?
+
+    @Query(
+        """
+        UPDATE sessions
+        SET name = :name,
+            note = :note,
+            photoUri = :photoUri,
+            finishedAt = :finishedAt,
+            startedAt = :startedAt
+        WHERE id = :sessionId
+        """,
+    )
+    suspend fun finishSession(
+        sessionId: Int,
+        name: String?,
+        note: String?,
+        photoUri: String?,
+        finishedAt: Long,
+        startedAt: Long,
+    )
+
+    @Query("UPDATE sessions SET finishedAt = NULL WHERE id = :sessionId")
+    suspend fun reopenSession(sessionId: Int)
 }

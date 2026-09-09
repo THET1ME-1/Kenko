@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -49,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,6 +72,8 @@ import com.looker.kenko.ui.components.loadoutFor
 import com.looker.kenko.ui.components.WeightRuler
 import com.looker.kenko.ui.components.rememberPhoto
 import com.looker.kenko.ui.theme.KenkoIcons
+import com.looker.kenko.ui.theme.setTypeColor
+import com.looker.kenko.ui.theme.weightNoteColor
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
 import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
@@ -373,6 +377,7 @@ private fun AddSetContent(
                     modifier = Modifier.weight(1F),
                     label = setTypeLabel(setType),
                     accent = setType != SetType.Standard || weightNote != null,
+                    accentColor = setTypeColor(setType),
                     onClick = { typesOpen = !typesOpen },
                 )
             }
@@ -435,6 +440,7 @@ private fun SetTypePicker(
                 PickerChip(
                     label = setTypeLabel(type),
                     selected = type == selected,
+                    accent = setTypeColor(type),
                     onClick = { onSelectType(type) },
                 )
             }
@@ -461,6 +467,7 @@ private fun SetTypePicker(
                 PickerChip(
                     label = weightNoteLabel(entry),
                     selected = entry == note,
+                    accent = weightNoteColor(entry),
                     onClick = { onSelectNote(entry) },
                 )
             }
@@ -483,28 +490,45 @@ private val SELECTABLE_TYPES = listOf(
 private fun PickerChip(
     label: String,
     selected: Boolean,
+    accent: Color,
     onClick: () -> Unit,
 ) {
-    Text(
-        text = label,
-        style = MaterialTheme.typography.labelLarge,
-        color = if (selected) {
-            MaterialTheme.colorScheme.onPrimaryContainer
-        } else {
-            MaterialTheme.colorScheme.onSurfaceVariant
-        },
+    Row(
         modifier = Modifier
             .clip(MaterialTheme.shapes.extraLarge)
-            .background(
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+            .then(
                 if (selected) {
-                    MaterialTheme.colorScheme.primaryContainer
+                    Modifier.border(
+                        width = KenkoBorderWidth * 2,
+                        color = accent,
+                        shape = MaterialTheme.shapes.extraLarge,
+                    )
                 } else {
-                    MaterialTheme.colorScheme.surfaceContainerHighest
+                    Modifier
                 },
             )
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 9.dp),
-    )
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(accent),
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = if (selected) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+        )
+    }
 }
 
 /**
@@ -632,6 +656,7 @@ private fun OutlineKey(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     accent: Boolean = false,
+    accentColor: Color? = null,
 ) {
     Box(
         modifier = modifier
@@ -640,7 +665,7 @@ private fun OutlineKey(
             .border(
                 width = KenkoBorderWidth,
                 color = if (accent) {
-                    MaterialTheme.colorScheme.primary
+                    accentColor ?: MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.outlineVariant
                 },
@@ -653,7 +678,7 @@ private fun OutlineKey(
             text = label,
             style = MaterialTheme.typography.labelLarge,
             color = if (accent) {
-                MaterialTheme.colorScheme.primary
+                accentColor ?: MaterialTheme.colorScheme.primary
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
             },

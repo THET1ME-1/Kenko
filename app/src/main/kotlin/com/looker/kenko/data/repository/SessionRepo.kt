@@ -93,6 +93,23 @@ interface SessionRepo {
 
     suspend fun getSessionIdOrCreate(date: LocalDate): Int
 
+    /**
+     * Closes the session: its name, note, photo and the two moments it happened between.
+     */
+    suspend fun finishSession(
+        sessionId: Int,
+        name: String?,
+        note: String?,
+        photoUri: String?,
+        finishedAt: Long,
+        minutes: Int,
+    )
+
+    /**
+     * Opens a closed session again, so the lifter can add what they forgot.
+     */
+    suspend fun reopenSession(sessionId: Int)
+
     fun streamByDate(date: LocalDate): Flow<Session?>
 
     suspend fun getSets(sessionId: Int): List<Set>

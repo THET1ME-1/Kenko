@@ -468,3 +468,17 @@ val MIGRATION_12_13 = object : Migration(12, 13) {
         db.execSQL("INSERT OR REPLACE INTO set_type (type, modifier) VALUES ('Amrap', 1.15)")
     }
 }
+
+/**
+ * A session gets an end: its own name, a note, a photo, and the two moments between which
+ * it happened.
+ */
+val MIGRATION_13_14 = object : Migration(13, 14) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE sessions ADD COLUMN name TEXT DEFAULT NULL")
+        db.execSQL("ALTER TABLE sessions ADD COLUMN note TEXT DEFAULT NULL")
+        db.execSQL("ALTER TABLE sessions ADD COLUMN photoUri TEXT DEFAULT NULL")
+        db.execSQL("ALTER TABLE sessions ADD COLUMN startedAt INTEGER DEFAULT NULL")
+        db.execSQL("ALTER TABLE sessions ADD COLUMN finishedAt INTEGER DEFAULT NULL")
+    }
+}

@@ -443,4 +443,26 @@
     <string name="label_weight_note_negatives">Негативы</string>
     <string name="label_weight_note_assisted">С помощью</string>
     <string name="label_weight_note_paused">С паузой</string>
+    <string name="title_finish_session">Завершить тренировку</string>
+    <string name="label_save_session">Сохранить</string>
+    <string name="label_session_name">Название</string>
+    <string name="label_session_note">Заметка</string>
+    <string name="label_session_note_hint">Как прошла тренировка? Запиши, пока помнишь.</string>
+    <string name="label_add_session_photo">Добавить фото</string>
+    <string name="label_finished_at">Закончил в</string>
+    <string name="label_session_length">Длительность</string>
+    <string name="label_records_of_session">Рекорды этой тренировки</string>
+    <string name="label_session_morning">Утренняя тренировка</string>
+    <string name="label_session_afternoon">Дневная тренировка</string>
+    <string name="label_session_evening">Вечерняя тренировка</string>
+    <string name="label_session_night">Ночная тренировка</string>
+    <string name="label_finish_session_action">Завершить тренировку</string>
+    <string name="label_session_finished">Тренировка завершена · %1$s</string>
+    <string name="label_reopen_session">Вернуться</string>
+    <plurals name="plural_minutes">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
 </resources>

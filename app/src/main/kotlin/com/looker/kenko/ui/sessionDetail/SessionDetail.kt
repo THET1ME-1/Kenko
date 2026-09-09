@@ -112,7 +112,6 @@ import com.looker.kenko.ui.selectExercise.SelectExercise
 import com.looker.kenko.ui.sessionDetail.components.DropSetCard
 import com.looker.kenko.ui.sessionDetail.components.DropSetRow
 import com.looker.kenko.ui.sessionDetail.components.SetItem
-import com.looker.kenko.ui.sessionDetail.components.SetKindLine
 import com.looker.kenko.ui.sessionDetail.components.SupersetCard
 import com.looker.kenko.ui.sessionDetail.components.SupersetRow
 import com.looker.kenko.ui.theme.KenkoIcons
@@ -126,11 +125,13 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun SessionDetails(
     viewModel: SessionDetailViewModel,
     onBackPress: () -> Unit,
+    onFinishClick: (LocalDate) -> Unit,
     onHistoryClick: (LocalDate) -> Unit,
     onEditPlanClick: (Int) -> Unit,
 ) {
@@ -139,6 +140,8 @@ fun SessionDetails(
     SessionDetail(
         state = state,
         rest = rest,
+        onFinishClick = onFinishClick,
+        onReopenClick = viewModel::reopenSession,
         onRestShift = viewModel::shiftRest,
         onRestStop = viewModel::stopRest,
         onBackPress = onBackPress,
@@ -254,6 +257,8 @@ private fun RecordBanner(
 private fun SessionDetail(
     state: SessionDetailState,
     rest: RestUiState? = null,
+    onFinishClick: (LocalDate) -> Unit = {},
+    onReopenClick: () -> Unit = {},
     onRestShift: (Int) -> Unit = {},
     onRestStop: () -> Unit = {},
     onBackPress: () -> Unit = {},
@@ -307,6 +312,10 @@ private fun SessionDetail(
                 date = data.date,
                 dayIndex = data.dayIndex,
                 blocks = data.blocks,
+                onFinishClick = { onFinishClick(data.date) },
+                onReopenClick = onReopenClick,
+                canFinish = data.isToday && data.blocks.isNotEmpty(),
+                finishedAt = data.finishedAt,
                 ghosts = data.ghosts,
                 ghostDelta = if (data.hasGhost) data.ghostDelta else null,
                 planId = data.planId,
@@ -414,6 +423,10 @@ private fun SetsList(
     date: LocalDate,
     dayIndex: Int?,
     blocks: List<SessionBlock>,
+    onFinishClick: () -> Unit,
+    onReopenClick: () -> Unit,
+    canFinish: Boolean,
+    finishedAt: Long?,
     ghosts: Map<String, Ghost>,
     ghostDelta: Float?,
     planId: Int?,
@@ -510,6 +523,24 @@ private fun SetsList(
                     onClick = onAddExerciseClick,
                     accent = true,
                 )
+            }
+        }
+        if (finishedAt != null) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                FinishedRow(finishedAt = finishedAt, onReopenClick = onReopenClick)
+            }
+        } else if (canFinish) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .height(56.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
+                    onClick = onFinishClick,
+                ) {
+                    Text(text = stringResource(R.string.label_finish_session_action))
+                }
             }
         }
     }
@@ -720,7 +751,6 @@ private fun ChainItem(
                 set = chain.set,
                 title = { Text(text = normalizeInt(number)) },
             )
-            SetKindLine(set = chain.set)
             if (ghost != null) {
                 GhostLine(set = ghost)
             }
@@ -842,6 +872,45 @@ private fun Header(
         },
 
     )
+}
+
+/**
+ * A session that is already closed: when it ended, and a way back into it.
+ */
+@Composable
+private fun FinishedRow(
+    finishedAt: Long,
+    onReopenClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            modifier = Modifier.weight(1F),
+            text = stringResource(R.string.label_session_finished, formatClock(finishedAt)),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        TextButton(onClick = onReopenClick) {
+            Text(text = stringResource(R.string.label_reopen_session))
+        }
+    }
+}
+
+/**
+ * `22:28` — время на стенных часах, без даты.
+ */
+private fun formatClock(epochSeconds: Long): String {
+    val time = kotlin.time.Instant.fromEpochSeconds(epochSeconds)
+        .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault())
+    return "${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}"
 }
 
 /**
