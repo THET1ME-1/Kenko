@@ -30,7 +30,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -62,7 +61,6 @@ import com.looker.kenko.data.model.SessionGroupKey
 import com.looker.kenko.data.model.SessionGrouping
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.EmptyPage
-import com.looker.kenko.ui.components.TertiaryKenkoButton
 import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
@@ -79,7 +77,7 @@ import kotlinx.datetime.LocalDate
 @Composable
 fun Sessions(
     viewModel: SessionsViewModel,
-    onSessionClick: (LocalDate?) -> Unit,
+    onSessionClick: (LocalDate) -> Unit,
     onBackPress: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -95,7 +93,7 @@ fun Sessions(
 @Composable
 private fun Sessions(
     state: SessionsUiData,
-    onSessionClick: (LocalDate?) -> Unit,
+    onSessionClick: (LocalDate) -> Unit,
     onGroupingChange: (SessionGrouping) -> Unit,
     onBackPress: () -> Unit,
     modifier: Modifier = Modifier,
@@ -118,30 +116,6 @@ private fun Sessions(
                 },
             )
         },
-        floatingActionButton = {
-            TertiaryKenkoButton(
-                onClick = { onSessionClick(null) },
-                label = {
-                    val isCurrentSessionActive = state.isCurrentSessionActive
-                    val text = remember(isCurrentSessionActive) {
-                        if (isCurrentSessionActive) {
-                            R.string.label_continue_session
-                        } else {
-                            R.string.label_start_session
-                        }
-                    }
-                    Text(text = stringResource(id = text))
-                },
-                icon = {
-                    Icon(
-                        modifier = Modifier.size(18.dp),
-                        painter = KenkoIcons.ArrowOutward,
-                        contentDescription = null,
-                    )
-                },
-            )
-        },
-        floatingActionButtonPosition = FabPosition.Center,
         containerColor = MaterialTheme.colorScheme.surface,
     ) { padding ->
         if (state.isEmpty) {
@@ -151,7 +125,7 @@ private fun Sessions(
             val isOpen = remember(state.grouping) { mutableStateMapOf<String, Boolean>() }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = padding + PaddingValues(bottom = 96.dp),
+                contentPadding = padding + PaddingValues(bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 state.groups.forEachIndexed { index, group ->

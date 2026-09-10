@@ -21,8 +21,6 @@ import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.SessionGroup
 import com.looker.kenko.data.model.SessionGrouping
 import com.looker.kenko.data.model.groupSessions
-import com.looker.kenko.data.model.isRunning
-import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.utils.asStateFlow
@@ -41,23 +39,17 @@ class SessionsViewModel @Inject constructor(
 ) : ViewModel() {
     private val sessionsStream: Flow<List<Session>> = repo.stream
 
-    // The same answer the home screen shows, so «Start» there and «Continue» here cannot disagree.
-    private val isCurrentSessionActive: Flow<Boolean> =
-        repo.streamByDate(localDate).map { it.isRunning }
-
     private val groupingStream: Flow<SessionGrouping> = settingsRepo.get { sessionGrouping }
 
     val state: StateFlow<SessionsUiData> = combine(
         sessionsStream,
-        isCurrentSessionActive,
         groupingStream,
-    ) { sessions, isCurrentSessionActive, grouping ->
+    ) { sessions, grouping ->
         val written = sessions.filter { it.sets.isNotEmpty() }
         SessionsUiData(
             groups = written.groupSessions(grouping),
             grouping = grouping,
             isEmpty = written.isEmpty(),
-            isCurrentSessionActive = isCurrentSessionActive,
         )
     }.asStateFlow(SessionsUiData())
 
@@ -73,5 +65,4 @@ data class SessionsUiData(
     val groups: List<SessionGroup> = emptyList(),
     val grouping: SessionGrouping = SessionGrouping.Month,
     val isEmpty: Boolean = true,
-    val isCurrentSessionActive: Boolean = false,
 )

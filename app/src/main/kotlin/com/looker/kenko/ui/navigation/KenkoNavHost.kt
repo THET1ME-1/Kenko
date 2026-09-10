@@ -191,7 +191,7 @@ fun KenkoNavHost(
 
                     is Routes.Session -> Sessions(
                         onSessionClick = { date ->
-                            backStack.add(Routes.SessionDetail(date?.toEpochDays()?.toInt() ?: -1))
+                            backStack.add(Routes.SessionDetail(date.toEpochDays().toInt()))
                         },
                         onBackPress = { backStack.removeAt(backStack.lastIndex) },
                         viewModel = hiltViewModel(),
