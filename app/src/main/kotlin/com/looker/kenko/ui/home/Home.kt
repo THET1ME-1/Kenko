@@ -14,16 +14,15 @@
 
 package com.looker.kenko.ui.home
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -38,13 +37,12 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -52,6 +50,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -68,25 +67,31 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
+import com.looker.kenko.data.local.model.SetType
+import com.looker.kenko.data.model.Exercise
+import com.looker.kenko.data.model.LastTime
+import com.looker.kenko.data.model.MuscleGroups
+import com.looker.kenko.data.model.RepsInReserve
+import com.looker.kenko.data.model.Set
 import com.looker.kenko.ui.components.BodyHeatMap
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.KenkoButton
 import com.looker.kenko.ui.components.LiftingQuotes
-import com.looker.kenko.ui.components.TertiaryKenkoButton
-import com.looker.kenko.ui.components.TickerText
+import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.stats.formatVolume
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
 import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
-import com.looker.kenko.ui.theme.header
 import com.looker.kenko.ui.theme.numbers
+import com.looker.kenko.utils.DateFormat
+import com.looker.kenko.utils.formatDate
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun Home(
@@ -94,29 +99,45 @@ fun Home(
     onProfileClick: () -> Unit,
     onStatsClick: () -> Unit,
     onSelectPlanClick: () -> Unit,
-    onAddExerciseClick: () -> Unit,
     onExploreSessionsClick: () -> Unit,
-    onExploreExercisesClick: () -> Unit,
-    onStartSessionClick: () -> Unit,
+    onAllPlansClick: () -> Unit,
+    onStartSessionClick: (planId: Int?, dayIndex: Int?) -> Unit,
     onCurrentPlanClick: (Int) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val weekLoad by viewModel.weekLoad.collectAsStateWithLifecycle()
+    val picker by viewModel.picker.collectAsStateWithLifecycle()
+    val isPickerVisible by viewModel.isPickerVisible.collectAsStateWithLifecycle()
     Home(
         state = state,
         weekLoad = weekLoad,
         onStatsClick = onStatsClick,
         onProfileClick = onProfileClick,
         onSelectPlanClick = onSelectPlanClick,
-        onAddExerciseClick = onAddExerciseClick,
         onExploreSessionsClick = onExploreSessionsClick,
-        onExploreExercisesClick = onExploreExercisesClick,
-        onStartSessionClick = onStartSessionClick,
+        onAllPlansClick = onAllPlansClick,
+        onStartSessionClick = { onStartSessionClick(null, null) },
+        onPickDayClick = viewModel::showPicker,
         onCurrentPlanClick = onCurrentPlanClick,
     )
+    if (isPickerVisible) {
+        PlanPickerSheet(
+            picker = picker,
+            todayDayIndex = state.dayIndex,
+            onPlanClick = viewModel::showDaysOf,
+            onDayClick = { planId, dayIndex ->
+                viewModel.hidePicker()
+                onStartSessionClick(planId, dayIndex)
+            },
+            onFreeSessionClick = {
+                viewModel.hidePicker()
+                onStartSessionClick(null, null)
+            },
+            onDismiss = viewModel::hidePicker,
+        )
+    }
 }
 
-// TODO: Add current plan indicator on this page
 @Composable
 private fun Home(
     state: HomeUiData,
@@ -124,10 +145,10 @@ private fun Home(
     onStatsClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onSelectPlanClick: () -> Unit = {},
-    onAddExerciseClick: () -> Unit = {},
     onExploreSessionsClick: () -> Unit = {},
-    onExploreExercisesClick: () -> Unit = {},
+    onAllPlansClick: () -> Unit = {},
     onStartSessionClick: () -> Unit = {},
+    onPickDayClick: () -> Unit = {},
     onCurrentPlanClick: (Int) -> Unit = {},
 ) {
     Scaffold(
@@ -152,9 +173,8 @@ private fun Home(
                     .widthIn(240.dp, 420.dp)
                     .height(120.dp),
             ) {
-                ExploreExerciseCard(
-                    onClick = onExploreExercisesClick,
-                    onLongClick = onAddExerciseClick,
+                AllPlansCard(
+                    onClick = onAllPlansClick,
                     modifier = Modifier.weight(1F),
                 )
                 VerticalDivider()
@@ -164,63 +184,46 @@ private fun Home(
                 )
             }
             HorizontalDivider(thickness = KenkoBorderWidth)
-            run {
-                StartSession(
-                    onStartSessionClick = onStartSessionClick,
-                    secondary = {
-                        if (!state.isPlanSelected) {
-                            TextButton(onClick = onSelectPlanClick) {
-                                Text(text = stringResource(R.string.label_select_plan_one))
-                            }
-                        } else if (state.isTodayEmpty && state.currentPlanId != null) {
-                            TextButton(onClick = { onCurrentPlanClick(state.currentPlanId) }) {
-                                Text(text = stringResource(R.string.label_edit_plan))
-                            }
-                        }
+            Column(
+                modifier = Modifier
+                    .align(CenterHorizontally)
+                    .widthIn(240.dp, 420.dp)
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                TodayLine(
+                    state = state,
+                    onClick = { state.currentPlanId?.let(onCurrentPlanClick) },
+                )
+                LastTimeCard(
+                    lastTime = state.lastTime,
+                    exercisesToday = state.todayExercises,
+                )
+                KenkoButton(
+                    modifier = Modifier.align(CenterHorizontally),
+                    onClick = onStartSessionClick,
+                    label = {
+                        Text(text = startLabel(state))
                     },
-                    content = {
-                        val heading = remember(
-                            state.isSessionStarted,
-                            state.isTodayEmpty,
-                            state.isPlanSelected,
-                        ) {
-                            if (!state.isPlanSelected) {
-                                R.string.label_free_session_heading
-                            } else if (state.isTodayEmpty) {
-                                R.string.label_nothing_today
-                            } else if (state.isSessionStarted) {
-                                R.string.label_continue_session_heading
-                            } else {
-                                if (state.isFirstSession) {
-                                    R.string.label_start_first_session
-                                } else {
-                                    R.string.label_start_session_heading
-                                }
-                            }
-                        }
-                        Text(
-                            modifier = Modifier
-                                .align(CenterHorizontally)
-                                .padding(horizontal = 16.dp),
-                            text = stringResource(heading),
-                            style = MaterialTheme.typography.header()
-                                .merge(
-                                    lineBreak = LineBreak.Heading,
-                                    color = MaterialTheme.colorScheme.primary,
-                                ),
+                    icon = {
+                        Icon(
+                            modifier = Modifier.size(18.dp),
+                            painter = KenkoIcons.ArrowOutward,
+                            contentDescription = null,
                         )
                     },
-                    buttonText = {
-                        val stringRes = remember(state.isSessionStarted) {
-                            if (state.isSessionStarted) {
-                                R.string.label_continue_session
-                            } else {
-                                R.string.label_start_session
-                            }
-                        }
-                        Text(text = stringResource(stringRes))
-                    },
                 )
+                Box(modifier = Modifier.align(CenterHorizontally)) {
+                    if (state.isPlanSelected) {
+                        TextButton(onClick = onPickDayClick) {
+                            Text(text = stringResource(R.string.label_home_other_day))
+                        }
+                    } else {
+                        TextButton(onClick = onSelectPlanClick) {
+                            Text(text = stringResource(R.string.label_select_plan_one))
+                        }
+                    }
+                }
             }
             WeekLoadCard(
                 load = weekLoad,
@@ -234,6 +237,148 @@ private fun Home(
         }
     }
 }
+
+/**
+ * What the button starts: today's day of the plan, a session already running, or a free run.
+ */
+@Composable
+private fun startLabel(state: HomeUiData): String = when {
+    state.isSessionStarted -> stringResource(R.string.label_continue_session)
+    !state.isPlanSelected || state.isTodayEmpty -> stringResource(R.string.label_start_session)
+    else -> stringResource(R.string.label_start_day, state.dayIndex)
+}
+
+/**
+ * Which day of the plan is due, and how much is written into it.
+ */
+@Composable
+private fun TodayLine(
+    state: HomeUiData,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val hasPlan = state.isPlanSelected && !state.isTodayEmpty
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .background(
+                if (hasPlan) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else {
+                    MaterialTheme.colorScheme.surfaceContainerLow
+                },
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        val content = if (hasPlan) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        }
+        if (hasPlan) {
+            Text(
+                text = "%02d".format(state.dayIndex),
+                style = MaterialTheme.typography.headlineSmall.numbers(),
+                color = content,
+            )
+        }
+        Column(modifier = Modifier.weight(1F)) {
+            Text(
+                text = when {
+                    !state.isPlanSelected -> stringResource(R.string.label_free_session_heading)
+                    state.isTodayEmpty -> stringResource(R.string.label_nothing_today)
+                    else -> state.planName.orEmpty()
+                },
+                style = MaterialTheme.typography.titleMedium,
+                color = content,
+                maxLines = 2,
+            )
+            if (hasPlan) {
+                Text(
+                    text = pluralStringResource(
+                        R.plurals.plural_exercises,
+                        state.todayExercises.size,
+                        state.todayExercises.size,
+                    ) + " " + Typography.bullet + " " + pluralStringResource(
+                        R.plurals.plural_sets,
+                        state.todaySets,
+                        state.todaySets,
+                    ),
+                    style = MaterialTheme.typography.labelMedium.numbers(),
+                    color = content,
+                )
+            }
+        }
+    }
+}
+
+/**
+ * The number today has to beat: what the same day of the plan weighed last time.
+ *
+ * A day trained for the first time has nothing to race, so it shows what is ahead instead.
+ */
+@Composable
+private fun LastTimeCard(
+    lastTime: LastTime?,
+    exercisesToday: List<Exercise>,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        if (lastTime == null) {
+            Text(
+                text = stringResource(R.string.label_home_first_run).uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
+            Text(
+                text = exercisesToday.take(4).map { it.displayName() }.joinToString()
+                    .ifEmpty { stringResource(R.string.label_home_nothing_planned) },
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        } else {
+            Text(
+                text = stringResource(
+                    R.string.label_home_last_time,
+                    formatDate(lastTime.date, DateFormat.DayMonth),
+                ).uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
+            Text(
+                text = formatVolume(lastTime.volume),
+                style = MaterialTheme.typography.displaySmall.numbers(),
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+                text = lastTime.topSets
+                    .map { set ->
+                        "${set.exercise.displayName()} ${set.weight.trimZero()}×${set.repsOrDuration}"
+                    }
+                    .joinToString(" ${Typography.bullet} "),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/**
+ * Weight reads as `70`, not `70.0`, and keeps the half-kilo when there is one.
+ */
+private fun Float.trimZero(): String =
+    if (this == toInt().toFloat()) toInt().toString() else toString()
 
 /**
  * The running week in one card: where the load landed and how much of it there was.
@@ -267,7 +412,19 @@ private fun WeekLoadCard(
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(
-                text = pluralStringResource(R.plurals.plural_sets, load.sets, load.sets),
+                text = buildString {
+                    append(pluralStringResource(R.plurals.plural_sets, load.sets, load.sets))
+                    if (load.streak > 0) {
+                        append(" ${Typography.bullet} ")
+                        append(
+                            pluralStringResource(
+                                R.plurals.plural_week_streak,
+                                load.streak,
+                                load.streak,
+                            ),
+                        )
+                    }
+                },
                 style = MaterialTheme.typography.labelMedium.numbers(),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -281,82 +438,163 @@ private fun WeekLoadCard(
     }
 }
 
+/**
+ * The choice the app used to make alone: which plan and which of its days is being trained.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ColumnScope.StartSession(
-    onStartSessionClick: () -> Unit,
-    content: @Composable () -> Unit,
-    buttonText: @Composable () -> Unit,
-    secondary: @Composable () -> Unit = {},
+private fun PlanPickerSheet(
+    picker: PlanPicker,
+    todayDayIndex: Int,
+    onPlanClick: (Int) -> Unit,
+    onDayClick: (planId: Int?, dayIndex: Int?) -> Unit,
+    onFreeSessionClick: () -> Unit,
+    onDismiss: () -> Unit,
 ) {
-    Spacer(modifier = Modifier.weight(1F))
-    content()
-    Spacer(modifier = Modifier.weight(1F))
-    KenkoButton(
-        modifier = Modifier.align(CenterHorizontally),
-        onClick = onStartSessionClick,
-        label = buttonText,
-        icon = {
-            Icon(
-                modifier = Modifier.size(18.dp),
-                painter = KenkoIcons.ArrowOutward,
-                contentDescription = null,
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.label_home_pick_title),
+                style = MaterialTheme.typography.headlineSmall,
             )
-        },
-    )
-    Box(modifier = Modifier.align(CenterHorizontally)) {
-        secondary()
+            if (picker.plans.size > 1) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    picker.plans.forEach { plan ->
+                        val id = plan.id ?: return@forEach
+                        PlanPill(
+                            name = plan.name,
+                            isSelected = id == picker.shownPlanId,
+                            onClick = { onPlanClick(id) },
+                        )
+                    }
+                }
+            }
+            picker.days.forEach { day ->
+                DayRow(
+                    day = day,
+                    isToday = day.index == todayDayIndex,
+                    onClick = { onDayClick(picker.shownPlanId, day.index) },
+                )
+            }
+            if (picker.days.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.label_home_plan_has_no_days),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            TextButton(
+                modifier = Modifier.align(CenterHorizontally),
+                onClick = onFreeSessionClick,
+            ) {
+                Text(text = stringResource(R.string.label_free_session_heading))
+            }
+        }
     }
 }
 
 @Composable
-private fun ColumnScope.SelectPlan(
-    onSelectPlanClick: () -> Unit,
+private fun PlanPill(
+    name: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
 ) {
-    Spacer(modifier = Modifier.weight(1F))
-    Text(
-        modifier = Modifier
-            .align(CenterHorizontally)
-            .padding(horizontal = 16.dp),
-        text = stringResource(R.string.label_selecting_a_plan),
-        style = MaterialTheme.typography.header().copy(
-            lineBreak = LineBreak.Heading,
-        ),
-        color = MaterialTheme.colorScheme.primary,
-    )
-    Spacer(modifier = Modifier.weight(1F))
-    Button(
-        modifier = Modifier.align(CenterHorizontally),
-        onClick = onSelectPlanClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.tertiary,
-            contentColor = MaterialTheme.colorScheme.onTertiary,
-        ),
-        contentPadding = PaddingValues(
-            vertical = 24.dp,
-            horizontal = 40.dp,
-        ),
+    Surface(
+        shape = CircleShape,
+        color = if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerHigh
+        },
+        onClick = onClick,
     ) {
-        Text(text = stringResource(R.string.label_select_plan_one))
-        Spacer(modifier = Modifier.width(12.dp))
-        Icon(
-            painter = KenkoIcons.ArrowOutward,
-            contentDescription = null,
+        Text(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            text = name,
+            style = MaterialTheme.typography.labelLarge,
+            color = if (isSelected) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
         )
     }
 }
 
 @Composable
-private fun ExploreExerciseCard(
+private fun DayRow(
+    day: PlanDayOption,
+    isToday: Boolean,
     onClick: () -> Unit,
-    onLongClick: () -> Unit,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        color = if (isToday) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLow
+        },
+        onClick = onClick,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            val content = if (isToday) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            }
+            Text(
+                text = "%02d".format(day.index),
+                style = MaterialTheme.typography.titleMedium.numbers(),
+                color = content,
+            )
+            Text(
+                modifier = Modifier.weight(1F),
+                text = stringResource(R.string.label_start_day, day.index),
+                style = MaterialTheme.typography.bodyLarge,
+                color = content,
+            )
+            Text(
+                text = pluralStringResource(
+                    R.plurals.plural_exercises,
+                    day.exercises,
+                    day.exercises,
+                ),
+                style = MaterialTheme.typography.labelMedium.numbers(),
+                color = content,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AllPlansCard(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     HelperCards(
         onClick = onClick,
-        onLongClick = onLongClick,
         modifier = modifier,
     ) {
-        Text(text = stringResource(R.string.label_explore_exercises))
+        Text(text = stringResource(R.string.label_all_plans))
         Icon(
             painter = KenkoIcons.ArrowOutward,
             contentDescription = null,
@@ -439,6 +677,16 @@ private fun HelperCards(
     }
 }
 
+private val previewExercise = Exercise(name = "Bench Press", target = MuscleGroups.Chest, id = 1)
+
+private fun previewSet(weight: Float, reps: Int) = Set(
+    repsOrDuration = reps,
+    weight = weight,
+    type = SetType.Standard,
+    exercise = previewExercise,
+    rir = RepsInReserve(2),
+)
+
 @Preview
 @Composable
 private fun HomePreview(
@@ -447,11 +695,15 @@ private fun HomePreview(
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Home(
             state = HomeUiData(
-                isPlanSelected = true,
-                isSessionStarted = true,
-                isTodayEmpty = false,
-                isFirstSession = false,
-                currentPlanId = null,
+                planName = "Push Pull Legs",
+                dayIndex = 3,
+                todayExercises = listOf(previewExercise),
+                todaySets = 18,
+                lastTime = LastTime(
+                    date = LocalDate(2026, 9, 3),
+                    volume = 4320F,
+                    topSets = listOf(previewSet(80F, 8)),
+                ),
             ),
         )
     }
@@ -459,17 +711,16 @@ private fun HomePreview(
 
 @Preview
 @Composable
-private fun StartTodayPreview(
+private fun FirstRunHomePreview(
     @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
 ) {
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Home(
             state = HomeUiData(
-                isPlanSelected = true,
-                isSessionStarted = false,
-                isTodayEmpty = false,
-                isFirstSession = false,
-                currentPlanId = null,
+                planName = "Push Pull Legs",
+                dayIndex = 1,
+                todayExercises = listOf(previewExercise),
+                todaySets = 12,
             ),
         )
     }
@@ -477,36 +728,10 @@ private fun StartTodayPreview(
 
 @Preview
 @Composable
-private fun TodayEmptyPreview(
+private fun NoPlanHomePreview(
     @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
 ) {
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
-        Home(
-            state = HomeUiData(
-                isPlanSelected = true,
-                isSessionStarted = false,
-                isTodayEmpty = true,
-                isFirstSession = false,
-                currentPlanId = null,
-            ),
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun FirstStartHomePreview(
-    @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
-) {
-    KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
-        Home(
-            state = HomeUiData(
-                isPlanSelected = false,
-                isSessionStarted = false,
-                isTodayEmpty = false,
-                isFirstSession = true,
-                currentPlanId = null,
-            ),
-        )
+        Home(state = HomeUiData(isPlanSelected = false))
     }
 }

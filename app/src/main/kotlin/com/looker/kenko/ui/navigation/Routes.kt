@@ -48,8 +48,16 @@ sealed interface Routes : NavKey {
     @Serializable
     data class PlanEdit(val id: Int) : Routes
 
+    /**
+     * A session to open or start. [planId] and [dayIndex] carry the choice made on the home
+     * screen: without them the app picks the day itself, which is right only for today.
+     */
     @Serializable
-    data class SessionDetail(val epochDays: Int) : Routes
+    data class SessionDetail(
+        val epochDays: Int,
+        val planId: Int? = null,
+        val dayIndex: Int? = null,
+    ) : Routes
 
     @Serializable
     data class SessionSummary(val epochDays: Int) : Routes
