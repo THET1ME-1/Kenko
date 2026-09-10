@@ -478,4 +478,12 @@
     <string name="label_grouping_month">По месяцам</string>
     <string name="label_grouping_year">По годам</string>
     <string name="label_grouping_plan_day">По дням программы</string>
+    <string name="label_all_plans">Все\nпрограммы</string>
+    <string name="label_start_day">Начать день %1$d</string>
+    <string name="label_home_other_day">Другой день или программа</string>
+    <string name="label_home_nothing_planned">В дне нет упражнений</string>
+    <string name="label_home_no_plan_hint">Выбери программу или тренируйся без неё</string>
+    <string name="label_home_pick_title">Что тренируем</string>
+    <string name="label_home_plan_has_no_days">В программе нет ни одного дня с упражнениями</string>
+    <string name="label_home_minutes">%1$d мин</string>
 </resources>

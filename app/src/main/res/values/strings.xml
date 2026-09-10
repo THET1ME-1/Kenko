@@ -514,4 +514,12 @@
     <string name="label_grouping_month">By month</string>
     <string name="label_grouping_year">By year</string>
     <string name="label_grouping_plan_day">By day of the plan</string>
+    <string name="label_all_plans">All\nplans</string>
+    <string name="label_start_day">Start day %1$d</string>
+    <string name="label_home_other_day">Another day or plan</string>
+    <string name="label_home_nothing_planned">No exercises in this day</string>
+    <string name="label_home_no_plan_hint">Pick a plan, or train without one</string>
+    <string name="label_home_pick_title">What are we training</string>
+    <string name="label_home_plan_has_no_days">This plan has no day with exercises in it</string>
+    <string name="label_home_minutes">%1$d min</string>
 </resources>

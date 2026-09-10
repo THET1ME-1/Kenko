@@ -114,10 +114,11 @@ fun KenkoNavHost(
                         onProfileClick = { backStack.add(Routes.Profile) },
                         onStatsClick = { backStack.add(Routes.Stats) },
                         onSelectPlanClick = { backStack.add(Routes.Plan) },
-                        onAddExerciseClick = { backStack.add(Routes.AddEditExercise()) },
                         onExploreSessionsClick = { backStack.add(Routes.Session) },
-                        onExploreExercisesClick = { backStack.add(Routes.Exercises) },
-                        onStartSessionClick = { backStack.add(Routes.SessionDetail(-1)) },
+                        onAllPlansClick = { backStack.add(Routes.Plan) },
+                        onStartSessionClick = { planId, dayIndex ->
+                            backStack.add(Routes.SessionDetail(-1, planId, dayIndex))
+                        },
                         onCurrentPlanClick = { id -> backStack.add(Routes.PlanEdit(id)) },
                         viewModel = hiltViewModel(),
                     )
