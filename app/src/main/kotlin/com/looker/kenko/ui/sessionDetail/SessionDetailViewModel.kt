@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.looker.kenko.R
 import com.looker.kenko.data.PlanDayResolver
+import com.looker.kenko.data.RestNotifier
 import com.looker.kenko.data.local.model.DEFAULT_REST_SECONDS
 import com.looker.kenko.data.model.DEFAULT_DROP_PERCENT
 import com.looker.kenko.data.model.Exercise
@@ -59,6 +60,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -77,6 +79,7 @@ class SessionDetailViewModel @AssistedInject constructor(
     @Assisted private val routeData: Routes.SessionDetail,
     private val uriHandler: UriHandler,
     private val dayResolver: PlanDayResolver,
+    private val notifier: RestNotifier,
 ) : ViewModel() {
 
     @AssistedFactory
@@ -167,14 +170,32 @@ class SessionDetailViewModel @AssistedInject constructor(
 
     private suspend fun startRest(exercise: Exercise?, seconds: Int) {
         if (seconds <= 0) return
-        _restTimer.emit(
-            RestTimer(
-                exerciseName = exercise?.name.orEmpty(),
-                exerciseNameRu = exercise?.nameRu,
-                totalSeconds = seconds,
-                endsAt = Clock.System.now() + seconds.seconds,
-            ),
+        val timer = RestTimer(
+            exerciseName = exercise?.name.orEmpty(),
+            exerciseNameRu = exercise?.nameRu,
+            totalSeconds = seconds,
+            endsAt = Clock.System.now() + seconds.seconds,
         )
+        _restTimer.emit(timer)
+    }
+
+    /**
+     * Keeps the notification in step with the timer: the phone spends the rest in a pocket.
+     */
+    private fun watchRestForNotification() {
+        viewModelScope.launch {
+            _restTimer.collectLatest { timer ->
+                if (timer == null) {
+                    notifier.cancel()
+                    return@collectLatest
+                }
+                val name = timer.exerciseNameRu ?: timer.exerciseName
+                notifier.showRunning(name, timer.endsAt)
+                val left = timer.secondsLeft(Clock.System.now())
+                delay(left.seconds)
+                notifier.showDone(name)
+            }
+        }
     }
 
     fun shiftRest(bySeconds: Int) {
@@ -188,6 +209,11 @@ class SessionDetailViewModel @AssistedInject constructor(
         viewModelScope.launch {
             _restTimer.emit(null)
         }
+    }
+
+    override fun onCleared() {
+        notifier.cancel()
+        super.onCleared()
     }
 
     /**
@@ -235,6 +261,7 @@ class SessionDetailViewModel @AssistedInject constructor(
 
     init {
         watchSetsForRest()
+        watchRestForNotification()
     }
 
     val state: StateFlow<SessionDetailState> =

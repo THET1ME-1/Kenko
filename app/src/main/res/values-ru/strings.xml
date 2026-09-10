@@ -497,4 +497,8 @@
     <string name="label_duplicate_plan">Сделать копию программы</string>
     <string name="label_copy_day">Скопировать день</string>
     <string name="label_copy_day_to">Скопировать в день %1$d</string>
+    <string name="label_rest_channel">Отдых между подходами</string>
+    <string name="label_rest_channel_desc">Показывает, сколько осталось отдыхать, и подаёт сигнал, когда пора</string>
+    <string name="label_rest_running">Идёт отдых</string>
+    <string name="label_rest_over">Отдых кончился</string>
 </resources>

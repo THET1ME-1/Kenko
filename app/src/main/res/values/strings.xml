@@ -533,4 +533,8 @@
     <string name="label_duplicate_plan">Duplicate plan</string>
     <string name="label_copy_day">Copy day</string>
     <string name="label_copy_day_to">Copy into day %1$d</string>
+    <string name="label_rest_channel">Rest between sets</string>
+    <string name="label_rest_channel_desc">Shows how much rest is left and calls when it is over</string>
+    <string name="label_rest_running">Resting</string>
+    <string name="label_rest_over">Rest is over</string>
 </resources>
