@@ -55,6 +55,17 @@ android {
         }
     }
 
+    // Split by ABI: a universal APK carries three copies of every native library, and the
+    // release goes out as files people download by hand.
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a", "x86_64")
+            isUniversalApk = false
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
