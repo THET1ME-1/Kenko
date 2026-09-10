@@ -522,4 +522,7 @@
     <string name="label_home_pick_title">What are we training</string>
     <string name="label_home_plan_has_no_days">This plan has no day with exercises in it</string>
     <string name="label_home_minutes">%1$d min</string>
+    <string name="label_exercise_not_found">Nothing found — try another word</string>
+    <string name="label_exercise_removed">Exercise deleted</string>
+    <string name="label_undo_delete">Undo</string>
 </resources>

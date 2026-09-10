@@ -79,6 +79,10 @@ object KenkoIcons {
         @Composable
         get() = painterResource(R.drawable.ic_save)
 
+    val Close: Painter
+        @Composable
+        get() = painterResource(R.drawable.ic_close)
+
     val Rename: Painter
         @Composable
         get() = painterResource(R.drawable.ic_edit)

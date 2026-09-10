@@ -123,3 +123,14 @@ class ExercisesPreviewParameter : PreviewParameterProvider<List<Exercise>> {
         ),
     )
 }
+
+/**
+ * Whether the exercise answers to what was typed: both names count, because the list shows the
+ * Russian one and the search used to look only at the English key behind it.
+ */
+fun Exercise.matchesSearch(query: String): Boolean {
+    val needle = query.trim()
+    if (needle.isEmpty()) return true
+    return name.contains(needle, ignoreCase = true) ||
+        nameRu?.contains(needle, ignoreCase = true) == true
+}

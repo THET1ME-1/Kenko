@@ -31,6 +31,8 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -59,6 +61,8 @@ import com.looker.kenko.ui.components.ExerciseCard
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.LazyTargets
 import com.looker.kenko.ui.components.SecondaryKenkoButton
+import com.looker.kenko.ui.components.EmptyPage
+import com.looker.kenko.ui.components.kenkoTextFieldColor
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.components.TargetChip
 import com.looker.kenko.ui.extensions.plus
@@ -77,6 +81,8 @@ fun Exercises(
     val state by viewModel.exercises.collectAsStateWithLifecycle()
     Exercises(
         state = state,
+        query = viewModel.searchQuery,
+        onQueryChange = viewModel::setSearch,
         snackbarState = viewModel.snackbarState,
         onBackPress = onBackPress,
         onExerciseClick = onExerciseClick,
@@ -90,6 +96,8 @@ fun Exercises(
 @Composable
 private fun Exercises(
     state: ExercisesUiState,
+    query: String = "",
+    onQueryChange: (String) -> Unit = {},
     snackbarState: SnackbarHostState,
     onExerciseClick: (id: Int?) -> Unit,
     onCreateClick: (target: MuscleGroups?) -> Unit,
@@ -124,18 +132,28 @@ private fun Exercises(
         topBar = {
             Header(
                 target = state.selected,
+                query = query,
+                onQueryChange = onQueryChange,
                 onSelect = onSelectTarget,
                 onBackPress = onBackPress,
             )
         },
     ) { innerPadding ->
-        ExercisesList(
-            exercises = state.exercises,
-            contentPadding = innerPadding + PaddingValues(bottom = 80.dp),
-            onExerciseClick = onExerciseClick,
-            onReferenceClick = onReferenceClick,
-            onRemove = onRemove,
-        )
+        if (state.exercises.isEmpty()) {
+            EmptyPage(
+                text = stringResource(R.string.label_exercise_not_found),
+                modifier = Modifier.padding(innerPadding),
+                hero = {},
+            )
+        } else {
+            ExercisesList(
+                exercises = state.exercises,
+                contentPadding = innerPadding + PaddingValues(bottom = 80.dp),
+                onExerciseClick = onExerciseClick,
+                onReferenceClick = onReferenceClick,
+                onRemove = onRemove,
+            )
+        }
     }
 }
 
@@ -180,6 +198,8 @@ private fun ExercisesList(
 @Composable
 private fun Header(
     target: MuscleGroups?,
+    query: String,
+    onQueryChange: (String) -> Unit,
     onSelect: (MuscleGroups?) -> Unit,
     onBackPress: () -> Unit,
     modifier: Modifier = Modifier,
@@ -192,6 +212,27 @@ private fun Header(
             navigationIcon = {
                 BackButton(onClick = onBackPress)
             }
+        )
+        // Nine hundred exercises: the muscle chips alone left the rest to scrolling.
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            value = query,
+            onValueChange = onQueryChange,
+            singleLine = true,
+            shape = MaterialTheme.shapes.large,
+            colors = kenkoTextFieldColor(),
+            placeholder = { Text(text = stringResource(R.string.label_search_exercise)) },
+            trailingIcon = if (query.isNotEmpty()) {
+                {
+                    IconButton(onClick = { onQueryChange("") }) {
+                        Icon(painter = KenkoIcons.Close, contentDescription = null)
+                    }
+                }
+            } else {
+                null
+            },
         )
         LazyTargets(contentPadding = PaddingValues(horizontal = 8.dp)) {
             TargetChip(

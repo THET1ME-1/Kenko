@@ -486,4 +486,7 @@
     <string name="label_home_pick_title">Что тренируем</string>
     <string name="label_home_plan_has_no_days">В программе нет ни одного дня с упражнениями</string>
     <string name="label_home_minutes">%1$d мин</string>
+    <string name="label_exercise_not_found">Ничего не нашлось — попробуй другое слово</string>
+    <string name="label_exercise_removed">Упражнение удалено</string>
+    <string name="label_undo_delete">Вернуть</string>
 </resources>

@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.MuscleGroups
+import com.looker.kenko.data.model.matchesSearch
 import com.looker.kenko.data.repository.ExerciseRepo
 import com.looker.kenko.data.repository.GymRepo
 import com.looker.kenko.utils.asStateFlow
@@ -73,7 +74,7 @@ class SelectExerciseViewModel @Inject constructor(
         _showEverything,
     ) { query, target, exercises, available, showAll ->
         val filteredExercises = exercises
-            .filter { (it.target == target || target == null) && it.satisfiesSearch(query) }
+            .filter { (it.target == target || target == null) && it.matchesSearch(query) }
             .filter { showAll || it.id in available }
         if (filteredExercises.isNotEmpty()) {
             SearchResult.Success(filteredExercises, available)
@@ -109,9 +110,6 @@ class SelectExerciseViewModel @Inject constructor(
         searchQuery = value
     }
 
-    private fun Exercise.satisfiesSearch(query: String): Boolean {
-        return query.isBlank() || name.contains(query, ignoreCase = true)
-    }
 }
 
 @Stable
