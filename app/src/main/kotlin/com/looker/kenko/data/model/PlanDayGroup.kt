@@ -97,3 +97,30 @@ fun nextDayIndex(lastDay: Int?, dayCount: Int): Int {
     if (dayCount <= 0 || lastDay == null) return 1
     return if (lastDay >= dayCount) 1 else lastDay + 1
 }
+
+/**
+ * The same exercises written into another day, or another plan: targets, order and supersets
+ * travel along, ids do not.
+ *
+ * Superset ids are handed out afresh from the ones the target day does not use, so a copied
+ * group never merges with a group already sitting there.
+ */
+fun List<PlanItem>.copiedTo(
+    planId: Int,
+    dayIndex: Int,
+    takenSupersetIds: kotlin.collections.Set<Int>,
+): List<PlanItem> {
+    var free = (takenSupersetIds.maxOrNull() ?: 0) + 1
+    val renamed = mutableMapOf<Int, Int>()
+    return map { item ->
+        val superset = item.supersetId?.let { old ->
+            renamed.getOrPut(old) { free++ }
+        }
+        item.copy(
+            planId = planId,
+            dayIndex = dayIndex,
+            supersetId = superset,
+            id = null,
+        )
+    }
+}

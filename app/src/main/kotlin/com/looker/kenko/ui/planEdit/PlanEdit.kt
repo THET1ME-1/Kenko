@@ -52,6 +52,7 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -67,6 +68,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -169,6 +171,7 @@ fun PlanEdit(
             PlanEditStage.PlanEdit -> {
                 PlanEdit(
                     state = state,
+                    onCopyDay = viewModel::copyCurrentDayTo,
                     onSelectDay = viewModel::setCurrentDay,
                     onRemoveItemClick = viewModel::removeItem,
                     onFullDaySelection = viewModel::openFullDaySelection,
@@ -361,6 +364,7 @@ private fun NameEdit(
 @Composable
 private fun PlanEdit(
     state: PlanEditState,
+    onCopyDay: (Int) -> Unit,
     onSelectDay: (Int) -> Unit,
     onRemoveItemClick: (PlanItem) -> Unit,
     onFullDaySelection: () -> Unit,
@@ -377,6 +381,18 @@ private fun PlanEdit(
     val focusManager = LocalFocusManager.current
     val isCurrentDayBlank by remember(state.items) { derivedStateOf { state.items.isEmpty() } }
     val expandedBlocks = remember { mutableStateMapOf<Long, Boolean>() }
+    var copyingDay by remember { mutableStateOf(false) }
+    if (copyingDay) {
+        CopyDaySheet(
+            currentDay = state.currentDay,
+            dayCount = state.dayCount,
+            onPick = { day ->
+                copyingDay = false
+                onCopyDay(day)
+            },
+            onDismiss = { copyingDay = false },
+        )
+    }
     PlanExercise(
         modifier = Modifier.fillMaxSize(),
         header = {
@@ -389,7 +405,7 @@ private fun PlanEdit(
         },
         items = {
             item {
-                DaySummaryRow(items = state.items)
+                DaySummaryRow(items = state.items, onCopyDay = { copyingDay = true })
             }
             if (state.selectedItems.isNotEmpty() || state.supersetMode) {
                 item {
@@ -700,20 +716,64 @@ private fun DayHeader(
 @Composable
 private fun DaySummaryRow(
     items: List<PlanItem>,
+    onCopyDay: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val summary = remember(items) { items.daySummary() }
-    Text(
-        text = stringResource(
-            R.string.label_day_summary,
-            pluralStringResource(R.plurals.plural_exercises, summary.exercises, summary.exercises),
-            pluralStringResource(R.plurals.plural_sets, summary.sets, summary.sets),
-            summary.minutes,
-        ),
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.outline,
-        modifier = modifier.padding(bottom = 12.dp),
-    )
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            modifier = Modifier.weight(1F),
+            text = stringResource(
+                R.string.label_day_summary,
+                pluralStringResource(
+                    R.plurals.plural_exercises,
+                    summary.exercises,
+                    summary.exercises,
+                ),
+                pluralStringResource(R.plurals.plural_sets, summary.sets, summary.sets),
+                summary.minutes,
+            ),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        // A cycle is usually built from a day that already exists.
+        if (items.isNotEmpty()) {
+            TextButton(onClick = onCopyDay) {
+                Text(text = stringResource(R.string.label_copy_day))
+            }
+        }
+    }
+}
+
+/**
+ * Where the day should land: any other day of the plan, the next one included.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CopyDaySheet(
+    currentDay: Int,
+    dayCount: Int,
+    onPick: (Int) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(modifier = Modifier.padding(bottom = 32.dp)) {
+            for (day in 1..(dayCount + 1)) {
+                if (day == currentDay) continue
+                ListItem(
+                    modifier = Modifier.clickable { onPick(day) },
+                    headlineContent = {
+                        Text(text = stringResource(R.string.label_copy_day_to, day))
+                    },
+                )
+            }
+        }
+    }
 }
 
 @Composable

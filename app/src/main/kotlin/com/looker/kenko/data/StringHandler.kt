@@ -26,4 +26,9 @@ class StringHandler(context: Context) {
         return resources.getString(id)
     }
 
+    /**
+     * The same string with its blanks filled — a plan copy carries the name of its original.
+     */
+    fun getString(id: Int, vararg formatArgs: Any): String = resources.getString(id, *formatArgs)
+
 }

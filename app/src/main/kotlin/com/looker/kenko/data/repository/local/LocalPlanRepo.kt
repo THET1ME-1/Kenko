@@ -25,6 +25,7 @@ import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.Labels
 import com.looker.kenko.data.model.Plan
 import com.looker.kenko.data.model.PlanItem
+import com.looker.kenko.data.model.copiedTo
 import com.looker.kenko.data.model.PlanStat
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.PlanRepo
@@ -182,6 +183,35 @@ class LocalPlanRepo @Inject constructor(
 
     override suspend fun nextSupersetId(planId: Int): Int =
         (dao.getMaxSupersetId(planId) ?: 0) + 1
+
+    override suspend fun duplicatePlan(planId: Int, name: String): Int {
+        val source = plan(planId) ?: return planId
+        val copyId = createPlan(
+            name = name,
+            description = source.description,
+            difficulty = source.difficulty,
+            focus = source.focus,
+            equipment = source.equipment,
+            time = source.time,
+        )
+        val items = getPlanItems(planId)
+        items.groupBy { it.dayIndex }.forEach { (day, dayItems) ->
+            dayItems
+                .copiedTo(planId = copyId, dayIndex = day, takenSupersetIds = emptySet())
+                .forEach { addItem(it) }
+        }
+        return copyId
+    }
+
+    override suspend fun copyDay(planId: Int, fromDay: Int, toDay: Int) {
+        if (fromDay == toDay) return
+        val source = getPlanItems(planId, fromDay)
+        if (source.isEmpty()) return
+        val taken = getPlanItems(planId).mapNotNull { it.supersetId }.toSet()
+        source
+            .copiedTo(planId = planId, dayIndex = toDay, takenSupersetIds = taken)
+            .forEach { addItem(it) }
+    }
 
     override suspend fun removeItem(id: Long) {
         dao.deleteItem(id)

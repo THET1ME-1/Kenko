@@ -83,6 +83,17 @@ interface PlanRepo {
      */
     suspend fun nextSupersetId(planId: Int): Int
 
+    /**
+     * The whole plan under a new name: days, targets and supersets included.
+     * Returns the id of the copy.
+     */
+    suspend fun duplicatePlan(planId: Int, name: String): Int
+
+    /**
+     * Writes the exercises of one day into another day of the same plan.
+     */
+    suspend fun copyDay(planId: Int, fromDay: Int, toDay: Int)
+
     suspend fun removeItem(id: Long)
 
     suspend fun removeItemById(exerciseId: Int)

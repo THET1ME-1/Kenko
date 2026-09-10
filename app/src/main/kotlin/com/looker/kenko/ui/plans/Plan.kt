@@ -14,7 +14,9 @@
 
 package com.looker.kenko.ui.plans
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,7 +28,9 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -73,6 +77,7 @@ fun Plan(
         onSelectPlan = viewModel::switchPlan,
         onRemove = viewModel::removePlan,
         onPlanClick = onPlanClick,
+        onDuplicate = viewModel::duplicatePlan,
     )
 
     if (showHelpDialog) {
@@ -107,7 +112,10 @@ private fun Plan(
     onSelectPlan: (Plan) -> Unit,
     onRemove: (Int) -> Unit,
     onPlanClick: (Int) -> Unit,
+    onDuplicate: (Plan) -> Unit = {},
 ) {
+    // A long press on a plan: the only thing it can do besides opening is to become a copy.
+    var acting by remember { mutableStateOf<Plan?>(null) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -161,11 +169,25 @@ private fun Plan(
                         plan = plan,
                         onClick = { onPlanClick(plan.id!!) },
                         onActiveChange = { onSelectPlan(plan) },
+                        onLongClick = { acting = plan },
                     )
                 }
                 if (!isLast) HorizontalDivider(thickness = KenkoBorderWidth)
             }
             endItem()
+        }
+    }
+    acting?.let { plan ->
+        ModalBottomSheet(onDismissRequest = { acting = null }) {
+            Column(modifier = Modifier.padding(bottom = 32.dp)) {
+                ListItem(
+                    modifier = Modifier.clickable {
+                        acting = null
+                        onDuplicate(plan)
+                    },
+                    headlineContent = { Text(text = stringResource(R.string.label_duplicate_plan)) },
+                )
+            }
         }
     }
 }

@@ -493,4 +493,8 @@
     <string name="label_move_session">Перенести на другую дату</string>
     <string name="label_delete_session">Удалить тренировку</string>
     <string name="label_delete_session_question">Удалить тренировку от %1$s? Подходы исчезнут вместе с ней.</string>
+    <string name="label_plan_copy">%1$s — копия</string>
+    <string name="label_duplicate_plan">Сделать копию программы</string>
+    <string name="label_copy_day">Скопировать день</string>
+    <string name="label_copy_day_to">Скопировать в день %1$d</string>
 </resources>

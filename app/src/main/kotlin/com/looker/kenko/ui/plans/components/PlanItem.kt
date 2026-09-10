@@ -17,6 +17,7 @@ package com.looker.kenko.ui.plans.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,6 +57,7 @@ fun PlanItem(
     onActiveChange: (Boolean) -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onLongClick: (() -> Unit)? = null,
 ) {
     val transition = updateTransition(targetState = plan.isActive, label = null)
     val background by transition.animateColor(label = "background") {
@@ -74,12 +76,12 @@ fun PlanItem(
     }
 
     Surface(
-        onClick = onClick,
+        modifier = modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick),
         color = background,
         contentColor = contentColor,
     ) {
         Column(
-            modifier = modifier.padding(16.dp),
+            modifier = Modifier.padding(16.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

@@ -292,6 +292,17 @@ class PlanEditViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Writes today's exercises into another day, targets and supersets included.
+     */
+    fun copyCurrentDayTo(day: Int) {
+        val planId = planIdStream.value ?: return
+        viewModelScope.launch {
+            repo.copyDay(planId = planId, fromDay = _dayIndex.value, toDay = day)
+            setCurrentDay(day)
+        }
+    }
+
     fun openFullDaySelection() {
         viewModelScope.launch {
             _fullDaySelection.emit(true)

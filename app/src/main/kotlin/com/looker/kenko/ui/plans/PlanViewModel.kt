@@ -17,6 +17,8 @@ package com.looker.kenko.ui.plans
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.looker.kenko.data.model.Plan
+import com.looker.kenko.R
+import com.looker.kenko.data.StringHandler
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.utils.asStateFlow
@@ -29,6 +31,7 @@ import kotlinx.coroutines.launch
 class PlanViewModel @Inject constructor(
     private val repo: PlanRepo,
     private val settingsRepo: SettingsRepo,
+    private val stringHandler: StringHandler,
 ) : ViewModel() {
 
     val plans = repo.plans.asStateFlow(emptyList())
@@ -36,6 +39,16 @@ class PlanViewModel @Inject constructor(
     fun removePlan(id: Int) {
         viewModelScope.launch {
             repo.deletePlan(id)
+        }
+    }
+
+    /**
+     * The same plan under a «copy» name: a new cycle usually starts from the old one.
+     */
+    fun duplicatePlan(plan: Plan) {
+        val id = plan.id ?: return
+        viewModelScope.launch {
+            repo.duplicatePlan(id, stringHandler.getString(R.string.label_plan_copy, plan.name))
         }
     }
 
