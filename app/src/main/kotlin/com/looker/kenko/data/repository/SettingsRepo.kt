@@ -16,6 +16,7 @@ package com.looker.kenko.data.repository
 
 import com.looker.kenko.data.model.settings.BackupInterval
 import com.looker.kenko.data.model.settings.ColorPalettes
+import com.looker.kenko.data.model.SessionGrouping
 import com.looker.kenko.data.model.settings.Settings
 import com.looker.kenko.data.model.settings.Theme
 import kotlin.time.Instant
@@ -42,6 +43,11 @@ interface SettingsRepo {
      * Picks the gym whose equipment the app offers.
      */
     suspend fun setCurrentGym(gymId: Int?)
+
+    /**
+     * Chooses how the session log is grouped.
+     */
+    suspend fun setSessionGrouping(grouping: SessionGrouping)
 
     suspend fun setBackupUri(uri: String?)
 

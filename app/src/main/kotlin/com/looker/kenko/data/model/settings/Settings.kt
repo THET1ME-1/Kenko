@@ -14,6 +14,8 @@
 
 package com.looker.kenko.data.model.settings
 
+import com.looker.kenko.data.model.SessionGrouping
+
 import kotlin.time.Instant
 
 data class Settings(
@@ -33,4 +35,8 @@ data class Settings(
     val backupUri: String?,
     val backupInterval: BackupInterval,
     val lastBackupTime: Instant?,
+    /**
+     * How the session log is cut into groups: by month, by year, by day of the plan, or not at all.
+     */
+    val sessionGrouping: SessionGrouping,
 )

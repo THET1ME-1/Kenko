@@ -519,4 +519,11 @@
         <item quantity="one">%1$d week in a row</item>
         <item quantity="other">%1$d weeks in a row</item>
     </plurals>
+    <string name="label_plan_day">Day %1$d</string>
+    <string name="label_sessions_without_day">No plan day</string>
+    <string name="label_sessions_grouping">Grouping</string>
+    <string name="label_grouping_none">No grouping, plain list</string>
+    <string name="label_grouping_month">By month</string>
+    <string name="label_grouping_year">By year</string>
+    <string name="label_grouping_plan_day">By day of the plan</string>
 </resources>

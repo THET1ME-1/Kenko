@@ -16,9 +16,14 @@ package com.looker.kenko.ui.sessions
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.looker.kenko.data.model.Session
+import com.looker.kenko.data.model.SessionGroup
+import com.looker.kenko.data.model.SessionGrouping
+import com.looker.kenko.data.model.groupSessions
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.SessionRepo
+import com.looker.kenko.data.repository.SettingsRepo
 import com.looker.kenko.utils.asStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -26,28 +31,44 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class SessionsViewModel @Inject constructor(
     repo: SessionRepo,
+    private val settingsRepo: SettingsRepo,
 ) : ViewModel() {
     private val sessionsStream: Flow<List<Session>> = repo.stream
 
     private val isCurrentSessionActive: Flow<Boolean> = repo.streamByDate(localDate).map { it != null }
 
+    private val groupingStream: Flow<SessionGrouping> = settingsRepo.get { sessionGrouping }
+
     val state: StateFlow<SessionsUiData> = combine(
         sessionsStream,
         isCurrentSessionActive,
-    ) { sessions, isCurrentSessionActive ->
+        groupingStream,
+    ) { sessions, isCurrentSessionActive, grouping ->
+        val written = sessions.filter { it.sets.isNotEmpty() }
         SessionsUiData(
-            sessions = sessions.filter { it.sets.isNotEmpty() },
+            groups = written.groupSessions(grouping),
+            grouping = grouping,
+            isEmpty = written.isEmpty(),
             isCurrentSessionActive = isCurrentSessionActive,
         )
-    }.asStateFlow(SessionsUiData(emptyList(), false))
+    }.asStateFlow(SessionsUiData())
+
+    fun setGrouping(grouping: SessionGrouping) {
+        viewModelScope.launch {
+            settingsRepo.setSessionGrouping(grouping)
+        }
+    }
 }
 
 @Stable
 data class SessionsUiData(
-    val sessions: List<Session>,
-    val isCurrentSessionActive: Boolean,
+    val groups: List<SessionGroup> = emptyList(),
+    val grouping: SessionGrouping = SessionGrouping.Month,
+    val isEmpty: Boolean = true,
+    val isCurrentSessionActive: Boolean = false,
 )

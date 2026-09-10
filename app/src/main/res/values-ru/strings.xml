@@ -485,4 +485,11 @@
         <item quantity="many">%1$d недель подряд</item>
         <item quantity="other">%1$d недели подряд</item>
     </plurals>
+    <string name="label_plan_day">День %1$d</string>
+    <string name="label_sessions_without_day">Без дня программы</string>
+    <string name="label_sessions_grouping">Группировка</string>
+    <string name="label_grouping_none">Без группировки, списком</string>
+    <string name="label_grouping_month">По месяцам</string>
+    <string name="label_grouping_year">По годам</string>
+    <string name="label_grouping_plan_day">По дням программы</string>
 </resources>

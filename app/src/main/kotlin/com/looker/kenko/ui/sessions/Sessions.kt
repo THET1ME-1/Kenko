@@ -17,6 +17,7 @@ package com.looker.kenko.ui.sessions
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,19 +26,28 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.model.Session
+import com.looker.kenko.data.model.SessionGroupKey
+import com.looker.kenko.data.model.SessionGrouping
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.EmptyPage
 import com.looker.kenko.ui.components.TertiaryKenkoButton
@@ -58,6 +70,7 @@ import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
 import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
+import com.looker.kenko.ui.theme.numbers
 import com.looker.kenko.utils.DateFormat
 import com.looker.kenko.utils.formatDate
 import com.looker.kenko.utils.isToday
@@ -73,6 +86,7 @@ fun Sessions(
     Sessions(
         state = state,
         onSessionClick = onSessionClick,
+        onGroupingChange = viewModel::setGrouping,
         onBackPress = onBackPress,
     )
 }
@@ -82,6 +96,7 @@ fun Sessions(
 private fun Sessions(
     state: SessionsUiData,
     onSessionClick: (LocalDate?) -> Unit,
+    onGroupingChange: (SessionGrouping) -> Unit,
     onBackPress: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -94,6 +109,12 @@ private fun Sessions(
                 },
                 title = {
                     Text(text = stringResource(id = R.string.label_sessions_title))
+                },
+                actions = {
+                    GroupingMenu(
+                        grouping = state.grouping,
+                        onGroupingChange = onGroupingChange,
+                    )
                 },
             )
         },
@@ -123,27 +144,156 @@ private fun Sessions(
         floatingActionButtonPosition = FabPosition.Center,
         containerColor = MaterialTheme.colorScheme.surface,
     ) { padding ->
-        if (state.sessions.isEmpty()) {
+        if (state.isEmpty) {
             EmptyPage(stringResource(id = R.string.label_no_sessions))
         } else {
+            // The newest group opens by itself: a year of training is otherwise a wall of headers.
+            val isOpen = remember(state.grouping) { mutableStateMapOf<String, Boolean>() }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = padding + PaddingValues(bottom = 96.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                items(
-                    items = state.sessions,
-                    key = { it.id!! },
-                ) { session ->
-                    SessionCard(
-                        modifier = Modifier.padding(horizontal = 14.dp),
-                        session = session,
-                        onClick = { onSessionClick(session.date) },
-                    )
+                state.groups.forEachIndexed { index, group ->
+                    val id = group.key.toString()
+                    val open = isOpen[id] ?: (index == 0)
+                    if (group.key != SessionGroupKey.All) {
+                        item(key = "header-$id") {
+                            GroupHeader(
+                                key = group.key,
+                                count = group.sessions.size,
+                                isOpen = open,
+                                onClick = { isOpen[id] = !open },
+                                modifier = Modifier.padding(horizontal = 14.dp),
+                            )
+                        }
+                    }
+                    if (open || group.key == SessionGroupKey.All) {
+                        items(
+                            items = group.sessions,
+                            key = { it.id ?: it.date.toEpochDays() },
+                        ) { session ->
+                            SessionCard(
+                                modifier = Modifier.padding(horizontal = 14.dp),
+                                session = session,
+                                onClick = { onSessionClick(session.date) },
+                            )
+                        }
+                    }
                 }
             }
         }
     }
+}
+
+/**
+ * Header of one group: what it holds and how many sessions are inside.
+ */
+@Composable
+private fun GroupHeader(
+    key: SessionGroupKey,
+    count: Int,
+    isOpen: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        onClick = onClick,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Icon(
+                modifier = Modifier
+                    .size(20.dp)
+                    .rotate(if (isOpen) 90F else 0F),
+                painter = KenkoIcons.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.outline,
+            )
+            Text(
+                modifier = Modifier.weight(1F),
+                text = groupTitle(key),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = count.toString(),
+                style = MaterialTheme.typography.titleMedium.numbers(),
+                color = MaterialTheme.colorScheme.outline,
+            )
+        }
+    }
+}
+
+/**
+ * The group in words: a month with its year, a year, or a day of the plan.
+ */
+@Composable
+private fun groupTitle(key: SessionGroupKey): String = when (key) {
+    SessionGroupKey.All -> ""
+    is SessionGroupKey.Month -> formatDate(
+        LocalDate(key.year, key.month, 1),
+        DateFormat.MonthYear,
+    ).replaceFirstChar { it.uppercase() }
+
+    is SessionGroupKey.Year -> key.year.toString()
+    is SessionGroupKey.PlanDay -> key.index
+        ?.let { stringResource(R.string.label_plan_day, it) }
+        ?: stringResource(R.string.label_sessions_without_day)
+}
+
+/**
+ * How the log is cut: the choice lives in settings, so the screen opens the way it was left.
+ */
+@Composable
+private fun GroupingMenu(
+    grouping: SessionGrouping,
+    onGroupingChange: (SessionGrouping) -> Unit,
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+    IconButton(onClick = { isExpanded = true }) {
+        Icon(
+            imageVector = KenkoIcons.Stack,
+            contentDescription = stringResource(R.string.label_sessions_grouping),
+        )
+    }
+    DropdownMenu(
+        expanded = isExpanded,
+        onDismissRequest = { isExpanded = false },
+    ) {
+        SessionGrouping.entries.forEach { entry ->
+            DropdownMenuItem(
+                text = { Text(text = groupingName(entry)) },
+                trailingIcon = {
+                    RadioButton(
+                        selected = entry == grouping,
+                        onClick = {
+                            onGroupingChange(entry)
+                            isExpanded = false
+                        },
+                    )
+                },
+                onClick = {
+                    onGroupingChange(entry)
+                    isExpanded = false
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun groupingName(grouping: SessionGrouping): String = when (grouping) {
+    SessionGrouping.None -> stringResource(R.string.label_grouping_none)
+    SessionGrouping.Month -> stringResource(R.string.label_grouping_month)
+    SessionGrouping.Year -> stringResource(R.string.label_grouping_year)
+    SessionGrouping.PlanDay -> stringResource(R.string.label_grouping_plan_day)
 }
 
 @Composable
@@ -225,9 +375,10 @@ private fun SessionsPreview(
 ) {
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
         Sessions(
-            state = SessionsUiData(listOf(Session(1, emptyList())), false),
+            state = SessionsUiData(),
             onBackPress = {},
             onSessionClick = {},
+            onGroupingChange = {},
         )
     }
 }
