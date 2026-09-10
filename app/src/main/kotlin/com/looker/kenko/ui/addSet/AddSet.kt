@@ -68,16 +68,17 @@ import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.Loadout
 import com.looker.kenko.ui.components.PlateCalculator
-import com.looker.kenko.ui.components.loadoutFor
 import com.looker.kenko.ui.components.WeightRuler
+import com.looker.kenko.ui.components.loadoutFor
 import com.looker.kenko.ui.components.rememberPhoto
+import com.looker.kenko.ui.components.unitLabel
 import com.looker.kenko.ui.theme.KenkoIcons
-import com.looker.kenko.ui.theme.setTypeColor
-import com.looker.kenko.ui.theme.weightNoteColor
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
 import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.ui.theme.numbers
+import com.looker.kenko.ui.theme.setTypeColor
+import com.looker.kenko.ui.theme.weightNoteColor
 
 @Composable
 fun AddSet(
@@ -294,7 +295,7 @@ private fun AddSetContent(
             Spacer(Modifier.width(6.dp))
             Text(
                 modifier = Modifier.padding(bottom = 8.dp),
-                text = stringResource(R.string.label_kg),
+                text = unitLabel(),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.outline,
             )

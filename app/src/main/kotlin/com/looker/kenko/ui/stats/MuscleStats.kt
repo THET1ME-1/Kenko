@@ -19,10 +19,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,9 +48,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.model.MuscleGroups
 import com.looker.kenko.data.model.formatWeight
-import com.looker.kenko.ui.components.BodyHeatMap
 import com.looker.kenko.ui.components.BackButton
+import com.looker.kenko.ui.components.BodyHeatMap
 import com.looker.kenko.ui.components.KenkoBorderWidth
+import com.looker.kenko.ui.components.unitLabel
+import com.looker.kenko.ui.components.weightText
 import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.theme.numbers
 import com.looker.kenko.utils.formatDate
@@ -183,7 +185,7 @@ fun MuscleStats(
                     SetLine(
                         date = formatDate(row.date),
                         title = row.set.exercise.displayName(),
-                        weight = "${formatWeight(row.set.weight)} ${stringResource(R.string.label_kg)}",
+                        weight = "${weightText(row.set.weight)} ${unitLabel()}",
                         reps = row.set.repsOrDuration,
                         assisting = row.isAssisting,
                     )

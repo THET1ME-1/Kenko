@@ -21,10 +21,10 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -61,9 +61,11 @@ import com.looker.kenko.data.model.MuscleLoad
 import com.looker.kenko.data.model.StatsPeriod
 import com.looker.kenko.data.model.StatsRange
 import com.looker.kenko.data.model.StatsSummary
-import com.looker.kenko.ui.components.BodyHeatMap
+import com.looker.kenko.data.model.WeightUnit
 import com.looker.kenko.ui.components.BackButton
+import com.looker.kenko.ui.components.BodyHeatMap
 import com.looker.kenko.ui.components.KenkoBorderWidth
+import com.looker.kenko.ui.components.LocalWeightUnit
 import com.looker.kenko.ui.components.MuscleIcon
 import com.looker.kenko.ui.components.heatColor
 import com.looker.kenko.ui.exercises.displayName
@@ -707,11 +709,23 @@ private fun EmptyPeriod(modifier: Modifier = Modifier) {
 }
 
 /**
- * Tonnage reads better in tonnes once it grows past a thousand kilograms.
+ * Tonnage reads better in tonnes once it grows past a thousand kilograms. In pounds there are
+ * no tonnes to speak of, so the number stays whole.
+ *
+ * [volume] always arrives in kilograms — the unit only decides how it is read.
  */
 @Composable
-fun formatVolume(volume: Float): String = if (volume >= 1000F) {
-    stringResource(R.string.label_tonnes_value, String.format("%.1f", volume / 1000F))
-} else {
-    stringResource(R.string.label_kg_value, volume.toInt().toString())
+fun formatVolume(volume: Float): String {
+    val unit = LocalWeightUnit.current
+    if (unit == WeightUnit.Lb) {
+        return stringResource(
+            R.string.label_lb_value,
+            unit.fromKilograms(volume).toInt().toString(),
+        )
+    }
+    return if (volume >= 1000F) {
+        stringResource(R.string.label_tonnes_value, String.format("%.1f", volume / 1000F))
+    } else {
+        stringResource(R.string.label_kg_value, volume.toInt().toString())
+    }
 }

@@ -53,6 +53,8 @@ import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.MiniStepper
 import com.looker.kenko.ui.components.SetTick
 import com.looker.kenko.ui.components.TickState
+import com.looker.kenko.ui.components.unitLabel
+import com.looker.kenko.ui.components.weightText
 import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.theme.numbers
 
@@ -292,7 +294,7 @@ private fun DropStepRow(
                         R.string.label_field_weight
                     },
                 ),
-                value = "${formatWeight(step.weight)} ${stringResource(R.string.label_kg)}",
+                value = "${weightText(step.weight)} ${unitLabel()}",
                 alignEnd = true,
             )
         }
@@ -352,7 +354,7 @@ fun DropSetRow(
                     )
                 }
                 Text(
-                    text = "${steps.chainLabel()} ${stringResource(R.string.label_kg)}",
+                    text = "${steps.chainLabel()} ${unitLabel()}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )

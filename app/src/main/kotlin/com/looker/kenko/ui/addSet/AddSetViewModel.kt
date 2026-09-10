@@ -38,6 +38,7 @@ import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.GripRepo
 import com.looker.kenko.data.model.gymShift
 import com.looker.kenko.data.model.lastGymOf
+import com.looker.kenko.data.model.WeightUnit
 import com.looker.kenko.data.repository.GymRepo
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.data.repository.SettingsRepo
@@ -63,6 +64,12 @@ class AddSetViewModel @AssistedInject constructor(
 
     var reps by mutableIntStateOf(12)
     val weights: TextFieldState = TextFieldState("20.0")
+
+    /**
+     * What the field is typed in. Everything that leaves this screen is turned into kilograms.
+     */
+    var unit: WeightUnit by mutableStateOf(WeightUnit.Kg)
+        private set
 
     var selectedSetType by mutableStateOf(SetType.Standard)
         private set
@@ -114,8 +121,11 @@ class AddSetViewModel @AssistedInject constructor(
         weightNote = if (weightNote == note) null else note
     }
 
+    /**
+     * [value] arrives in kilograms — the field speaks the chosen unit.
+     */
     fun setWeight(value: Float) {
-        weights.setTextAndPlaceCursorAtEnd(formatWeight(value))
+        weights.setTextAndPlaceCursorAtEnd(unit.format(unit.fromKilograms(value)))
     }
 
     fun selectGrip(gripId: Int?) {
@@ -140,7 +150,7 @@ class AddSetViewModel @AssistedInject constructor(
             if (parentSetId != null) {
                 sessionRepo.addDrop(
                     parentSetId = parentSetId,
-                    weight = weightFloat,
+                    weight = weightInKilograms,
                     reps = reps,
                     rir = RepsInReserve(repsInReserve),
                     dropIndex = target.dropIndex,
@@ -151,7 +161,7 @@ class AddSetViewModel @AssistedInject constructor(
             sessionRepo.addSet(
                 sessionId = sessionId,
                 exerciseId = id,
-                weight = weightFloat,
+                weight = weightInKilograms,
                 reps = reps,
                 setType = selectedSetType,
                 rir = RepsInReserve(repsInReserve),
@@ -170,30 +180,46 @@ class AddSetViewModel @AssistedInject constructor(
     private inline val weightFloat: Float
         get() = weights.text.toString().toFloatOrNull() ?: 0F
 
+    /**
+     * The typed number as the database wants it.
+     */
+    private inline val weightInKilograms: Float
+        get() = unit.toKilograms(weightFloat)
+
     init {
         if (target.dropCount > 0) {
             setSetType(SetType.Drop)
         }
-        val suggestion = target.suggestion
-        if (suggestion != null) {
-            reps = suggestion.reps
-            addWeight(suggestion.weight - weightFloat)
-            setSetType(SetType.Drop)
-        } else {
-            viewModelScope.launch {
-                val last = sessionRepo.getLastSetByExerciseId(id)
-                lastSet = last
-                if (last != null) {
-                    reps = last.repsOrDuration
-                    addWeight(last.weight - weightFloat)
-                    setSetType(last.type)
-                    checkGym(last)
-                } else {
-                    if (target.planReps > 0) reps = target.planReps
-                    if (target.planWeight > 0F) addWeight(target.planWeight - weightFloat)
-                }
+        viewModelScope.launch {
+            // The unit has to be known before the first number lands in the field.
+            unit = settingsRepo.stream.first().weightUnit
+            weights.setTextAndPlaceCursorAtEnd(unit.format(unit.fromKilograms(START_WEIGHT)))
+            val suggestion = target.suggestion
+            if (suggestion != null) {
+                reps = suggestion.reps
+                setWeight(suggestion.weight)
+                setSetType(SetType.Drop)
+                return@launch
+            }
+            val last = sessionRepo.getLastSetByExerciseId(id)
+            lastSet = last
+            if (last != null) {
+                reps = last.repsOrDuration
+                setWeight(last.weight)
+                setSetType(last.type)
+                checkGym(last)
+            } else {
+                if (target.planReps > 0) reps = target.planReps
+                if (target.planWeight > 0F) setWeight(target.planWeight)
             }
         }
+    }
+
+    /**
+     * Where the field starts when there is nothing to remember: an empty bar.
+     */
+    private companion object {
+        const val START_WEIGHT = 20F
     }
 
     /**

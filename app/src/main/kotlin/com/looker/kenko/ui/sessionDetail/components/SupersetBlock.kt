@@ -50,6 +50,8 @@ import com.looker.kenko.data.model.oneRepMax
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.SetTick
 import com.looker.kenko.ui.components.TickState
+import com.looker.kenko.ui.components.unitLabel
+import com.looker.kenko.ui.components.weightText
 import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.theme.numbers
 import kotlin.math.roundToInt
@@ -259,7 +261,7 @@ private fun SupersetLegRow(
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.Bottom,
         ) {
-            val kg = stringResource(R.string.label_kg)
+            val kg = unitLabel()
             Column(modifier = Modifier.weight(1F)) {
                 Text(
                     text = exercise.displayName(),
@@ -270,7 +272,7 @@ private fun SupersetLegRow(
                     text = buildString {
                         append(chain?.set?.repsOrDuration?.toString() ?: plannedReps?.toString() ?: "—")
                         append(" × ")
-                        append(chain?.set?.weight?.let { formatWeight(it) } ?: "—")
+                        append(chain?.set?.weight?.let { weightText(it) } ?: "—")
                         append(" $kg")
                     },
                     style = MaterialTheme.typography.titleMedium.numbers(),
@@ -280,7 +282,7 @@ private fun SupersetLegRow(
                 Text(
                     text = stringResource(
                         R.string.label_one_rep_max_short,
-                        formatWeight(oneRepMax(chain.set.weight, chain.set.repsOrDuration)),
+                        weightText(oneRepMax(chain.set.weight, chain.set.repsOrDuration)),
                     ),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -352,7 +354,7 @@ fun SupersetRow(
                     ?.set
                 val reps = last?.repsOrDuration
                     ?: block.plan.firstOrNull { it.exercise == exercise }?.targetReps
-                val weight = last?.weight?.let { formatWeight(it) } ?: "—"
+                val weight = last?.weight?.let { weightText(it) } ?: "—"
                 "${legLetter(index)} ${exercise.displayName()} ${reps ?: "—"}×$weight"
             }
             Text(

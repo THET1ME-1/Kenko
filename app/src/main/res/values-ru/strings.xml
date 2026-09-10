@@ -501,4 +501,9 @@
     <string name="label_rest_channel_desc">Показывает, сколько осталось отдыхать, и подаёт сигнал, когда пора</string>
     <string name="label_rest_running">Идёт отдых</string>
     <string name="label_rest_over">Отдых кончился</string>
+    <string name="label_lb">ФНТ</string>
+    <string name="label_lb_value">%1$s фнт</string>
+    <string name="label_weight_unit">Единицы веса</string>
+    <string name="label_unit_kg">Килограммы</string>
+    <string name="label_unit_lb">Фунты</string>
 </resources>

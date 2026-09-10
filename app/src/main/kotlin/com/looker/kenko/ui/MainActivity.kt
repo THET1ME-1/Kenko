@@ -31,6 +31,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.looker.kenko.ui.navigation.KenkoNavHost
 import com.looker.kenko.ui.navigation.Routes
+import androidx.compose.runtime.CompositionLocalProvider
+import com.looker.kenko.ui.components.LocalWeightUnit
 import com.looker.kenko.ui.theme.KenkoTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -45,13 +47,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             val theme by viewModel.theme.collectAsStateWithLifecycle()
             val colorScheme by viewModel.colorScheme.collectAsStateWithLifecycle()
+            val weightUnit by viewModel.weightUnit.collectAsStateWithLifecycle()
             KenkoTheme(
                 theme = theme,
                 colorSchemes = colorScheme,
             ) {
-                val backStack = rememberNavBackStack(Routes.GetStarted(true))
-                Kenko {
-                    KenkoNavHost(backStack = backStack)
+                CompositionLocalProvider(LocalWeightUnit provides weightUnit) {
+                    val backStack = rememberNavBackStack(Routes.GetStarted(true))
+                    Kenko {
+                        KenkoNavHost(backStack = backStack)
+                    }
                 }
             }
         }

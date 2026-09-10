@@ -23,6 +23,7 @@ import com.looker.kenko.data.Frame
 import com.looker.kenko.data.IllustrationStore
 import com.looker.kenko.data.backup.BackupManager
 import com.looker.kenko.data.backup.BackupResult
+import com.looker.kenko.data.model.WeightUnit
 import com.looker.kenko.data.model.settings.BackupInterval
 import com.looker.kenko.data.model.settings.ColorPalettes
 import com.looker.kenko.data.model.settings.Theme
@@ -106,6 +107,7 @@ class SettingsViewModel @Inject constructor(
         SettingsUiData(
             currentGymName = gym?.name,
             isWeekMode = settings.isWeekMode,
+            weightUnit = settings.weightUnit,
             selectedTheme = settings.theme,
             selectedColorPalette = settings.colorPalette,
             backupUri = settings.backupUri,
@@ -119,6 +121,7 @@ class SettingsViewModel @Inject constructor(
         SettingsUiData(
             currentGymName = null,
             isWeekMode = false,
+            weightUnit = WeightUnit.Kg,
             selectedTheme = Theme.System,
             selectedColorPalette = ColorPalettes.Default,
             backupUri = null,
@@ -129,6 +132,15 @@ class SettingsViewModel @Inject constructor(
             backupMessage = null,
         ),
     )
+
+    /**
+     * Kilograms or pounds. Only the reading changes: the database keeps kilograms.
+     */
+    fun setWeightUnit(unit: WeightUnit) {
+        viewModelScope.launch {
+            repo.setWeightUnit(unit)
+        }
+    }
 
     fun updateWeekMode(enabled: Boolean) {
         viewModelScope.launch {
@@ -232,6 +244,7 @@ enum class BackupMessage {
 data class SettingsUiData(
     val currentGymName: String?,
     val isWeekMode: Boolean,
+    val weightUnit: WeightUnit,
     val selectedTheme: Theme,
     val selectedColorPalette: ColorPalettes,
     val backupUri: String?,

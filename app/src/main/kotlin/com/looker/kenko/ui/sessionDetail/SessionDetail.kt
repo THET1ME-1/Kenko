@@ -106,6 +106,8 @@ import com.looker.kenko.ui.components.OnSurfaceVariantBorder
 import com.looker.kenko.ui.components.PrimaryBorder
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.components.TypingText
+import com.looker.kenko.ui.components.unitLabel
+import com.looker.kenko.ui.components.weightText
 import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.exercises.localizedExerciseName
 import com.looker.kenko.ui.extensions.normalizeInt
@@ -235,7 +237,7 @@ private fun RecordBanner(
                 Text(
                     text = stringResource(
                         R.string.label_new_record,
-                        "${record.reps} × ${formatWeight(record.weight)}",
+                        "${record.reps} × ${weightText(record.weight)}",
                     ),
                     style = MaterialTheme.typography.titleMedium.numbers(),
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -248,7 +250,7 @@ private fun RecordBanner(
             }
             if (record.previous > 0F) {
                 Text(
-                    text = "+${formatWeight(record.gain)}",
+                    text = "+${weightText(record.gain)}",
                     style = MaterialTheme.typography.titleMedium.numbers(),
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
@@ -627,7 +629,7 @@ private fun LazyGridScope.singleExerciseBlock(
             note = ghost?.let {
                 stringResource(
                     R.string.label_ghost_last,
-                    "${formatWeight(it.volume)} ${stringResource(R.string.label_kg)}",
+                    "${weightText(it.volume)} ${unitLabel()}",
                 )
             },
         ) {
@@ -796,7 +798,7 @@ private fun GhostLine(
         modifier = modifier.padding(start = 52.dp, top = 2.dp),
         text = stringResource(
             R.string.label_ghost_last,
-            "${set.repsOrDuration} × ${formatWeight(set.weight)}",
+            "${set.repsOrDuration} × ${weightText(set.weight)}",
         ),
         style = MaterialTheme.typography.labelSmall.numbers(),
         color = MaterialTheme.colorScheme.outline,
@@ -834,7 +836,7 @@ private fun PlannedSetRow(
         )
         Text(
             text = if (weight > 0F) {
-                "$reps × ${formatWeight(weight)} ${stringResource(R.string.label_kg)}"
+                "$reps × ${weightText(weight)} ${unitLabel()}"
             } else {
                 "$reps ${stringResource(R.string.label_field_reps)}"
             },
@@ -963,8 +965,8 @@ private fun GhostScore(delta: Float, modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = (if (ahead) "+" else "−") + formatWeight(abs(delta)) + " " +
-                stringResource(R.string.label_kg),
+            text = (if (ahead) "+" else "−") + weightText(abs(delta)) + " " +
+                unitLabel(),
             style = MaterialTheme.typography.titleMedium.numbers(),
             color = if (ahead) {
                 MaterialTheme.colorScheme.onPrimaryContainer

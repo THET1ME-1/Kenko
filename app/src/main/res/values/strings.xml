@@ -537,4 +537,9 @@
     <string name="label_rest_channel_desc">Shows how much rest is left and calls when it is over</string>
     <string name="label_rest_running">Resting</string>
     <string name="label_rest_over">Rest is over</string>
+    <string name="label_lb">LB</string>
+    <string name="label_lb_value">%1$s lb</string>
+    <string name="label_weight_unit">Weight unit</string>
+    <string name="label_unit_kg">Kilograms</string>
+    <string name="label_unit_lb">Pounds</string>
 </resources>

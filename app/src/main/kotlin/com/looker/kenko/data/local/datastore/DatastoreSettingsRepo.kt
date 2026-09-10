@@ -25,6 +25,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.looker.kenko.data.model.settings.BackupInterval
 import com.looker.kenko.data.model.settings.ColorPalettes
 import com.looker.kenko.data.model.SessionGrouping
+import com.looker.kenko.data.model.WeightUnit
 import com.looker.kenko.data.model.settings.Settings
 import com.looker.kenko.data.model.settings.Theme
 import com.looker.kenko.data.repository.SettingsRepo
@@ -87,6 +88,10 @@ class DatastoreSettingsRepo @Inject constructor(
         SESSION_GROUPING.update(grouping.name)
     }
 
+    override suspend fun setWeightUnit(unit: WeightUnit) {
+        WEIGHT_UNIT.update(unit.name)
+    }
+
     override suspend fun setWeekMode(enabled: Boolean) {
         WEEK_MODE.update(enabled)
     }
@@ -118,6 +123,7 @@ class DatastoreSettingsRepo @Inject constructor(
         val backupInterval = preferences[BACKUP_INTERVAL] ?: BackupInterval.Off.name
         val lastBackupTime = preferences[LAST_BACKUP_TIME_SECONDS]
         val sessionGrouping = preferences[SESSION_GROUPING] ?: SessionGrouping.Month.name
+        val weightUnit = preferences[WEIGHT_UNIT] ?: WeightUnit.Kg.name
         return Settings(
             isOnboardingDone = isOnboardingDone,
             isWeekMode = isWeekMode,
@@ -129,6 +135,7 @@ class DatastoreSettingsRepo @Inject constructor(
             backupInterval = BackupInterval.valueOf(backupInterval),
             lastBackupTime = lastBackupTime?.let { Instant.fromEpochSeconds(it) },
             sessionGrouping = SessionGrouping.valueOf(sessionGrouping),
+            weightUnit = WeightUnit.valueOf(weightUnit),
         )
     }
 
@@ -145,5 +152,6 @@ class DatastoreSettingsRepo @Inject constructor(
         val LAST_BACKUP_TIME_SECONDS: Preferences.Key<Long> =
             longPreferencesKey("last_backup_time_seconds")
         val SESSION_GROUPING: Preferences.Key<String> = stringPreferencesKey("session_grouping")
+        val WEIGHT_UNIT: Preferences.Key<String> = stringPreferencesKey("weight_unit")
     }
 }

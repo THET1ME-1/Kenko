@@ -47,6 +47,8 @@ import com.looker.kenko.data.model.Record
 import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.MuscleIcon
+import com.looker.kenko.ui.components.unitLabel
+import com.looker.kenko.ui.components.weightText
 import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.theme.numbers
 import com.looker.kenko.utils.formatDate
@@ -132,8 +134,8 @@ private fun RecordRow(
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
-                text = "${record.reps} × ${formatWeight(record.weight)} " +
-                    stringResource(R.string.label_kg),
+                text = "${record.reps} × ${weightText(record.weight)} " +
+                    unitLabel(),
                 style = MaterialTheme.typography.labelMedium.numbers(),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -150,7 +152,7 @@ private fun RecordRow(
         Spacer(Modifier.width(10.dp))
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                text = formatWeight(record.estimatedMax),
+                text = weightText(record.estimatedMax),
                 style = MaterialTheme.typography.titleLarge.numbers(),
                 color = MaterialTheme.colorScheme.primary,
             )

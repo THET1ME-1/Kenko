@@ -81,6 +81,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
+import com.looker.kenko.data.model.WeightUnit
 import com.looker.kenko.data.model.settings.BackupInterval
 import com.looker.kenko.data.model.settings.ColorPalettes
 import com.looker.kenko.data.model.settings.Theme
@@ -114,6 +115,7 @@ fun Settings(
         onClearIllustrations = viewModel::clearIllustrations,
         onGymsClick = onGymsClick,
         onWeekModeChange = viewModel::updateWeekMode,
+        onWeightUnitChange = viewModel::setWeightUnit,
         onSelectTheme = viewModel::updateTheme,
         onSelectColorPalette = viewModel::updateColorPalette,
         onSelectBackupLocation = viewModel::setBackupLocation,
@@ -134,6 +136,7 @@ private fun Settings(
     onClearIllustrations: () -> Unit = {},
     onGymsClick: () -> Unit = {},
     onWeekModeChange: (Boolean) -> Unit,
+    onWeightUnitChange: (WeightUnit) -> Unit = {},
     onSelectTheme: (Theme) -> Unit,
     onSelectColorPalette: (ColorPalettes) -> Unit,
     onSelectBackupLocation: (Uri) -> Unit,
@@ -224,6 +227,41 @@ private fun Settings(
                     )
                 }
                 Switch(checked = state.isWeekMode, onCheckedChange = onWeekModeChange)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.weight(1F),
+                    text = stringResource(R.string.label_weight_unit),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                // Kilograms or pounds: the switch changes the reading, never the stored numbers.
+                SingleChoiceSegmentedButtonRow {
+                    WeightUnit.entries.forEachIndexed { index, unit ->
+                        SegmentedButton(
+                            selected = unit == state.weightUnit,
+                            onClick = { onWeightUnitChange(unit) },
+                            shape = SegmentedButtonDefaults.itemShape(
+                                index,
+                                WeightUnit.entries.size,
+                            ),
+                        ) {
+                            Text(
+                                text = stringResource(
+                                    when (unit) {
+                                        WeightUnit.Kg -> R.string.label_unit_kg
+                                        WeightUnit.Lb -> R.string.label_unit_lb
+                                    },
+                                ),
+                            )
+                        }
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(24.dp))
             CategoryHeader(title = stringResource(R.string.label_theme))
@@ -822,6 +860,7 @@ private fun SettingsPreview(
             state = SettingsUiData(
                 currentGymName = null,
                 isWeekMode = false,
+                weightUnit = WeightUnit.Kg,
                 selectedTheme = Theme.System,
                 selectedColorPalette = ColorPalettes.Default,
                 backupUri = null,
@@ -832,6 +871,7 @@ private fun SettingsPreview(
                 backupMessage = null,
             ),
             onWeekModeChange = {},
+            onWeightUnitChange = {},
             onSelectTheme = {},
             onSelectColorPalette = {},
             onSelectBackupLocation = {},

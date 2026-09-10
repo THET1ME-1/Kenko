@@ -108,6 +108,8 @@ import com.looker.kenko.ui.components.HorizontalDaySelector
 import com.looker.kenko.ui.components.KenkoButton
 import com.looker.kenko.ui.components.PrimaryBorder
 import com.looker.kenko.ui.components.SwipeToDeleteBox
+import com.looker.kenko.ui.components.unitLabel
+import com.looker.kenko.ui.components.weightText
 import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.extensions.normalizeInt
 import com.looker.kenko.ui.extensions.plus
@@ -588,7 +590,7 @@ private fun PlanExerciseBlock(
                 )
                 Text(
                     text = "${item.targetSets} × ${item.repsLabel} · " +
-                        "${formatWeight(item.targetWeight)} ${stringResource(R.string.label_kg)} · " +
+                        "${weightText(item.targetWeight)} ${unitLabel()} · " +
                         stringResource(R.string.label_rest_short, formatRest(item.restSeconds)),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline,

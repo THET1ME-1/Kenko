@@ -17,6 +17,7 @@ package com.looker.kenko.data.repository
 import com.looker.kenko.data.model.settings.BackupInterval
 import com.looker.kenko.data.model.settings.ColorPalettes
 import com.looker.kenko.data.model.SessionGrouping
+import com.looker.kenko.data.model.WeightUnit
 import com.looker.kenko.data.model.settings.Settings
 import com.looker.kenko.data.model.settings.Theme
 import kotlin.time.Instant
@@ -48,6 +49,11 @@ interface SettingsRepo {
      * Chooses how the session log is grouped.
      */
     suspend fun setSessionGrouping(grouping: SessionGrouping)
+
+    /**
+     * Chooses whether weights read in kilograms or pounds.
+     */
+    suspend fun setWeightUnit(unit: WeightUnit)
 
     suspend fun setBackupUri(uri: String?)
 

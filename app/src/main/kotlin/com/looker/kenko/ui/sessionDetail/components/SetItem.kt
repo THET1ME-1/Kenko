@@ -53,17 +53,19 @@ import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.model.ExercisesPreviewParameter
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.Set
-import com.looker.kenko.data.model.repDurationStringRes
 import com.looker.kenko.data.model.formatWeight
+import com.looker.kenko.data.model.repDurationStringRes
 import com.looker.kenko.ui.addSet.setTypeLabel
 import com.looker.kenko.ui.addSet.weightNoteLabel
+import com.looker.kenko.ui.components.unitLabel
+import com.looker.kenko.ui.components.weightText
 import com.looker.kenko.ui.theme.KenkoIcons
-import com.looker.kenko.ui.theme.setTypeColor
-import com.looker.kenko.ui.theme.weightNoteColor
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
 import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
 import com.looker.kenko.ui.theme.numbers
+import com.looker.kenko.ui.theme.setTypeColor
+import com.looker.kenko.ui.theme.weightNoteColor
 
 @Composable
 fun SetItem(
@@ -105,7 +107,7 @@ fun SetItem(
             )
             PerformedItem(
                 title = stringResource(R.string.label_weight),
-                performance = "${formatWeight(set.weight)} ${stringResource(R.string.label_kg)}",
+                performance = "${weightText(set.weight)} ${unitLabel()}",
             )
         }
     }
@@ -166,7 +168,7 @@ fun SuggestedSetItem(
                 .copy(color = MaterialTheme.colorScheme.onSurface)
                 .toSpanStyle()
 
-            val kg = stringResource(R.string.label_kg)
+            val kg = unitLabel()
             val annotatedString = remember(kg) {
                 buildAnnotatedString {
                     withStyle(spanStyle1) {
