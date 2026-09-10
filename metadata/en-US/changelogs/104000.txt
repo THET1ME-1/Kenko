@@ -1,0 +1,13 @@
+Added
+- Drop sets, supersets and a rest timer
+- Plan presets: sets, rep range, rest and weight
+- Session summary with tonnage, muscles, photo and duration
+- Records, last-session ghost and gym-to-gym weight shift
+- Statistics, body heat map, CSV and PDF reports
+- 876 exercises with illustrations, gyms and grips
+- Plate calculator and weight entry by keyboard
+
+Fixed
+- Weight ruler wrote 75.4 while pointing at 75
+- Plate calculator doubled every plate
+- Rest panel took half the screen

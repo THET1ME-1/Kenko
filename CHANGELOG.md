@@ -7,12 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-09-10
+
 ### Added
-- Last performed set data already inserted
+- Drop sets, supersets and rest timer with a notification
+- Plan presets: target sets, rep range, rest and weight per exercise
+- Session summary: tonnage, worked muscles, name, note, photo and duration
+- Records by one-rep max, last-session ghost and a gym-to-gym weight shift
+- Statistics with a body heat map, muscle and exercise screens, CSV and PDF reports
+- Exercise library of 876 movements with illustrations from a CDN
+- Gyms with their own equipment, and grips that belong to an exercise
+- Plate calculator, weight entry by keyboard, kilograms or pounds
+- Session history grouping, moving and deleting a session, plan and day copying
 
 ### Changed
-- Redesign set adding UI
-- Activity graph design
+- Plans are optional: a session runs without one
+- Plan days are plain numbers, week mode is a setting
+- Set rows carry the kind of set and a note about the weight
+- Every interface string starts with a capital letter
+
+### Fixed
+- The weight ruler wrote 75.4 while pointing at 75
+- The plate calculator doubled every plate and would not let one off
+- The rest panel took half the screen and slid under the phone buttons
+- The add button covered the exercise and superset actions in the day editor
 
 ## [1.3.3] - 2026-04-11
 

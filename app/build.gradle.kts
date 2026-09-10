@@ -38,7 +38,7 @@ android {
         applicationId = "com.looker.kenko"
         minSdk = 26
         targetSdk = 37
-        versionName = "1.3.3"
+        versionName = "1.4.0"
         versionCode = versionCodeFor(versionName)
     }
 
