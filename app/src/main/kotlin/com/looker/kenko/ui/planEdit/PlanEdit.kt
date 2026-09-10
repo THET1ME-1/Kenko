@@ -52,7 +52,6 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -106,6 +105,7 @@ import com.looker.kenko.ui.components.DaySelectorChip
 import com.looker.kenko.ui.components.ErrorSnackbar
 import com.looker.kenko.ui.components.HorizontalDaySelector
 import com.looker.kenko.ui.components.KenkoButton
+import com.looker.kenko.ui.components.SheetAction
 import com.looker.kenko.ui.components.PrimaryBorder
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.components.unitLabel
@@ -767,11 +767,9 @@ private fun CopyDaySheet(
         Column(modifier = Modifier.padding(bottom = 32.dp)) {
             for (day in 1..(dayCount + 1)) {
                 if (day == currentDay) continue
-                ListItem(
-                    modifier = Modifier.clickable { onPick(day) },
-                    headlineContent = {
-                        Text(text = stringResource(R.string.label_copy_day_to, day))
-                    },
+                SheetAction(
+                    text = stringResource(R.string.label_copy_day_to, day),
+                    onClick = { onPick(day) },
                 )
             }
         }

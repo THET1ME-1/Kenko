@@ -28,7 +28,6 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -51,6 +50,7 @@ import com.looker.kenko.data.model.Plan
 import com.looker.kenko.data.model.PlanPreviewParameters
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.EmptyPage
+import com.looker.kenko.ui.components.SheetAction
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.SwipeToDeleteBox
 import com.looker.kenko.ui.components.endItem
@@ -180,12 +180,12 @@ private fun Plan(
     acting?.let { plan ->
         ModalBottomSheet(onDismissRequest = { acting = null }) {
             Column(modifier = Modifier.padding(bottom = 32.dp)) {
-                ListItem(
-                    modifier = Modifier.clickable {
+                SheetAction(
+                    text = stringResource(R.string.label_duplicate_plan),
+                    onClick = {
                         acting = null
                         onDuplicate(plan)
                     },
-                    headlineContent = { Text(text = stringResource(R.string.label_duplicate_plan)) },
                 )
             }
         }

@@ -35,7 +35,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -214,7 +213,8 @@ private fun SideSwitch(
             SegmentedButton(
                 selected = entry == side,
                 onClick = { onSideChange(entry) },
-                shape = SegmentedButtonDefaults.itemShape(index, BodySide.entries.size),
+                shape = segmentShape(index, BodySide.entries.size),
+                colors = kenkoSegmentColors,
             ) {
                 Text(
                     text = stringResource(

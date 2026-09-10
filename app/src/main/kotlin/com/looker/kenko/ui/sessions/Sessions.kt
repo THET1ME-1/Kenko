@@ -37,8 +37,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
@@ -73,6 +71,7 @@ import com.looker.kenko.data.model.SessionGroupKey
 import com.looker.kenko.data.model.SessionGrouping
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.EmptyPage
+import com.looker.kenko.ui.components.SheetAction
 import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.extensions.plus
 import com.looker.kenko.ui.planEdit.components.dayName
@@ -248,16 +247,14 @@ private fun SessionActions(
 ) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(modifier = Modifier.padding(bottom = 32.dp)) {
-            ListItem(
-                modifier = Modifier.clickable(onClick = onMove),
-                headlineContent = { Text(text = stringResource(R.string.label_move_session)) },
+            SheetAction(
+                text = stringResource(R.string.label_move_session),
+                onClick = onMove,
             )
-            ListItem(
-                modifier = Modifier.clickable(onClick = onDelete),
-                headlineContent = { Text(text = stringResource(R.string.label_delete_session)) },
-                colors = ListItemDefaults.colors(
-                    headlineColor = MaterialTheme.colorScheme.error,
-                ),
+            SheetAction(
+                text = stringResource(R.string.label_delete_session),
+                onClick = onDelete,
+                contentColor = MaterialTheme.colorScheme.error,
             )
         }
     }

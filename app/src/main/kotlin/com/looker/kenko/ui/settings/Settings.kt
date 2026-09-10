@@ -49,8 +49,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonColors
-import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SingleChoiceSegmentedButtonRowScope
 import androidx.compose.material3.SnackbarHost
@@ -88,6 +86,8 @@ import com.looker.kenko.data.model.settings.Theme
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.HealthQuotes
 import com.looker.kenko.ui.components.KenkoBorderWidth
+import com.looker.kenko.ui.components.kenkoSegmentColors
+import com.looker.kenko.ui.components.segmentShape
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -246,10 +246,8 @@ private fun Settings(
                         SegmentedButton(
                             selected = unit == state.weightUnit,
                             onClick = { onWeightUnitChange(unit) },
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index,
-                                WeightUnit.entries.size,
-                            ),
+                            shape = segmentShape(index, WeightUnit.entries.size),
+                            colors = kenkoSegmentColors,
                         ) {
                             Text(
                                 text = stringResource(
@@ -528,7 +526,7 @@ private fun SingleChoiceSegmentedButtonRowScope.SystemButton(
         selected = isSelected,
         onClick = { onClick(theme) },
         shape = CircleShape.end(4.dp),
-        colors = themeButtonColors,
+        colors = kenkoSegmentColors,
         modifier = Modifier.padding(2.dp),
     ) {
         Text(text = stringResource(theme.nameRes))
@@ -546,7 +544,7 @@ private fun SingleChoiceSegmentedButtonRowScope.LightButton(
         selected = isSelected,
         onClick = { onClick(theme) },
         shape = RoundedCornerShape(4.dp),
-        colors = themeButtonColors,
+        colors = kenkoSegmentColors,
         modifier = Modifier.padding(2.dp),
     ) {
         Text(text = stringResource(theme.nameRes))
@@ -564,21 +562,13 @@ private fun SingleChoiceSegmentedButtonRowScope.DarkButton(
         selected = isSelected,
         onClick = { onClick(theme) },
         shape = CircleShape.start(4.dp),
-        colors = themeButtonColors,
+        colors = kenkoSegmentColors,
         modifier = Modifier.padding(2.dp),
     ) {
         Text(text = stringResource(theme.nameRes))
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-private val themeButtonColors: SegmentedButtonColors
-    @Composable
-    get() = SegmentedButtonDefaults.colors(
-        activeBorderColor = Color.Transparent,
-        inactiveBorderColor = Color.Transparent,
-        inactiveContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-    )
 
 @Composable
 private fun BackupSection(
@@ -773,7 +763,7 @@ private fun BackupIntervalSelector(
                     BackupInterval.entries.lastIndex -> CircleShape.start(4.dp)
                     else -> RoundedCornerShape(4.dp)
                 },
-                colors = themeButtonColors,
+                colors = kenkoSegmentColors,
                 modifier = Modifier.padding(2.dp),
             ) {
                 Text(
