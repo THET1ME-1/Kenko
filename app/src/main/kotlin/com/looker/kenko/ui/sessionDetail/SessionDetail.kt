@@ -41,6 +41,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
@@ -85,6 +86,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -154,6 +156,7 @@ fun SessionDetails(
         onBackPress = onBackPress,
         onEditPlanClick = onEditPlanClick,
         onRemoveSet = viewModel::removeSet,
+        onEditSet = viewModel::showEditSetSheet,
         onReferenceClick = viewModel::openReference,
         onAddSetClick = { exercise, supersetId ->
             viewModel.showAddSetSheet(exercise, supersetId)
@@ -292,6 +295,7 @@ private fun SessionDetail(
     onBackPress: () -> Unit = {},
     onEditPlanClick: (Int) -> Unit = {},
     onRemoveSet: (Int?) -> Unit = {},
+    onEditSet: (com.looker.kenko.data.model.Set, Int) -> Unit = { _, _ -> },
     onReferenceClick: (String) -> Unit = {},
     onAddSetClick: (Exercise, Int?) -> Unit = { _, _ -> },
     onAddDropClick: (SetChain) -> Unit = {},
@@ -352,6 +356,7 @@ private fun SessionDetail(
                 onBackPress = onBackPress,
                 onEditPlanClick = onEditPlanClick,
                 onRemoveSet = onRemoveSet,
+                onEditSet = onEditSet,
                 onReferenceClick = onReferenceClick,
                 onAddSetClick = onAddSetClick,
                 onAddDropClick = onAddDropClick,
@@ -375,7 +380,10 @@ private fun SessionDetail(
 private const val REST_SHIFT_SECONDS = 30
 
 /**
- * Rest between sets: the clock is the whole point, so it gets the biggest type on the screen.
+ * Отдых между подходами.
+ *
+ * Панель висит поверх списка, поэтому занимает одну строку: время слева, управление справа.
+ * Раньше она забирала полэкрана и наезжала на кнопки навигации — под ними уходил и «Пропустить».
  */
 @Composable
 private fun RestBar(
@@ -393,7 +401,8 @@ private fun RestBar(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
         shape = MaterialTheme.shapes.extraLarge,
         color = if (rest.isDone) {
             MaterialTheme.colorScheme.primaryContainer
@@ -402,44 +411,46 @@ private fun RestBar(
         },
         border = if (rest.isDone) PrimaryBorder else OnSurfaceVariantBorder,
     ) {
-        Column(
-            modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Row(
+            modifier = Modifier.padding(start = 18.dp, end = 10.dp, top = 8.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = stringResource(R.string.label_rest).uppercase(),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline,
-            )
-            Text(
-                text = formatSeconds(rest.secondsLeft),
-                style = MaterialTheme.typography.displayMedium.numbers(),
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Text(
-                text = localizedExerciseName(rest.exerciseName, rest.exerciseNameRu),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline,
-            )
-            Spacer(Modifier.height(12.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+            Column(modifier = Modifier.weight(1F)) {
+                Text(
+                    text = formatSeconds(rest.secondsLeft),
+                    style = MaterialTheme.typography.headlineMedium.numbers(),
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = localizedExerciseName(rest.exerciseName, rest.exerciseNameRu),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            TextButton(
+                onClick = { onShift(-REST_SHIFT_SECONDS) },
+                contentPadding = PaddingValues(horizontal = 10.dp),
             ) {
-                TextButton(onClick = { onShift(-REST_SHIFT_SECONDS) }) {
-                    Text(text = "-$REST_SHIFT_SECONDS")
-                }
-                TextButton(onClick = { onShift(REST_SHIFT_SECONDS) }) {
-                    Text(text = "+$REST_SHIFT_SECONDS")
-                }
-                Spacer(Modifier.width(8.dp))
-                Button(onClick = onStop) {
-                    Text(
-                        text = stringResource(
-                            if (rest.isDone) R.string.label_done else R.string.label_skip_rest,
-                        ),
-                    )
-                }
+                Text(text = "-$REST_SHIFT_SECONDS")
+            }
+            TextButton(
+                onClick = { onShift(REST_SHIFT_SECONDS) },
+                contentPadding = PaddingValues(horizontal = 10.dp),
+            ) {
+                Text(text = "+$REST_SHIFT_SECONDS")
+            }
+            Spacer(Modifier.width(4.dp))
+            Button(
+                onClick = onStop,
+                contentPadding = PaddingValues(horizontal = 18.dp, vertical = 10.dp),
+            ) {
+                Text(
+                    text = stringResource(
+                        if (rest.isDone) R.string.label_done else R.string.label_skip_rest,
+                    ),
+                )
             }
         }
     }
@@ -463,6 +474,7 @@ private fun SetsList(
     onBackPress: () -> Unit,
     onEditPlanClick: (Int) -> Unit,
     onRemoveSet: (Int?) -> Unit,
+    onEditSet: (com.looker.kenko.data.model.Set, Int) -> Unit,
     onReferenceClick: (String) -> Unit,
     onAddSetClick: (Exercise, Int?) -> Unit,
     onAddDropClick: (SetChain) -> Unit,
@@ -528,6 +540,7 @@ private fun SetsList(
                     isEditable = isEditable,
                     expanded = expanded,
                     onRemoveSet = onRemoveSet,
+                    onEditSet = onEditSet,
                     onReferenceClick = onReferenceClick,
                     onAddSetClick = onAddSetClick,
                     groupActions = groupActions,
@@ -605,6 +618,7 @@ private fun LazyGridScope.singleExerciseBlock(
     isEditable: Boolean,
     expanded: SnapshotStateMap<String, Boolean>,
     onRemoveSet: (Int?) -> Unit,
+    onEditSet: (com.looker.kenko.data.model.Set, Int) -> Unit,
     onReferenceClick: (String) -> Unit,
     onAddSetClick: (Exercise, Int?) -> Unit,
     groupActions: GroupActions,
@@ -687,6 +701,7 @@ private fun LazyGridScope.singleExerciseBlock(
                 number = number,
                 ghost = ghost?.setAt(index),
                 onRemoveSet = onRemoveSet,
+                onEdit = { onEditSet(chain.set, number) },
                 modifier = Modifier.animateItem(),
             )
         }
@@ -767,6 +782,7 @@ private fun ChainItem(
     chain: SetChain,
     number: Int,
     onRemoveSet: (Int?) -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier,
     ghost: com.looker.kenko.data.model.Set? = null,
 ) {
@@ -775,7 +791,9 @@ private fun ChainItem(
         onDismiss = { onRemoveSet(chain.set.id) },
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
+            // Записанный подход правится тапом: ошибиться весом легче, чем кажется.
             SetItem(
+                modifier = Modifier.clickable(onClick = onEdit),
                 set = chain.set,
                 title = { Text(text = normalizeInt(number)) },
             )

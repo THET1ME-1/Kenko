@@ -104,6 +104,26 @@ class LocalSessionRepo @Inject constructor(
         )
     }
 
+    override suspend fun updateSet(
+        setId: Int,
+        weight: Float,
+        reps: Int,
+        setType: SetType,
+        rir: RepsInReserve,
+        gripId: Int?,
+        weightNote: WeightNote?,
+    ) {
+        setsDao.updatePerformance(
+            setId = setId,
+            weight = weight,
+            reps = reps,
+            type = setType,
+            rir = rir.value,
+            gripId = gripId,
+            weightNote = weightNote,
+        )
+    }
+
     override suspend fun clearLastSupersetRound(sessionId: Int, supersetId: Int) {
         val performed = setsDao.getSupersetSets(sessionId, supersetId)
         val lastRound = performed.maxOfOrNull { it.roundIndex ?: 0 } ?: return
@@ -299,6 +319,12 @@ class LocalSessionRepo @Inject constructor(
 
     override suspend fun getSets(sessionId: Int): List<Set> =
         setsDao.getSetsBySessionId(sessionId).toExternal()
+
+    override suspend fun getSet(setId: Int): Set? = withContext(Dispatchers.IO) {
+        val entity = setsDao.get(setId) ?: return@withContext null
+        val exercise = exerciseDao.get(entity.exerciseId) ?: return@withContext null
+        entity.toExternal(exercise.toExternal())
+    }
 
     override suspend fun getLastSetByExerciseId(exerciseId: Int): Set? = withContext(Dispatchers.IO) {
         val exercise = exerciseDao.get(exerciseId) ?: return@withContext null

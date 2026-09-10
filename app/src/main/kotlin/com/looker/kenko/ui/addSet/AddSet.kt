@@ -65,11 +65,12 @@ import com.looker.kenko.data.model.Grip
 import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.WEIGHT_STEP
 import com.looker.kenko.data.model.formatWeight
+import com.looker.kenko.data.model.roundToStep
 import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.Loadout
+import com.looker.kenko.ui.components.NumberInputDialog
 import com.looker.kenko.ui.components.PlateCalculator
 import com.looker.kenko.ui.components.WeightRuler
-import com.looker.kenko.ui.components.loadoutFor
 import com.looker.kenko.ui.components.rememberPhoto
 import com.looker.kenko.ui.components.unitLabel
 import com.looker.kenko.ui.theme.KenkoIcons
@@ -95,17 +96,16 @@ fun AddSet(
         }
     val grips by viewModel.grips.collectAsStateWithLifecycle()
     val weight = viewModel.weights.text.toString().toFloatOrNull() ?: 0F
-    var loadout by remember { mutableStateOf<Loadout?>(null) }
 
-    val plates = loadout
+    val plates = viewModel.loadout
     if (plates != null) {
         PlatesSheet(
             loadout = plates,
-            onLoadoutChange = { loadout = it },
-            onBack = { loadout = null },
+            onLoadoutChange = viewModel::updateLoadout,
+            onBack = viewModel::closePlates,
             onApply = {
                 viewModel.setWeight(it)
-                loadout = null
+                viewModel.closePlates()
             },
         )
         return
@@ -113,6 +113,7 @@ fun AddSet(
 
     AddSetContent(
         exerciseName = exerciseName,
+        isEditing = viewModel.isEditing,
         isDrop = target.parentSetId != null,
         dropIndex = target.dropIndex,
         setNumber = setNumber,
@@ -134,7 +135,7 @@ fun AddSet(
         gymHint = viewModel.gymHint,
         onApplyGymHint = viewModel::applyGymHint,
         onDismissGymHint = viewModel::dismissGymHint,
-        onOpenPlates = { loadout = loadoutFor(weight) },
+        onOpenPlates = { viewModel.openPlates(weight) },
         onDoneClick = {
             viewModel.addSet()
             onDone()
@@ -191,6 +192,7 @@ private fun PlatesSheet(
 private fun AddSetContent(
     exerciseName: String,
     weight: Float,
+    isEditing: Boolean,
     reps: Int,
     reserve: Int,
     setType: SetType,
@@ -283,8 +285,14 @@ private fun AddSetContent(
 
         Spacer(Modifier.height(14.dp))
 
+        var typingWeight by remember { mutableStateOf(false) }
+        var typingReps by remember { mutableStateOf(false) }
         Row(
-            modifier = Modifier.align(CenterHorizontally),
+            modifier = Modifier
+                .align(CenterHorizontally)
+                .clip(MaterialTheme.shapes.large)
+                .clickable { typingWeight = true }
+                .padding(horizontal = 12.dp, vertical = 2.dp),
             verticalAlignment = Alignment.Bottom,
         ) {
             Text(
@@ -300,6 +308,17 @@ private fun AddSetContent(
                 color = MaterialTheme.colorScheme.outline,
             )
         }
+        if (typingWeight) {
+            NumberInputDialog(
+                title = stringResource(R.string.title_enter_weight),
+                value = formatWeight(weight),
+                onDismiss = { typingWeight = false },
+                onConfirm = {
+                    onWeightChange(it)
+                    typingWeight = false
+                },
+            )
+        }
 
         Spacer(Modifier.height(8.dp))
 
@@ -313,7 +332,7 @@ private fun AddSetContent(
                     modifier = Modifier.weight(1F),
                     label = stepLabel(step),
                     accent = step == WEIGHT_STEP,
-                    onClick = { onWeightChange((weight + step).coerceAtLeast(0F)) },
+                    onClick = { onWeightChange((roundToStep(weight) + step).coerceAtLeast(0F)) },
                 )
             }
         }
@@ -335,6 +354,7 @@ private fun AddSetContent(
             DisplayKey(
                 modifier = Modifier.weight(1F),
                 label = reps.toString(),
+                onClick = { typingReps = true },
             )
             StepKey(
                 modifier = Modifier.weight(1F),
@@ -349,6 +369,19 @@ private fun AddSetContent(
             )
         }
 
+        if (typingReps) {
+            NumberInputDialog(
+                title = stringResource(R.string.title_enter_reps),
+                value = reps.toString(),
+                allowDecimals = false,
+                onDismiss = { typingReps = false },
+                onConfirm = {
+                    onRepsChanged(it.toInt().coerceAtLeast(1))
+                    typingReps = false
+                },
+            )
+        }
+
         Spacer(Modifier.height(18.dp))
 
         Button(
@@ -360,7 +393,11 @@ private fun AddSetContent(
         ) {
             Text(
                 text = stringResource(
-                    if (isDrop) R.string.label_write_drop else R.string.label_write_set,
+                    when {
+                        isEditing -> R.string.label_save
+                        isDrop -> R.string.label_write_drop
+                        else -> R.string.label_write_set
+                    },
                 ),
             )
         }
@@ -595,18 +632,21 @@ private fun stepLabel(step: Float): String {
 }
 
 /**
- * The current value, sitting in the same slot as the keys but not asking to be pressed.
+ * Текущее значение: стоит в ряду клавиш и по нажатию открывает ввод с клавиатуры — набрать
+ * «двадцать» быстрее, чем дожать плюсом.
  */
 @Composable
 private fun DisplayKey(
     label: String,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     Box(
         modifier = modifier
             .height(48.dp)
             .clip(MaterialTheme.shapes.extraLarge)
-            .background(MaterialTheme.colorScheme.primaryContainer),
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -773,6 +813,7 @@ private fun AddSetPreview(
                 weight = weight,
                 reps = reps,
                 reserve = 2,
+                isEditing = false,
                 setType = SetType.Standard,
                 onWeightChange = { weight = it },
                 onRepsChanged = { reps = it },

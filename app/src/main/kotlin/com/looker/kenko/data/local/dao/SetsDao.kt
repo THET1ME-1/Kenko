@@ -19,6 +19,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.looker.kenko.data.local.model.SetEntity
 import com.looker.kenko.data.local.model.SetType
+import com.looker.kenko.data.local.model.WeightNote
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -184,6 +185,28 @@ interface SetsDao {
         """,
     )
     suspend fun updateDropSettings(setId: Int, count: Int, percent: Int, type: SetType)
+
+    @Query(
+        """
+        UPDATE sets
+        SET weight = :weight,
+            reps = :reps,
+            type = :type,
+            rir = :rir,
+            gripId = :gripId,
+            weightNote = :weightNote
+        WHERE id = :setId
+        """,
+    )
+    suspend fun updatePerformance(
+        setId: Int,
+        weight: Float,
+        reps: Int,
+        type: SetType,
+        rir: Int,
+        gripId: Int?,
+        weightNote: WeightNote?,
+    )
 
     @Query(
         """

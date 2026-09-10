@@ -44,6 +44,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.looker.kenko.data.model.WEIGHT_STEP
+import com.looker.kenko.data.model.roundToStep
 import com.looker.kenko.ui.theme.Numbers
 import androidx.compose.ui.text.font.FontFamily
 import kotlin.math.roundToInt
@@ -64,6 +65,9 @@ private const val MAX_WEIGHT = 500F
  *
  * The number itself lives above the ruler — here only the scale, so the eye has one place
  * to read from and one place to pull.
+ *
+ * Дробный вес, пришедший со стороны (прошлый подход, поправка зала), первым же движением
+ * встаёт на сетку: иначе риска показывает 75, а в подходе пишется 75.4.
  */
 @Composable
 fun WeightRuler(
@@ -96,7 +100,8 @@ fun WeightRuler(
                     val steps = (carried / stepPx).let { if (it > 0) it.toInt() else -((-it).toInt()) }
                     if (steps != 0) {
                         carried -= steps * stepPx
-                        val next = (weight + steps * WEIGHT_STEP).coerceIn(0F, MAX_WEIGHT)
+                        val base = roundToStep(weight)
+                        val next = (base + steps * WEIGHT_STEP).coerceIn(0F, MAX_WEIGHT)
                         if (next != weight) {
                             haptic.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
                             onWeightChange(next)
@@ -135,6 +140,9 @@ private fun DrawScope.drawRuler(
     val center = size.width / 2
     val visibleSteps = (size.width / stepPx / 2).toInt() + 2
     val currentStep = (weight / WEIGHT_STEP).roundToInt()
+    // Насколько вес не дотягивает до своей риски: шкала сдвигается на эту долю, чтобы
+    // курсор не врал про ровное число.
+    val drift = (weight / WEIGHT_STEP - currentStep) * stepPx
     val baseline = size.height - 20.dp.toPx()
 
     // Подсветка под текущим значением: глазу нужно место, к которому он возвращается.
@@ -148,7 +156,7 @@ private fun DrawScope.drawRuler(
     for (offset in -visibleSteps..visibleSteps) {
         val step = currentStep + offset
         if (step < 0) continue
-        val x = center + offset * stepPx
+        val x = center + offset * stepPx - drift
         val isMajor = step % TICKS_PER_LABEL == 0
         val height = if (isMajor) 34.dp.toPx() else 18.dp.toPx()
         drawLine(

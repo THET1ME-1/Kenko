@@ -349,6 +349,29 @@ class SessionDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Правка записанного подхода: та же шторка, но с его числами и без нового номера.
+     */
+    fun showEditSetSheet(set: Set, number: Int) {
+        val setId = set.id ?: return
+        val exerciseId = set.exercise.id ?: return
+        viewModelScope.launch {
+            _sheetTarget.emit(
+                SetSheetTarget(
+                    exerciseName = set.exercise.name,
+                    exerciseNameRu = set.exercise.nameRu,
+                    setNumber = number,
+                    target = AddSetTarget(
+                        exerciseId = exerciseId,
+                        supersetId = set.supersetId,
+                        gripId = set.gripId,
+                        editSetId = setId,
+                    ),
+                ),
+            )
+        }
+    }
+
+    /**
      * How many sets of this exercise are already written down — the sheet shows the next number.
      */
     private fun performedSets(exerciseId: Int): Int {

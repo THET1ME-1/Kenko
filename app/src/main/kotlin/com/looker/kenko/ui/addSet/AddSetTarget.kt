@@ -46,6 +46,10 @@ data class AddSetTarget(
      */
     val gripId: Int? = null,
     val suggestion: Suggestion? = null,
+    /**
+     * Подход, который правим. Пусто — пишем новый.
+     */
+    val editSetId: Int? = null,
 ) {
     @Immutable
     data class Suggestion(val reps: Int, val weight: Float)

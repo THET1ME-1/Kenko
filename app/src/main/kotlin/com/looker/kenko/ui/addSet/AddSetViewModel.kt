@@ -42,6 +42,9 @@ import com.looker.kenko.data.model.WeightUnit
 import com.looker.kenko.data.repository.GymRepo
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.data.repository.SettingsRepo
+import com.looker.kenko.ui.components.Loadout
+import com.looker.kenko.ui.components.PlateMemory
+import com.looker.kenko.ui.components.loadoutFor
 import com.looker.kenko.utils.asStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -56,6 +59,7 @@ class AddSetViewModel @AssistedInject constructor(
     private val sessionRepo: SessionRepo,
     private val settingsRepo: SettingsRepo,
     private val gymRepo: GymRepo,
+    private val plateMemory: PlateMemory,
     gripRepo: GripRepo,
     @Assisted private val target: AddSetTarget,
 ) : ViewModel() {
@@ -122,6 +126,28 @@ class AddSetViewModel @AssistedInject constructor(
     }
 
     /**
+     * Собранная штанга: пока она не null, шторка показывает калькулятор блинов.
+     */
+    var loadout: Loadout? by mutableStateOf(null)
+        private set
+
+    /**
+     * Калькулятор открывается там, где его закрыли: своя сборка важнее пересчёта из веса.
+     */
+    fun openPlates(weight: Float) {
+        loadout = plateMemory.of(id) ?: loadoutFor(weight)
+    }
+
+    fun updateLoadout(value: Loadout) {
+        loadout = value
+        plateMemory.remember(id, value)
+    }
+
+    fun closePlates() {
+        loadout = null
+    }
+
+    /**
      * [value] arrives in kilograms — the field speaks the chosen unit.
      */
     fun setWeight(value: Float) {
@@ -144,8 +170,26 @@ class AddSetViewModel @AssistedInject constructor(
         weights.setTextAndPlaceCursorAtEnd((weightFloat + value).toString())
     }
 
+    /**
+     * Открыта ли шторка на уже записанном подходе.
+     */
+    val isEditing: Boolean = target.editSetId != null
+
     fun addSet() {
         viewModelScope.launch {
+            val editId = target.editSetId
+            if (editId != null) {
+                sessionRepo.updateSet(
+                    setId = editId,
+                    weight = weightInKilograms,
+                    reps = reps,
+                    setType = selectedSetType,
+                    rir = RepsInReserve(repsInReserve),
+                    gripId = selectedGripId,
+                    weightNote = weightNote,
+                )
+                return@launch
+            }
             val parentSetId = target.parentSetId
             if (parentSetId != null) {
                 sessionRepo.addDrop(
@@ -194,6 +238,19 @@ class AddSetViewModel @AssistedInject constructor(
             // The unit has to be known before the first number lands in the field.
             unit = settingsRepo.stream.first().weightUnit
             weights.setTextAndPlaceCursorAtEnd(unit.format(unit.fromKilograms(START_WEIGHT)))
+            val editId = target.editSetId
+            if (editId != null) {
+                val edited = sessionRepo.getSet(editId)
+                if (edited != null) {
+                    reps = edited.repsOrDuration
+                    setWeight(edited.weight)
+                    setSetType(edited.type)
+                    selectedGripId = edited.gripId
+                    weightNote = edited.weightNote
+                    repsInReserve = edited.rir.value
+                }
+                return@launch
+            }
             val suggestion = target.suggestion
             if (suggestion != null) {
                 reps = suggestion.reps

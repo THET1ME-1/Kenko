@@ -18,7 +18,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,35 +65,40 @@ val platePresets = listOf(25F, 20F, 15F, 10F, 5F, 2.5F, 1.25F)
 private val BAR_HEIGHT = 116.dp
 
 /**
- * What hangs on the bar right now: how many of each plate on each side.
+ * Что сейчас навешано: сколько блинов каждого номинала.
  *
- * Sides are counted apart because a lifter often ends up with an odd plate on one of them.
+ * Считается ровно то, что человек повесил: тап по блину добавляет один блин, а не пару.
+ * Штанга собирается симметрично, поэтому у набора есть переключатель [mirrored] — он
+ * удваивает навеску, но по своей воле, а не молча.
  */
 data class Loadout(
     val bar: Float = 20F,
-    val left: Map<Float, Int> = emptyMap(),
-    val right: Map<Float, Int> = emptyMap(),
+    val plates: Map<Float, Int> = emptyMap(),
+    val mirrored: Boolean = false,
 ) {
-    val leftWeight: Float get() = left.entries.sumOf { (it.key * it.value).toDouble() }.toFloat()
-    val rightWeight: Float get() = right.entries.sumOf { (it.key * it.value).toDouble() }.toFloat()
-    val total: Float get() = bar + leftWeight + rightWeight
+    /** Вес всех навешанных блинов, без удвоения. */
+    val plateWeight: Float
+        get() = plates.entries.sumOf { (it.key * it.value).toDouble() }.toFloat()
 
-    fun countOf(plate: Float): Int = (left[plate] ?: 0) + (right[plate] ?: 0)
+    /** Сколько железа висит с учётом того, зеркалится набор или нет. */
+    val hangingWeight: Float get() = plateWeight * if (mirrored) 2 else 1
 
-    fun hang(plate: Float, bothSides: Boolean): Loadout = copy(
-        left = if (bothSides) left.plus(plate to (left[plate] ?: 0) + 1) else left,
-        right = right.plus(plate to (right[plate] ?: 0) + 1),
-    )
+    val total: Float get() = bar + hangingWeight
 
-    fun takeOff(plate: Float): Loadout = copy(
-        left = left.minusOne(plate),
-        right = right.minusOne(plate),
-    )
+    fun countOf(plate: Float): Int = plates[plate] ?: 0
 
-    private fun Map<Float, Int>.minusOne(plate: Float): Map<Float, Int> {
-        val count = get(plate) ?: return this
-        return if (count <= 1) minus(plate) else plus(plate to count - 1)
+    fun hang(plate: Float): Loadout = copy(plates = plates + (plate to countOf(plate) + 1))
+
+    fun takeOff(plate: Float): Loadout {
+        val count = countOf(plate)
+        return when {
+            count <= 0 -> this
+            count == 1 -> copy(plates = plates - plate)
+            else -> copy(plates = plates + (plate to count - 1))
+        }
     }
+
+    fun cleared(): Loadout = copy(plates = emptyMap())
 }
 
 /**
@@ -102,24 +106,26 @@ data class Loadout(
  *
  * Anything the plates cannot reach stays off: 47.6 on a 20 kg bar loads to 47.5.
  */
-fun loadoutFor(target: Float, bar: Float = 20F): Loadout {
-    var perSide = ((target - bar) / 2).coerceAtLeast(0F)
-    val side = buildMap {
+fun loadoutFor(target: Float, bar: Float = 20F, mirrored: Boolean = false): Loadout {
+    val sides = if (mirrored) 2 else 1
+    var rest = ((target - bar) / sides).coerceAtLeast(0F)
+    val plates = buildMap {
         platePresets.forEach { plate ->
-            val count = (perSide / plate).toInt()
+            val count = (rest / plate).toInt()
             if (count > 0) {
                 put(plate, count)
-                perSide -= count * plate
+                rest -= count * plate
             }
         }
     }
-    return Loadout(bar = bar, left = side, right = side)
+    return Loadout(bar = bar, plates = plates, mirrored = mirrored)
 }
 
 /**
  * The bar as it will look on the rack: plates in place, the number they add up to under it.
  *
- * Tapping a plate hangs it on both sides at once, a long press on one side only.
+ * Тап по блину вешает один блин, тап по счётчику снимает его. Симметричную навеску включает
+ * отдельный переключатель — тогда под итогом стоит удвоенный вес железа.
  */
 @Composable
 fun PlateCalculator(
@@ -157,12 +163,22 @@ fun PlateCalculator(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 12.dp),
-            text = "${stringResource(R.string.label_side_short_left)} " +
-                "${formatWeight(loadout.leftWeight)} · " +
-                "${stringResource(R.string.label_side_short_right)} " +
-                formatWeight(loadout.rightWeight),
+            text = stringResource(
+                R.string.label_plates_sum,
+                formatWeight(loadout.plateWeight),
+                formatWeight(loadout.bar),
+            ),
             style = MaterialTheme.typography.labelMedium.numbers(),
             color = MaterialTheme.colorScheme.outline,
+        )
+
+        BarPill(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 12.dp),
+            text = stringResource(R.string.label_both_sides),
+            selected = loadout.mirrored,
+            onClick = { onLoadoutChange(loadout.copy(mirrored = !loadout.mirrored)) },
         )
 
         FlowRow(
@@ -174,8 +190,7 @@ fun PlateCalculator(
                 PlateChip(
                     plate = plate,
                     count = loadout.countOf(plate),
-                    onClick = { onLoadoutChange(loadout.hang(plate, bothSides = true)) },
-                    onLongClick = { onLoadoutChange(loadout.hang(plate, bothSides = false)) },
+                    onClick = { onLoadoutChange(loadout.hang(plate)) },
                     onRemove = { onLoadoutChange(loadout.takeOff(plate)) },
                 )
             }
@@ -221,9 +236,7 @@ fun PlateCalculator(
             OutlinedKey(
                 modifier = Modifier.weight(1F),
                 label = stringResource(R.string.action_clear_plates),
-                onClick = {
-                    onLoadoutChange(loadout.copy(left = emptyMap(), right = emptyMap()))
-                },
+                onClick = { onLoadoutChange(loadout.cleared()) },
             )
             Button(
                 modifier = Modifier
@@ -302,10 +315,12 @@ private fun DrawScope.drawBar(
     }
 
     // Тяжёлое ближе к грифу — так штангу и собирают.
-    val stack = platePresets.flatMap { p -> List(loadout.right[p] ?: 0) { p } }
-    val leftStack = platePresets.flatMap { p -> List(loadout.left[p] ?: 0) { p } }
+    val stack = platePresets.flatMap { p -> List(loadout.countOf(p)) { p } }
     drawStack(stack, toRight = true, measurer = measurer, style = plateStyle, color = plate)
-    drawStack(leftStack, toRight = false, measurer = measurer, style = plateStyle, color = plate)
+    // Вторая сторона рисуется, только когда навеска зеркальная: иначе картинка врала бы про вес.
+    if (loadout.mirrored) {
+        drawStack(stack, toRight = false, measurer = measurer, style = plateStyle, color = plate)
+    }
 }
 
 private fun DrawScope.drawStack(
@@ -370,40 +385,41 @@ private fun PlateChip(
     plate: Float,
     count: Int,
     onClick: () -> Unit,
-    onLongClick: () -> Unit,
     onRemove: () -> Unit,
 ) {
+    val hanging = count > 0
     Row(
         modifier = Modifier
             .clip(MaterialTheme.shapes.extraLarge)
             .background(
-                if (count > 0) {
+                if (hanging) {
                     MaterialTheme.colorScheme.primaryContainer
                 } else {
                     MaterialTheme.colorScheme.surfaceContainerHigh
                 },
-            )
-            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
-            .padding(start = 12.dp, end = if (count > 0) 4.dp else 12.dp, top = 9.dp, bottom = 9.dp),
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
+            modifier = Modifier
+                .clickable(onClick = onClick)
+                .padding(start = 14.dp, end = if (hanging) 8.dp else 14.dp, top = 11.dp, bottom = 11.dp),
             text = formatWeight(plate).removeSuffix(".0"),
             style = MaterialTheme.typography.labelLarge.numbers(),
-            color = if (count > 0) {
+            color = if (hanging) {
                 MaterialTheme.colorScheme.onPrimaryContainer
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
             },
         )
-        if (count > 0) {
+        if (hanging) {
+            // Снять блин: своя зона в палец шириной, иначе тап всегда попадал в «повесить».
             Text(
                 modifier = Modifier
-                    .padding(start = 6.dp)
                     .clip(MaterialTheme.shapes.extraLarge)
                     .clickable(onClick = onRemove)
-                    .padding(horizontal = 8.dp, vertical = 2.dp),
-                text = "×$count",
+                    .padding(horizontal = 12.dp, vertical = 11.dp),
+                text = "×$count −",
                 style = MaterialTheme.typography.labelMedium.numbers(),
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
@@ -412,7 +428,12 @@ private fun PlateChip(
 }
 
 @Composable
-private fun BarPill(text: String, selected: Boolean, onClick: () -> Unit) {
+private fun BarPill(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Text(
         text = text,
         style = MaterialTheme.typography.labelLarge.numbers(),
@@ -422,7 +443,7 @@ private fun BarPill(text: String, selected: Boolean, onClick: () -> Unit) {
         } else {
             MaterialTheme.colorScheme.onSurfaceVariant
         },
-        modifier = Modifier
+        modifier = modifier
             .clip(MaterialTheme.shapes.extraLarge)
             .background(
                 if (selected) {

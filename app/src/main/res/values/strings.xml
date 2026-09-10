@@ -387,7 +387,7 @@
     <string name="label_set_type_drop">Drop set</string>
     <string name="label_set_type_rest_pause">Rest-pause</string>
     <string name="title_plate_calculator">Plate calculator</string>
-    <string name="label_hang_plates">Tap hangs a plate on both sides, long press on one</string>
+    <string name="label_hang_plates">Tap adds a plate, the counter takes it off</string>
     <string name="action_use_weight">Use %1$s kg</string>
     <string name="action_clear_plates">Take off</string>
     <string name="label_side_short_left">Left</string>
@@ -542,4 +542,8 @@
     <string name="label_weight_unit">Weight unit</string>
     <string name="label_unit_kg">Kilograms</string>
     <string name="label_unit_lb">Pounds</string>
+    <string name="label_both_sides">Both sides ×2</string>
+    <string name="label_plates_sum">Plates %1$s · bar %2$s</string>
+    <string name="title_enter_weight">Enter weight</string>
+    <string name="title_enter_reps">Enter reps</string>
 </resources>

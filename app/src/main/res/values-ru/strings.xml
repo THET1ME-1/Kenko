@@ -349,7 +349,7 @@
     <string name="label_set_type_drop">Дропсет</string>
     <string name="label_set_type_rest_pause">Рест-пауза</string>
     <string name="title_plate_calculator">Калькулятор блинов</string>
-    <string name="label_hang_plates">Тап вешает блин на обе стороны, долгий — на одну</string>
+    <string name="label_hang_plates">Тап вешает блин, счётчик рядом снимает его</string>
     <string name="action_use_weight">Поставить %1$s кг</string>
     <string name="action_clear_plates">Снять всё</string>
     <string name="label_side_short_left">Лево</string>
@@ -506,4 +506,8 @@
     <string name="label_weight_unit">Единицы веса</string>
     <string name="label_unit_kg">Килограммы</string>
     <string name="label_unit_lb">Фунты</string>
+    <string name="label_both_sides">На обе стороны ×2</string>
+    <string name="label_plates_sum">Блины %1$s · гриф %2$s</string>
+    <string name="title_enter_weight">Введите вес</string>
+    <string name="title_enter_reps">Введите повторы</string>
 </resources>

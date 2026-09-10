@@ -89,6 +89,20 @@ interface SessionRepo {
      */
     suspend fun clearLastSupersetRound(sessionId: Int, supersetId: Int)
 
+    /**
+     * Правка записанного подхода: вес, повторы и оговорки. Всё остальное — порядок, круг,
+     * сбросы — остаётся на месте.
+     */
+    suspend fun updateSet(
+        setId: Int,
+        weight: Float,
+        reps: Int,
+        setType: SetType,
+        rir: RepsInReserve,
+        gripId: Int?,
+        weightNote: WeightNote?,
+    )
+
     suspend fun removeSet(setId: Int)
 
     suspend fun getSessionIdOrCreate(date: LocalDate): Int
@@ -124,6 +138,8 @@ interface SessionRepo {
     fun streamByDate(date: LocalDate): Flow<Session?>
 
     suspend fun getSets(sessionId: Int): List<Set>
+
+    suspend fun getSet(setId: Int): Set?
 
     suspend fun getLastSetByExerciseId(exerciseId: Int): Set?
 }

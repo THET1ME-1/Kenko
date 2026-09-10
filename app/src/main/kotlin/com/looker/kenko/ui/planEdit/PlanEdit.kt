@@ -29,10 +29,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -44,7 +44,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -146,16 +145,12 @@ fun PlanEdit(
         snackbarHostState = viewModel.snackbarState,
         stage = pageStage,
         fab = {
-            PlanEditFAB(
-                pageStage = pageStage,
-                onClick = {
-                    if (pageStage == PlanEditStage.NameEdit) {
-                        viewModel.saveName()
-                    } else {
-                        viewModel.openSheet()
-                    }
-                },
-            )
+            if (pageStage == PlanEditStage.NameEdit) {
+                PlanEditFAB(
+                    pageStage = pageStage,
+                    onClick = viewModel::saveName,
+                )
+            }
         },
         onBackPress = { viewModel.onBackPress(pageStage, onBackPress) },
         onDebugMockClick = viewModel::debugFillMockData,
@@ -620,13 +615,13 @@ private fun PlanExerciseBlock(
                     )
                 }
             }
-            Row(
+            FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+                itemVerticalAlignment = Alignment.CenterVertically,
             ) {
                 TextButton(onClick = onClick) {
                     Text(text = stringResource(R.string.label_edit_targets))
