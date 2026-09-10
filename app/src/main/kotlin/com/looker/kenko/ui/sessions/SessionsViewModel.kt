@@ -21,6 +21,7 @@ import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.SessionGroup
 import com.looker.kenko.data.model.SessionGrouping
 import com.looker.kenko.data.model.groupSessions
+import com.looker.kenko.data.model.isRunning
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.data.repository.SettingsRepo
@@ -40,7 +41,9 @@ class SessionsViewModel @Inject constructor(
 ) : ViewModel() {
     private val sessionsStream: Flow<List<Session>> = repo.stream
 
-    private val isCurrentSessionActive: Flow<Boolean> = repo.streamByDate(localDate).map { it != null }
+    // The same answer the home screen shows, so «Start» there and «Continue» here cannot disagree.
+    private val isCurrentSessionActive: Flow<Boolean> =
+        repo.streamByDate(localDate).map { it.isRunning }
 
     private val groupingStream: Flow<SessionGrouping> = settingsRepo.get { sessionGrouping }
 

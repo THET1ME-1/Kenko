@@ -52,6 +52,14 @@ data class Session(
     val isFinished: Boolean get() = finishedAt != null
 
     /**
+     * Whether today's training is under way: something is written into it and it is still open.
+     *
+     * A record with no sets left in it is not a session in progress — deleting the last set
+     * leaves the row behind.
+     */
+    val isRunning: Boolean get() = sets.isNotEmpty() && !isFinished
+
+    /**
      * Minutes between the first set and the closing, when both are known.
      */
     val minutes: Int?
@@ -63,3 +71,9 @@ data class Session(
 }
 
 fun Session(planId: Int, sets: List<Set>) = Session(planId = planId, date = localDate, sets = sets)
+
+/**
+ * The one answer both the home screen and the log ask for, so their buttons cannot disagree.
+ */
+val Session?.isRunning: Boolean
+    get() = this?.let { it.sets.isNotEmpty() && !it.isFinished } == true

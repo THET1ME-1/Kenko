@@ -24,6 +24,7 @@ import com.looker.kenko.data.model.PlanDaySummary
 import com.looker.kenko.data.model.StatsPeriod
 import com.looker.kenko.data.model.StatsRange
 import com.looker.kenko.data.model.daySummary
+import com.looker.kenko.data.model.isRunning
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.model.summarize
 import com.looker.kenko.data.model.toDayGroups
@@ -87,7 +88,7 @@ class HomeViewModel @Inject constructor(
     ) { (currentPlan, day), currentSession, planItems ->
         HomeUiData(
             isPlanSelected = currentPlan != null,
-            isSessionStarted = currentSession != null && currentSession.sets.isNotEmpty(),
+            isSessionStarted = currentSession.isRunning,
             isTodayEmpty = planItems.isEmpty(),
             currentPlanId = currentPlan?.id,
             planName = currentPlan?.name,
