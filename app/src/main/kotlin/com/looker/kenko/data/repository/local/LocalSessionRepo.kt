@@ -277,6 +277,17 @@ class LocalSessionRepo @Inject constructor(
         dao.reopenSession(sessionId)
     }
 
+    override suspend fun removeSession(sessionId: Int) {
+        dao.deleteSession(sessionId)
+    }
+
+    override suspend fun moveSession(sessionId: Int, date: LocalDate): Boolean {
+        val target = date.toLocalEpochDays()
+        if (dao.sessionExistsOn(target)) return false
+        dao.moveSession(sessionId, target)
+        return true
+    }
+
     override fun streamByDate(date: LocalDate): Flow<Session?> {
         return dao
             .session(date.toLocalEpochDays())

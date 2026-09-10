@@ -148,4 +148,10 @@ interface SessionDao {
 
     @Query("UPDATE sessions SET finishedAt = NULL WHERE id = :sessionId")
     suspend fun reopenSession(sessionId: Int)
+
+    @Query("DELETE FROM sessions WHERE id = :sessionId")
+    suspend fun deleteSession(sessionId: Int)
+
+    @Query("UPDATE sessions SET date = :date WHERE id = :sessionId")
+    suspend fun moveSession(sessionId: Int, date: EpochDays)
 }

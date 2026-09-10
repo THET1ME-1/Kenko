@@ -525,4 +525,8 @@
     <string name="label_exercise_not_found">Nothing found — try another word</string>
     <string name="label_exercise_removed">Exercise deleted</string>
     <string name="label_undo_delete">Undo</string>
+    <string name="label_date_taken">That day already has a session</string>
+    <string name="label_move_session">Move to another date</string>
+    <string name="label_delete_session">Delete session</string>
+    <string name="label_delete_session_question">Delete the session of %1$s? Its sets go with it.</string>
 </resources>

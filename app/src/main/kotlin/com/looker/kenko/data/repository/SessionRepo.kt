@@ -110,6 +110,17 @@ interface SessionRepo {
      */
     suspend fun reopenSession(sessionId: Int)
 
+    /**
+     * Throws the whole session away — the sets go with it.
+     */
+    suspend fun removeSession(sessionId: Int)
+
+    /**
+     * Moves a session to another day. Returns false when that day is already taken:
+     * two sessions on one date would fight over which one the app calls today's.
+     */
+    suspend fun moveSession(sessionId: Int, date: LocalDate): Boolean
+
     fun streamByDate(date: LocalDate): Flow<Session?>
 
     suspend fun getSets(sessionId: Int): List<Set>

@@ -489,4 +489,8 @@
     <string name="label_exercise_not_found">Ничего не нашлось — попробуй другое слово</string>
     <string name="label_exercise_removed">Упражнение удалено</string>
     <string name="label_undo_delete">Вернуть</string>
+    <string name="label_date_taken">В этот день уже есть тренировка</string>
+    <string name="label_move_session">Перенести на другую дату</string>
+    <string name="label_delete_session">Удалить тренировку</string>
+    <string name="label_delete_session_question">Удалить тренировку от %1$s? Подходы исчезнут вместе с ней.</string>
 </resources>

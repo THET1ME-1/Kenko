@@ -14,6 +14,8 @@
 
 package com.looker.kenko.ui.sessions
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,18 +28,28 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -83,8 +95,11 @@ fun Sessions(
     val state by viewModel.state.collectAsStateWithLifecycle()
     Sessions(
         state = state,
+        snackbarState = viewModel.snackbarState,
         onSessionClick = onSessionClick,
         onGroupingChange = viewModel::setGrouping,
+        onSessionMove = viewModel::moveSession,
+        onSessionRemove = viewModel::removeSession,
         onBackPress = onBackPress,
     )
 }
@@ -96,10 +111,18 @@ private fun Sessions(
     onSessionClick: (LocalDate) -> Unit,
     onGroupingChange: (SessionGrouping) -> Unit,
     onBackPress: () -> Unit,
+    snackbarState: SnackbarHostState = remember { SnackbarHostState() },
+    onSessionMove: (Session, LocalDate) -> Unit = { _, _ -> },
+    onSessionRemove: (Session) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    // A long press opens what a written session can still do: move to the right day or go away.
+    var acting by remember { mutableStateOf<Session?>(null) }
+    var moving by remember { mutableStateOf<Session?>(null) }
+    var deleting by remember { mutableStateOf<Session?>(null) }
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackbarState) },
         topBar = {
             TopAppBar(
                 navigationIcon = {
@@ -151,6 +174,7 @@ private fun Sessions(
                                 modifier = Modifier.padding(horizontal = 14.dp),
                                 session = session,
                                 onClick = { onSessionClick(session.date) },
+                                onLongClick = { acting = session },
                             )
                         }
                     }
@@ -158,7 +182,123 @@ private fun Sessions(
             }
         }
     }
+    acting?.let { session ->
+        SessionActions(
+            onMove = {
+                acting = null
+                moving = session
+            },
+            onDelete = {
+                acting = null
+                deleting = session
+            },
+            onDismiss = { acting = null },
+        )
+    }
+    moving?.let { session ->
+        MoveSessionDialog(
+            session = session,
+            onPick = { date ->
+                moving = null
+                onSessionMove(session, date)
+            },
+            onDismiss = { moving = null },
+        )
+    }
+    deleting?.let { session ->
+        AlertDialog(
+            onDismissRequest = { deleting = null },
+            title = { Text(text = stringResource(R.string.label_delete_session)) },
+            text = {
+                Text(
+                    text = stringResource(
+                        R.string.label_delete_session_question,
+                        formatDate(session.date, DateFormat.SessionLabel),
+                    ),
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onSessionRemove(session)
+                        deleting = null
+                    },
+                ) {
+                    Text(text = stringResource(R.string.label_remove))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { deleting = null }) {
+                    Text(text = stringResource(R.string.label_cancel))
+                }
+            },
+        )
+    }
 }
+
+/**
+ * What can still be done to a session that is already written down.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SessionActions(
+    onMove: () -> Unit,
+    onDelete: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(modifier = Modifier.padding(bottom = 32.dp)) {
+            ListItem(
+                modifier = Modifier.clickable(onClick = onMove),
+                headlineContent = { Text(text = stringResource(R.string.label_move_session)) },
+            )
+            ListItem(
+                modifier = Modifier.clickable(onClick = onDelete),
+                headlineContent = { Text(text = stringResource(R.string.label_delete_session)) },
+                colors = ListItemDefaults.colors(
+                    headlineColor = MaterialTheme.colorScheme.error,
+                ),
+            )
+        }
+    }
+}
+
+/**
+ * The calendar for a session written on the wrong day.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MoveSessionDialog(
+    session: Session,
+    onPick: (LocalDate) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val state = rememberDatePickerState(
+        initialSelectedDateMillis = session.date.toEpochDays() * MILLIS_IN_DAY,
+    )
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val millis = state.selectedDateMillis ?: return@TextButton onDismiss()
+                    onPick(LocalDate.fromEpochDays((millis / MILLIS_IN_DAY).toInt()))
+                },
+            ) {
+                Text(text = stringResource(R.string.label_save))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.label_cancel))
+            }
+        },
+    ) {
+        DatePicker(state = state)
+    }
+}
+
+private const val MILLIS_IN_DAY = 86_400_000L
 
 /**
  * Header of one group: what it holds and how many sessions are inside.
@@ -275,6 +415,7 @@ fun SessionCard(
     session: Session,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
+    onLongClick: (() -> Unit)? = null,
 ) {
     val containerColor = if (session.date.isToday) {
         MaterialTheme.colorScheme.secondaryContainer
@@ -287,10 +428,12 @@ fun SessionCard(
         MaterialTheme.shapes.extraLarge
     }
     Surface(
-        modifier = modifier,
+        modifier = modifier.combinedClickable(
+            onClick = onClick,
+            onLongClick = onLongClick,
+        ),
         color = containerColor,
         shape = containerShape,
-        onClick = onClick,
     ) {
         Column(
             modifier = Modifier

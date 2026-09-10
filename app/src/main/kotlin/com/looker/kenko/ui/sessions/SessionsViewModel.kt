@@ -14,9 +14,12 @@
 
 package com.looker.kenko.ui.sessions
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.looker.kenko.R
+import com.looker.kenko.data.StringHandler
 import com.looker.kenko.data.model.Session
 import com.looker.kenko.data.model.SessionGroup
 import com.looker.kenko.data.model.SessionGrouping
@@ -31,12 +34,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 
 @HiltViewModel
 class SessionsViewModel @Inject constructor(
-    repo: SessionRepo,
+    private val repo: SessionRepo,
     private val settingsRepo: SettingsRepo,
+    private val stringHandler: StringHandler,
 ) : ViewModel() {
+
+    val snackbarState = SnackbarHostState()
     private val sessionsStream: Flow<List<Session>> = repo.stream
 
     private val groupingStream: Flow<SessionGrouping> = settingsRepo.get { sessionGrouping }
@@ -52,6 +59,28 @@ class SessionsViewModel @Inject constructor(
             isEmpty = written.isEmpty(),
         )
     }.asStateFlow(SessionsUiData())
+
+    /**
+     * Throws a session away with everything written into it.
+     */
+    fun removeSession(session: Session) {
+        val id = session.id ?: return
+        viewModelScope.launch {
+            repo.removeSession(id)
+        }
+    }
+
+    /**
+     * Moves a session to another day, unless that day already holds one.
+     */
+    fun moveSession(session: Session, date: LocalDate) {
+        val id = session.id ?: return
+        viewModelScope.launch {
+            if (!repo.moveSession(id, date)) {
+                snackbarState.showSnackbar(stringHandler.getString(R.string.label_date_taken))
+            }
+        }
+    }
 
     fun setGrouping(grouping: SessionGrouping) {
         viewModelScope.launch {
