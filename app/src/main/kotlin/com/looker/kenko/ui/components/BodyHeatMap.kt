@@ -15,23 +15,37 @@
 package com.looker.kenko.ui.components
 
 import android.graphics.Matrix
+import android.graphics.Path as AndroidPath
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Region
-import android.graphics.Path as AndroidPath
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -40,11 +54,14 @@ import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.looker.kenko.R
 import com.looker.kenko.data.model.MuscleGroups
 import com.looker.kenko.ui.components.body.BODY_BACK_OFFSET
 import com.looker.kenko.ui.components.body.BODY_VIEW_HEIGHT
@@ -133,29 +150,81 @@ fun BodyPicker(
     secondary: Set<MuscleGroups>,
     onMuscleClick: (MuscleGroups) -> Unit,
     modifier: Modifier = Modifier,
-    height: Dp = 300.dp,
+    height: Dp = 420.dp,
 ) {
     val colors = MaterialTheme.colorScheme
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(height),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    // One figure at full width instead of two halves: on a phone the small ones were
+    // impossible to hit — a muscle two millimetres wide is not a target.
+    var side by rememberSaveable(primary) { mutableStateOf(primary?.bodySide ?: BodySide.Front) }
+    // Pinch brings the small muscles within reach of a finger; the figure never goes below life
+    // size, and turning the body around puts it back.
+    var scale by remember(side) { mutableFloatStateOf(1F) }
+    var pan by remember(side) { mutableStateOf(Offset.Zero) }
+    val zoom = rememberTransformableState { zoomChange, panChange, _ ->
+        scale = (scale * zoomChange).coerceIn(MIN_BODY_ZOOM, MAX_BODY_ZOOM)
+        pan = if (scale <= MIN_BODY_ZOOM) Offset.Zero else pan + panChange
+    }
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        BodySide.entries.forEach { side ->
-            BodyFigure(
-                side = side,
-                fillOf = { muscle ->
-                    when (muscle) {
-                        primary -> colors.primary
-                        in secondary -> colors.primaryContainer
-                        else -> colors.surfaceVariant
-                    }
-                },
-                selected = primary,
-                onMuscleClick = onMuscleClick,
-                modifier = Modifier.weight(1F),
-            )
+        SideSwitch(side = side, onSideChange = { side = it })
+        BodyFigure(
+            side = side,
+            fillOf = { muscle ->
+                when (muscle) {
+                    primary -> colors.primary
+                    in secondary -> colors.primaryContainer
+                    else -> colors.surfaceVariant
+                }
+            },
+            selected = primary,
+            onMuscleClick = onMuscleClick,
+            modifier = Modifier
+                .height(height)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                    translationX = pan.x
+                    translationY = pan.y
+                }
+                .transformable(zoom),
+        )
+    }
+}
+
+/**
+ * Life size and the closest the body comes.
+ */
+private const val MIN_BODY_ZOOM = 1F
+private const val MAX_BODY_ZOOM = 3F
+
+/**
+ * Front or back: the muscles of the hidden side keep their colour and come back with it.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SideSwitch(
+    side: BodySide,
+    onSideChange: (BodySide) -> Unit,
+) {
+    SingleChoiceSegmentedButtonRow {
+        BodySide.entries.forEachIndexed { index, entry ->
+            SegmentedButton(
+                selected = entry == side,
+                onClick = { onSideChange(entry) },
+                shape = SegmentedButtonDefaults.itemShape(index, BodySide.entries.size),
+            ) {
+                Text(
+                    text = stringResource(
+                        when (entry) {
+                            BodySide.Front -> R.string.label_body_front
+                            BodySide.Back -> R.string.label_body_back
+                        },
+                    ),
+                )
+            }
         }
     }
 }

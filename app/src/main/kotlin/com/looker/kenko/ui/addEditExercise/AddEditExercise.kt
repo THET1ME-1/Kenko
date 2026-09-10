@@ -47,6 +47,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,6 +74,7 @@ import com.looker.kenko.ui.components.kenkoTextFieldColor
 import com.looker.kenko.ui.components.rememberIllustration
 import com.looker.kenko.ui.components.rememberPhoto
 import com.looker.kenko.ui.exercises.string
+import com.looker.kenko.ui.exercises.localizedExerciseName
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
@@ -86,6 +88,9 @@ fun AddEditExercise(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val grips by viewModel.grips.collectAsStateWithLifecycle()
+    // The field shows the name the library lists, not the English key behind it.
+    val shown = state.originalName?.let { localizedExerciseName(it, state.originalNameRu) }
+    LaunchedEffect(shown) { shown?.let(viewModel::showLocalizedName) }
     AddEditExercise(
         state = state,
         grips = grips,
@@ -305,19 +310,13 @@ private fun PhotoBlock(
                 }
             }
         } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(16F / 10F),
-                contentAlignment = Alignment.Center,
-            ) {
-                DashedAddButton(
-                    label = stringResource(R.string.label_add_photo),
-                    onClick = { picker.launch(request) },
-                    modifier = Modifier.fillMaxWidth(),
-                    accent = true,
-                )
-            }
+            // No picture, no reserved 16:10 hole: the button stands on its own height.
+            DashedAddButton(
+                label = stringResource(R.string.label_add_photo),
+                onClick = { picker.launch(request) },
+                modifier = Modifier.fillMaxWidth(),
+                accent = true,
+            )
         }
     }
 }
@@ -524,6 +523,8 @@ private fun AddEditExercisePreview(
                 photoUri = null,
                 illustration = null,
                 frames = 0,
+                originalName = null,
+                originalNameRu = null,
                 isIsometric = false,
                 isError = false,
                 isReadOnly = false,

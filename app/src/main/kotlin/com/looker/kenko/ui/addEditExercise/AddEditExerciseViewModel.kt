@@ -89,6 +89,12 @@ class AddEditExerciseViewModel @AssistedInject constructor(
     var exerciseName: String by mutableStateOf("")
         private set
 
+    /**
+     * The name as the screen first showed it — translated, the way the library lists it.
+     * Comparing against it tells whether the lifter actually renamed anything.
+     */
+    private var shownName: String? = null
+
     var reference: String by mutableStateOf("")
         private set
 
@@ -113,6 +119,8 @@ class AddEditExerciseViewModel @AssistedInject constructor(
             photoUri = basics.photo,
             illustration = basics.exercise?.illustration,
             frames = basics.exercise?.frames ?: 0,
+            originalName = basics.exercise?.name,
+            originalNameRu = basics.exercise?.nameRu,
             isIsometric = isometric,
             isReadOnly = readOnly,
             isError = alreadyExist,
@@ -125,6 +133,8 @@ class AddEditExerciseViewModel @AssistedInject constructor(
             photoUri = null,
             illustration = null,
             frames = 0,
+            originalName = null,
+            originalNameRu = null,
             isIsometric = false,
             isError = false,
             isReadOnly = false,
@@ -223,6 +233,15 @@ class AddEditExerciseViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Puts the translated name into the field once, before anything is typed into it.
+     */
+    fun showLocalizedName(display: String) {
+        if (shownName != null || display.isBlank()) return
+        shownName = display
+        setName(display)
+    }
+
     fun setIsometric(value: Boolean) {
         viewModelScope.launch {
             isIsometric.emit(value)
@@ -239,17 +258,28 @@ class AddEditExerciseViewModel @AssistedInject constructor(
                 snackbarState.showSnackbar(stringHandler.getString(R.string.error_invalid_reference_format))
                 return@launch
             }
+            // A rename lands in the field the shown name came from: the Russian one when the
+            // catalogue gave it, the name itself otherwise. Writing both would break the link
+            // to the catalogue row.
+            val typed = exerciseName.trim()
+            val source = original.value
+            val renamed = source != null && typed != shownName
+            val russianIsShown = source?.nameRu != null
             repo.upsert(
                 Exercise(
-                    name = exerciseName,
+                    name = when {
+                        source == null -> typed
+                        renamed && !russianIsShown -> typed
+                        else -> source.name
+                    },
                     target = targetMuscle.value,
                     reference = reference.ifBlank { null },
                     isIsometric = isIsometric.value,
                     photoUri = photoUri.value,
                     secondaryTargets = secondaryMuscles.value.toList(),
-                    nameRu = original.value?.nameRu,
-                    illustration = original.value?.illustration,
-                    frames = original.value?.frames ?: 0,
+                    nameRu = if (renamed && russianIsShown) typed else source?.nameRu,
+                    illustration = source?.illustration,
+                    frames = source?.frames ?: 0,
                     id = exerciseId,
                 ),
             )
@@ -263,7 +293,6 @@ class AddEditExerciseViewModel @AssistedInject constructor(
                 val exercise = repo.get(exerciseId)
                 exercise?.let {
                     original.emit(it)
-                    setName(it.name)
                     addReference(it.reference ?: "")
                     setIsometric(it.isIsometric)
                     setTargetMuscle(it.target)
@@ -295,6 +324,11 @@ data class AddEditExerciseUiState(
     val photoUri: String?,
     val illustration: String?,
     val frames: Int,
+    /**
+     * The row as it lies in the library, so the screen can tell a rename from an untouched field.
+     */
+    val originalName: String?,
+    val originalNameRu: String?,
     val isIsometric: Boolean,
     val isError: Boolean,
     val isReadOnly: Boolean,
