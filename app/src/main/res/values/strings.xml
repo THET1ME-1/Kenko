@@ -507,18 +507,6 @@
     <string name="label_download_illustrations">Download all</string>
     <string name="label_downloading_illustrations">Downloading: %1$d of %2$d</string>
     <string name="label_clear_illustrations">Clear</string>
-    <string name="label_all_plans">All\nplans</string>
-    <string name="label_start_day">Start day %1$d</string>
-    <string name="label_home_other_day">Another day or plan</string>
-    <string name="label_home_last_time">Last time, %1$s</string>
-    <string name="label_home_first_run">This day is new</string>
-    <string name="label_home_nothing_planned">No exercises in this day</string>
-    <string name="label_home_pick_title">What are we training</string>
-    <string name="label_home_plan_has_no_days">This plan has no day with exercises in it</string>
-    <plurals name="plural_week_streak">
-        <item quantity="one">%1$d week in a row</item>
-        <item quantity="other">%1$d weeks in a row</item>
-    </plurals>
     <string name="label_plan_day">Day %1$d</string>
     <string name="label_sessions_without_day">No plan day</string>
     <string name="label_sessions_grouping">Grouping</string>

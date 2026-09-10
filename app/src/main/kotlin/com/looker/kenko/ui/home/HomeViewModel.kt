@@ -17,50 +17,37 @@ package com.looker.kenko.ui.home
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import com.looker.kenko.data.PlanDayResolver
-import com.looker.kenko.data.model.Exercise
-import com.looker.kenko.data.model.LastTime
 import com.looker.kenko.data.model.MuscleGroups
-import com.looker.kenko.data.model.Plan
 import com.looker.kenko.data.model.StatsPeriod
 import com.looker.kenko.data.model.StatsRange
-import com.looker.kenko.data.model.lastTimeOf
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.model.summarize
-import com.looker.kenko.data.model.weekStreak
 import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.utils.asStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val planRepo: PlanRepo,
+    planRepo: PlanRepo,
     sessionRepo: SessionRepo,
     private val dayResolver: PlanDayResolver,
 ) : ViewModel() {
+
+    private val planStream = planRepo.current
 
     private val sessionStream = sessionRepo.streamByDate(localDate)
 
     private val sessionsStream = sessionRepo.stream
 
-    /**
-     * The plan of the day and which of its days is due, resolved once for the whole screen.
-     */
-    private val todayStream = planRepo.current.map { plan ->
-        plan to dayResolver.dayFor(localDate, plan?.id)
-    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val planItemStream = todayStream.flatMapLatest { (_, day) ->
-        planRepo.planItemsForDay(day)
+    private val planItemStream = planRepo.current.flatMapLatest { plan ->
+        planRepo.planItemsForDay(dayResolver.dayFor(localDate, plan?.id))
     }
 
     /**
@@ -72,7 +59,6 @@ class HomeViewModel @Inject constructor(
         WeekLoad(
             volume = summary.volume,
             sets = summary.sets,
-            streak = sessions.weekStreak(localDate),
             heat = MuscleGroups.entries.associateWith { muscle ->
                 val top = summary.muscles.maxOfOrNull { it.volume } ?: 0F
                 val own = summary.muscles.firstOrNull { it.muscle == muscle }?.volume ?: 0F
@@ -82,73 +68,28 @@ class HomeViewModel @Inject constructor(
     }.asStateFlow(WeekLoad())
 
     val state = combine(
-        todayStream,
+        planStream,
         sessionStream,
         sessionsStream,
         planItemStream,
-    ) { (currentPlan, day), currentSession, sessions, planItems ->
+    ) { currentPlan, currentSession, sessions, planItems ->
+        val isFirstSession = sessions.size <= 1 && sessions.firstOrNull()?.date == localDate
         HomeUiData(
             isPlanSelected = currentPlan != null,
             isSessionStarted = currentSession != null && currentSession.sets.isNotEmpty(),
             isTodayEmpty = planItems.isEmpty(),
+            isFirstSession = isFirstSession,
             currentPlanId = currentPlan?.id,
-            planName = currentPlan?.name,
-            dayIndex = day,
-            todayExercises = planItems.map { it.exercise },
-            todaySets = planItems.sumOf { it.targetSets },
-            lastTime = sessions.lastTimeOf(
-                dayIndex = day.takeIf { currentPlan != null },
-                before = localDate,
-            ),
         )
-    }.asStateFlow(HomeUiData())
-
-    private val _pickerPlanId: MutableStateFlow<Int?> = MutableStateFlow(null)
-
-    private val _isPickerVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isPickerVisible: StateFlow<Boolean> = _isPickerVisible
-
-    /**
-     * Plans and their days for the sheet that opens before a session starts.
-     */
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val picker: StateFlow<PlanPicker> = combine(
-        planRepo.plans,
-        planRepo.current,
-        _pickerPlanId,
-    ) { plans, current, picked ->
-        plans to (picked ?: current?.id ?: plans.firstOrNull()?.id)
-    }.flatMapLatest { (plans, shownId) ->
-        if (shownId == null) {
-            flowOf(PlanPicker(plans = plans))
-        } else {
-            planRepo.planItems(shownId).map { items ->
-                PlanPicker(
-                    plans = plans,
-                    shownPlanId = shownId,
-                    days = items
-                        .groupBy { it.dayIndex }
-                        .toSortedMap()
-                        .map { (index, dayItems) ->
-                            PlanDayOption(index = index, exercises = dayItems.size)
-                        },
-                )
-            }
-        }
-    }.asStateFlow(PlanPicker())
-
-    fun showPicker() {
-        _pickerPlanId.value = null
-        _isPickerVisible.value = true
-    }
-
-    fun hidePicker() {
-        _isPickerVisible.value = false
-    }
-
-    fun showDaysOf(planId: Int) {
-        _pickerPlanId.value = planId
-    }
+    }.asStateFlow(
+        HomeUiData(
+            isPlanSelected = true,
+            isSessionStarted = false,
+            isTodayEmpty = false,
+            isFirstSession = false,
+            currentPlanId = null,
+        ),
+    )
 }
 
 /**
@@ -158,37 +99,16 @@ class HomeViewModel @Inject constructor(
 data class WeekLoad(
     val volume: Float = 0F,
     val sets: Int = 0,
-    val streak: Int = 0,
     val heat: Map<MuscleGroups, Float> = emptyMap(),
 ) {
     val isEmpty: Boolean get() = sets == 0
 }
 
-/**
- * One day of a plan as the picker shows it: its number and how much is written into it.
- */
-@Immutable
-data class PlanDayOption(
-    val index: Int,
-    val exercises: Int,
-)
-
-@Immutable
-data class PlanPicker(
-    val plans: List<Plan> = emptyList(),
-    val shownPlanId: Int? = null,
-    val days: List<PlanDayOption> = emptyList(),
-)
-
 @Immutable
 data class HomeUiData(
-    val isPlanSelected: Boolean = true,
-    val isSessionStarted: Boolean = false,
-    val isTodayEmpty: Boolean = false,
-    val currentPlanId: Int? = null,
-    val planName: String? = null,
-    val dayIndex: Int = 1,
-    val todayExercises: List<Exercise> = emptyList(),
-    val todaySets: Int = 0,
-    val lastTime: LastTime? = null,
+    val isPlanSelected: Boolean,
+    val isSessionStarted: Boolean,
+    val isTodayEmpty: Boolean,
+    val isFirstSession: Boolean,
+    val currentPlanId: Int?,
 )

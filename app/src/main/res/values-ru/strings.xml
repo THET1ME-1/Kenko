@@ -471,20 +471,6 @@
     <string name="label_download_illustrations">Скачать все</string>
     <string name="label_downloading_illustrations">Качаю: %1$d из %2$d</string>
     <string name="label_clear_illustrations">Очистить</string>
-    <string name="label_all_plans">Все\nпрограммы</string>
-    <string name="label_start_day">Начать день %1$d</string>
-    <string name="label_home_other_day">Другой день или программа</string>
-    <string name="label_home_last_time">Прошлый раз, %1$s</string>
-    <string name="label_home_first_run">Этот день ещё не проходили</string>
-    <string name="label_home_nothing_planned">В дне нет упражнений</string>
-    <string name="label_home_pick_title">Что тренируем</string>
-    <string name="label_home_plan_has_no_days">В программе нет ни одного дня с упражнениями</string>
-    <plurals name="plural_week_streak">
-        <item quantity="one">%1$d неделя подряд</item>
-        <item quantity="few">%1$d недели подряд</item>
-        <item quantity="many">%1$d недель подряд</item>
-        <item quantity="other">%1$d недели подряд</item>
-    </plurals>
     <string name="label_plan_day">День %1$d</string>
     <string name="label_sessions_without_day">Без дня программы</string>
     <string name="label_sessions_grouping">Группировка</string>

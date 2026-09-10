@@ -86,13 +86,6 @@ class SessionDetailViewModel @AssistedInject constructor(
 
     private val epochDays: Int? = routeData.epochDays.takeIf { it != -1 }
 
-    /**
-     * Plan and day picked before the session started. Empty when the app chose the day itself.
-     */
-    private val chosenPlanId: Int? = routeData.planId
-
-    private val chosenDayIndex: Int? = routeData.dayIndex
-
     private val sessionDate: LocalDate = epochDays?.let {
         LocalDate.fromEpochDays(it)
     } ?: localDate
@@ -110,8 +103,8 @@ class SessionDetailViewModel @AssistedInject constructor(
         planRepo.current,
     ) { session, activePlan -> session to activePlan }
         .flatMapLatest { (session, activePlan) ->
-            val planId = session?.planId ?: chosenPlanId ?: activePlan?.id
-            val day = session?.dayIndex ?: chosenDayIndex ?: dayResolver.dayFor(sessionDate, planId)
+            val planId = session?.planId ?: activePlan?.id
+            val day = session?.dayIndex ?: dayResolver.dayFor(sessionDate, planId)
             currentDayIndex = day
             when {
                 planId != null -> planRepo.planItems(planId, day)
@@ -261,9 +254,7 @@ class SessionDetailViewModel @AssistedInject constructor(
                 }
                 .toMap()
 
-            val planId = session?.planId
-                ?: chosenPlanId
-                ?: if (sessionDate.isToday) activePlan?.id else null
+            val planId = session?.planId ?: if (sessionDate.isToday) activePlan?.id else null
 
             SessionDetailState.Success(
                 SessionUiData(
