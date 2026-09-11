@@ -1,0 +1,2 @@
+Tapping a set in the day editor opens the goals behind it: the weight no longer hides
+behind the three dots.

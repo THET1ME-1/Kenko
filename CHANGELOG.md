@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-09-11
+
+### Fixed
+- A set of the day editor did not react to a tap: the weight could only be changed through the
+  three dots. Tapping a set row, a drop set card or an exercise inside a superset now opens the
+  goals behind it
+
 ## [1.5.0] - 2026-09-11
 
 ### Added
