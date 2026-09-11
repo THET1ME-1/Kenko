@@ -261,7 +261,6 @@
     <string name="label_rest_short">Rest %1$s</string>
     <string name="label_day_summary">%1$s · %2$s · ~%3$d min</string>
     <string name="label_add_exercise_short">+ Exercise</string>
-    <string name="label_add_superset">+ Superset</string>
     <string name="label_drop_in_plan">Drop set</string>
     <string name="label_no_plans_yet">No plans yet</string>
     <string name="label_color_scheme_amethyst">Amethyst</string>
@@ -546,4 +545,67 @@
     <string name="label_plates_sum">Plates %1$s · bar %2$s</string>
     <string name="title_enter_weight">Enter weight</string>
     <string name="title_enter_reps">Enter reps</string>
+    <!-- Profile -->
+    <string name="label_profile_since_FORMAT">Training since %1$s</string>
+    <string name="label_profile_empty_since">The journal is empty</string>
+    <string name="label_profile_empty_hint">The first set starts the count</string>
+    <plurals name="plural_sessions_word">
+        <item quantity="one">session</item>
+        <item quantity="other">sessions</item>
+    </plurals>
+    <plurals name="plural_weeks_streak">
+        <item quantity="one">%1$d week in a row</item>
+        <item quantity="other">%1$d weeks in a row</item>
+    </plurals>
+    <string name="label_hours_value_FORMAT">%1$d h</string>
+    <string name="label_hours_minutes_FORMAT">%1$d h %2$d min</string>
+    <string name="label_fresh_record">Fresh record</string>
+    <string name="label_profile_record_reps_FORMAT">× %1$d</string>
+    <string name="label_profile_record_gain_FORMAT">+%1$s on the last one</string>
+    <string name="label_profile_two_parts_FORMAT">%1$s · %2$s</string>
+    <string name="label_profile_plan">Plan</string>
+    <string name="label_profile_plan_none">Not selected</string>
+    <string name="label_profile_stats_empty">Nothing this month yet</string>
+    <string name="label_profile_stats_hint_FORMAT">%1$s in %2$s</string>
+    <string name="label_profile_muscle_share_FORMAT">%1$s %2$d%%</string>
+    <string name="label_profile_records_hint_FORMAT">%1$s %2$s · %3$s</string>
+    <string name="label_profile_exercises_hint_FORMAT">%1$d in the library</string>
+    <string name="label_profile_gym_none">No gym selected</string>
+    <string name="label_profile_history">History</string>
+    <string name="label_profile_history_empty">No sessions yet</string>
+    <string name="label_today">Today</string>
+    <string name="label_yesterday">Yesterday</string>
+    <!-- Exercise actions -->
+    <string name="label_exercise_actions">What to do</string>
+    <string name="label_add_set">Add a set</string>
+    <string name="label_goal_today">Goal for today</string>
+    <string name="label_plan_goal_FORMAT">%1$d × %2$s</string>
+    <string name="label_merge_with_next">Tie with the next one</string>
+    <string name="label_reset_to_plan">Back to the plan</string>
+    <string name="label_remove_from_session">Remove from the session</string>
+    <string name="label_remove_from_day">Remove from the day</string>
+    <string name="label_superset">Superset</string>
+    <string name="label_edit_goal">Exercise goals</string>
+    <string name="label_goal_of_FORMAT">Goals: %1$s</string>
+    <string name="label_remove_of_FORMAT">Remove: %1$s</string>
+    <string name="label_add_day">+ Day</string>
+    <string name="label_copy_of_FORMAT">%1$s (copy)</string>
+    <string name="label_add_to_gym_FORMAT">Add to “%1$s”</string>
+    <string name="label_remove_from_gym_FORMAT">Remove from “%1$s”</string>
+    <string name="label_duplicate_exercise">Make a copy</string>
+    <string name="label_open_exercise">Open the card</string>
+    <string name="label_reorder">Reorder</string>
+    <string name="label_add_to_plan">Into the plan</string>
+    <string name="label_add_to_plan_day_FORMAT">Day %1$d</string>
+    <string name="label_added_to_day_FORMAT">Added to day %1$d</string>
+    <string name="label_add_to_session">Into today\&apos;s session</string>
+    <string name="label_gym_only_FORMAT">Gym “%1$s”</string>
+    <string name="label_all_exercises">All exercises</string>
+    <string name="label_plan_active">Active</string>
+    <string name="label_make_active">Make it active</string>
+    <string name="label_rename_plan">Rename</string>
+    <string name="label_delete_plan">Delete the plan</string>
+    <string name="label_delete_gym">Delete the gym</string>
+    <string name="label_superset_tap_hint">Tap an exercise of the round to write its set. “Close the round” writes them all at once.</string>
+    <string name="label_nothing_written">Nothing written yet</string>
 </resources>

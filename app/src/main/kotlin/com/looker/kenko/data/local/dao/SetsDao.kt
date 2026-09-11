@@ -239,6 +239,41 @@ interface SetsDao {
     )
     suspend fun getSupersetSets(sessionId: Int, supersetId: Int): List<SetEntity>
 
+    /**
+     * Every set of one exercise inside one session: what an exercise dropped from the day
+     * takes with it.
+     */
+    @Query(
+        """
+        DELETE FROM sets
+        WHERE sessionId = :sessionId AND exerciseId = :exerciseId
+        """,
+    )
+    suspend fun deleteExerciseSets(sessionId: Int, exerciseId: Int)
+
+    /**
+     * Moves what was already written onto another movement: swapping an exercise mid-session
+     * keeps the work, only the name changes.
+     */
+    @Query(
+        """
+        UPDATE sets SET exerciseId = :toExerciseId
+        WHERE sessionId = :sessionId AND exerciseId = :fromExerciseId
+        """,
+    )
+    suspend fun moveSetsToExercise(sessionId: Int, fromExerciseId: Int, toExerciseId: Int)
+
+    /**
+     * Ties a written set into a superset round, or lets it out of one.
+     */
+    @Query(
+        """
+        UPDATE sets SET supersetId = :supersetId, roundIndex = :roundIndex
+        WHERE id = :setId
+        """,
+    )
+    suspend fun updateSupersetMembership(setId: Int, supersetId: Int?, roundIndex: Int?)
+
     @Insert
     suspend fun insert(set: SetEntity): Long
 

@@ -36,6 +36,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -136,7 +137,7 @@ private fun AddEditExercise(
                 title = {
                     Text(
                         text = stringResource(
-                            if (state.isReadOnly) {
+                            if (state.isExisting) {
                                 R.string.label_edit_exercise
                             } else {
                                 R.string.label_add_exercise_header
@@ -149,6 +150,21 @@ private fun AddEditExercise(
         snackbarHost = {
             SnackbarHost(hostState = snackbarState) { ErrorSnackbar(data = it) }
         },
+        // Saving stays under the thumb: the form is long, and the button used to sit at its end.
+        floatingActionButton = {
+            KenkoButton(
+                onClick = onSaveClick,
+                label = { Text(text = stringResource(R.string.label_save)) },
+                icon = {
+                    Icon(
+                        modifier = Modifier.size(18.dp),
+                        painter = KenkoIcons.Save,
+                        contentDescription = null,
+                    )
+                },
+            )
+        },
+        floatingActionButtonPosition = FabPosition.Center,
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -197,7 +213,7 @@ private fun AddEditExercise(
                 onCheckedChange = onIsometricChange,
             )
 
-            if (state.isReadOnly) {
+            if (state.isExisting) {
                 Spacer(Modifier.height(20.dp))
                 GripSection(
                     grips = grips,
@@ -233,24 +249,7 @@ private fun AddEditExercise(
                 },
             )
 
-            Spacer(Modifier.height(24.dp))
-
-            KenkoButton(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .navigationBarsPadding(),
-                onClick = onSaveClick,
-                label = { Text(text = stringResource(R.string.label_save)) },
-                icon = {
-                    Icon(
-                        modifier = Modifier.size(18.dp),
-                        painter = KenkoIcons.Save,
-                        contentDescription = null,
-                    )
-                },
-            )
-
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(96.dp))
         }
     }
 }
@@ -527,7 +526,7 @@ private fun AddEditExercisePreview(
                 originalNameRu = null,
                 isIsometric = false,
                 isError = false,
-                isReadOnly = false,
+                isExisting = false,
                 isReferenceInvalid = false,
             ),
             name = name,

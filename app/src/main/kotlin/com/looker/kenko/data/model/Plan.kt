@@ -83,6 +83,10 @@ data class PlanItem(
      * Handle the plan expects for this exercise.
      */
     val gripId: Int? = null,
+    /**
+     * Set only for today: which planned exercise this one stands in for. Never stored.
+     */
+    val replacedExerciseId: Int? = null,
     val id: Long? = null,
 ) {
     /**

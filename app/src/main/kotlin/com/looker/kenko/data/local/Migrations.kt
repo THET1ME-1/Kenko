@@ -496,3 +496,43 @@ val MIGRATION_14_15 = object : Migration(14, 15) {
         db.execSQL("ALTER TABLE exercises ADD COLUMN frames INTEGER NOT NULL DEFAULT 0")
     }
 }
+
+/**
+ * A session can differ from the plan behind it: an exercise skipped, swapped, moved, or given
+ * a goal for today only. The program itself stays untouched.
+ */
+val MIGRATION_15_16 = object : Migration(15, 16) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `session_overrides` (
+            `sessionId` INTEGER NOT NULL,
+            `exerciseId` INTEGER NOT NULL,
+            `skipped` INTEGER NOT NULL DEFAULT 0,
+            `replacementId` INTEGER DEFAULT NULL,
+            `orderIndex` INTEGER DEFAULT NULL,
+            `targetSets` INTEGER DEFAULT NULL,
+            `targetReps` INTEGER DEFAULT NULL,
+            `targetRepsMax` INTEGER DEFAULT NULL,
+            `barWeight` REAL DEFAULT NULL,
+            `leftWeight` REAL DEFAULT NULL,
+            `rightWeight` REAL DEFAULT NULL,
+            `restSeconds` INTEGER DEFAULT NULL,
+            `dropCount` INTEGER DEFAULT NULL,
+            `supersetId` INTEGER DEFAULT NULL,
+            PRIMARY KEY(`sessionId`, `exerciseId`),
+            FOREIGN KEY(`sessionId`) REFERENCES `sessions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
+            FOREIGN KEY(`exerciseId`) REFERENCES `exercises`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE)
+            """.trimIndent(),
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_session_overrides_sessionId` ON `session_overrides` (`sessionId`)",
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_session_overrides_exerciseId` ON `session_overrides` (`exerciseId`)",
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_session_overrides_replacementId` ON `session_overrides` (`replacementId`)",
+        )
+    }
+}

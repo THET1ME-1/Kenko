@@ -18,82 +18,97 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.looker.kenko.R
 import com.looker.kenko.ui.components.HealthQuotes
-import com.looker.kenko.ui.components.TickerText
 import com.looker.kenko.ui.components.TypingText
+import com.looker.kenko.ui.extensions.PHI
+import com.looker.kenko.ui.extensions.vertical
 import com.looker.kenko.ui.theme.KenkoIcons
 import com.looker.kenko.ui.theme.KenkoTheme
 import com.looker.kenko.ui.theme.KenkoThemeConfig
 import com.looker.kenko.ui.theme.KenkoThemePreviewParameter
-import com.looker.kenko.ui.theme.header
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun GetStarted(onNext: () -> Unit) {
-    GetStarted(onNextClick = onNext)
+fun GetStarted(isOnboardingDone: Boolean, onNext: () -> Unit) {
+    val updatedOnNext by rememberUpdatedState(newValue = onNext)
+
+    LaunchedEffect(Unit) {
+        if (isOnboardingDone) {
+            delay(300)
+            updatedOnNext()
+        }
+    }
+
+    GetStartedScreen(
+        isOnboardingDone = isOnboardingDone,
+        onNextClick = updatedOnNext,
+    )
 }
 
 @Composable
-private fun GetStarted(
-    modifier: Modifier = Modifier,
+private fun GetStartedScreen(
+    isOnboardingDone: Boolean,
     onNextClick: () -> Unit,
 ) {
-    Surface(
-        modifier = modifier.fillMaxSize(),
-    ) {
-        val iconVisibility = remember { Animatable(-50F) }
-        val buttonVisibility = remember { Animatable(0.75F) }
-        LaunchedEffect(true) {
-            buttonVisibility.animateTo(
-                targetValue = 0.85F,
-                animationSpec = spring(),
-            )
-            launch {
-                iconVisibility.animateTo(
-                    targetValue = 0F,
-                    animationSpec = spring(
-                        stiffness = Spring.StiffnessVeryLow,
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                    ),
+    Surface {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            val iconVisibility = remember { Animatable(-50F) }
+            val buttonVisibility = remember { Animatable(0.75F) }
+            LaunchedEffect(true) {
+                buttonVisibility.animateTo(
+                    targetValue = 0.85F,
+                    animationSpec = spring(),
                 )
-            }
-            launch {
+                launch {
+                    iconVisibility.animateTo(
+                        targetValue = 0F,
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessVeryLow,
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                        ),
+                    )
+                }
                 buttonVisibility.animateTo(
                     targetValue = 1F,
                     animationSpec = spring(
@@ -102,121 +117,126 @@ private fun GetStarted(
                     ),
                 )
             }
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-        ) {
-            var startShowingFirstMeaning by remember { mutableStateOf(false) }
-            var startShowingSecondMeaning by remember { mutableStateOf(false) }
-            Spacer(modifier = Modifier.height(80.dp))
-            Text(
-                text = stringResource(R.string.label_kenko),
-                style = MaterialTheme.typography.header(),
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(horizontal = 18.dp),
+            Icon(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = 50.dp, y = 56.dp)
+                    .graphicsLayer {
+                        translationX = iconVisibility.value * 2
+                        rotationZ = iconVisibility.value
+                    },
+                imageVector = KenkoIcons.Dawn,
+                tint = MaterialTheme.colorScheme.secondary,
+                contentDescription = null,
             )
-            TypingText(
-                text = stringResource(R.string.label_kenko_jp),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.secondary,
-                typingDelay = 10.milliseconds,
-                onCompleteListener = { startShowingFirstMeaning = true },
-                modifier = Modifier.padding(horizontal = 18.dp),
-            )
-            TypingText(
-                text = stringResource(R.string.label_kenko_meaning),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.outline,
-                startTyping = startShowingFirstMeaning,
-                typingDelay = 10.milliseconds,
-                initialDelay = 0.milliseconds,
-                onCompleteListener = { startShowingSecondMeaning = true },
-                modifier = Modifier.padding(horizontal = 18.dp),
-            )
-            TypingText(
-                text = stringResource(R.string.label_kenko_meaning_ALT),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.outline,
-                startTyping = startShowingSecondMeaning,
-                typingDelay = 10.milliseconds,
-                initialDelay = 0.milliseconds,
-                modifier = Modifier.padding(horizontal = 18.dp),
-            )
-            Spacer(modifier = Modifier.weight(1F))
-            TickerText(
-                texts = stringArrayResource(R.array.label_features),
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                modifier = Modifier.background(MaterialTheme.colorScheme.tertiaryContainer),
-            )
+            HeroTitle(modifier = Modifier.align(Alignment.CenterStart))
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.6F)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .align(Alignment.BottomCenter)
                     .navigationBarsPadding(),
-                verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Spacer(modifier = Modifier.weight(1F))
-                Text(
-                    text = stringResource(R.string.label_boarding_quote),
-                    style = MaterialTheme.typography.displaySmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(modifier = Modifier.weight(1F))
-                Button(
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = buttonVisibility.value
-                            scaleY = buttonVisibility.value
-                            translationY = (1F - buttonVisibility.value) * 15F
-                        },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.inverseSurface,
-                        contentColor = MaterialTheme.colorScheme.inverseOnSurface,
-                    ),
-                    onClick = onNextClick,
-                    contentPadding = PaddingValues(
-                        vertical = 24.dp,
-                        horizontal = 40.dp,
-                    ),
-                ) {
-                    ButtonIcon(
-                        modifier = Modifier
-                            .graphicsLayer {
-                                translationX = iconVisibility.value
-                                rotationZ = iconVisibility.value
+                if (!isOnboardingDone) {
+                    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.secondary) {
+                        ButtonGroup(
+                            content = {
+                                FilledTonalButton(
+                                    modifier = Modifier
+                                        .graphicsLayer {
+                                            scaleX = buttonVisibility.value
+                                            scaleY = buttonVisibility.value
+                                            translationY = (1F - buttonVisibility.value) * 15F
+                                        },
+                                    onClick = onNextClick,
+                                    contentPadding = PaddingValues(
+                                        vertical = 24.dp,
+                                        horizontal = 40.dp,
+                                    ),
+                                ) {
+                                    ButtonIcon(
+                                        modifier = Modifier
+                                            .graphicsLayer {
+                                                translationX = iconVisibility.value
+                                                rotationZ = iconVisibility.value
+                                            },
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    TypingText(text = stringResource(R.string.label_lets_go))
+                                }
                             },
-                        backgroundColor = MaterialTheme.colorScheme.primaryContainer,
-                        iconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = stringResource(R.string.label_lets_go))
+                        )
+                    }
                 }
-                HealthQuotes(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    color = MaterialTheme.colorScheme.outline,
-                )
+                Spacer(modifier = Modifier.height(8.dp))
+                HealthQuotes()
+                Spacer(modifier = Modifier.height(4.dp))
             }
         }
     }
 }
 
 @Composable
+private fun HeroTitle(modifier: Modifier = Modifier) {
+    Row(modifier, horizontalArrangement = Arrangement.spacedBy((-12).dp)) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                modifier = Modifier.vertical(),
+                text = stringResource(R.string.label_kenko).uppercase(),
+                style = MaterialTheme.typography.displayLarge,
+                color = MaterialTheme.colorScheme.tertiary,
+            )
+            Box(
+                modifier = Modifier
+                    .width(48.dp)
+                    .aspectRatio(1 / PHI)
+                    .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape),
+            )
+        }
+        Column {
+            var startShowingFirstMeaning by remember { mutableStateOf(false) }
+            var startShowingSecondMeaning by remember { mutableStateOf(false) }
+            TypingText(
+                text = stringResource(R.string.label_kenko_jp),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                typingDelay = 10.milliseconds,
+                onCompleteListener = { startShowingFirstMeaning = true },
+            )
+            TypingText(
+                text = stringResource(R.string.label_kenko_meaning),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.secondary,
+                startTyping = startShowingFirstMeaning,
+                typingDelay = 10.milliseconds,
+                initialDelay = 0.milliseconds,
+                onCompleteListener = { startShowingSecondMeaning = true },
+            )
+            TypingText(
+                text = stringResource(R.string.label_kenko_meaning_ALT),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.secondary,
+                startTyping = startShowingSecondMeaning,
+                typingDelay = 10.milliseconds,
+                initialDelay = 0.milliseconds,
+            )
+        }
+    }
+}
+
+@Composable
 private fun ButtonIcon(
-    iconColor: Color,
-    backgroundColor: Color,
     modifier: Modifier = Modifier,
 ) {
     Icon(
         modifier = modifier
-            .background(backgroundColor, CircleShape)
+            .background(MaterialTheme.colorScheme.onSecondaryContainer, CircleShape)
             .padding(8.dp),
         painter = KenkoIcons.ArrowForward,
-        tint = iconColor,
-        contentDescription = "",
+        tint = MaterialTheme.colorScheme.secondaryContainer,
+        contentDescription = null,
     )
 }
 
@@ -226,6 +246,6 @@ private fun GetStartedPreview(
     @PreviewParameter(KenkoThemePreviewParameter::class) config: KenkoThemeConfig,
 ) {
     KenkoTheme(colorSchemes = config.colorSchemes, theme = config.theme) {
-        GetStarted(onNextClick = {})
+        GetStartedScreen(isOnboardingDone = false, onNextClick = {})
     }
 }

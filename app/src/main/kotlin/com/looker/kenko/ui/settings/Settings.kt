@@ -43,6 +43,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -83,6 +85,11 @@ import com.looker.kenko.data.model.WeightUnit
 import com.looker.kenko.data.model.settings.BackupInterval
 import com.looker.kenko.data.model.settings.ColorPalettes
 import com.looker.kenko.data.model.settings.Theme
+import com.looker.kenko.ui.components.SettingsBlock
+import com.looker.kenko.ui.components.SettingsChevron
+import com.looker.kenko.ui.components.SettingsGroup
+import com.looker.kenko.ui.components.SettingsRow
+import com.looker.kenko.ui.components.SettingsSection
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.HealthQuotes
 import com.looker.kenko.ui.components.KenkoBorderWidth
@@ -180,125 +187,150 @@ private fun Settings(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
         ) {
-            HorizontalDivider(thickness = KenkoBorderWidth)
-            Spacer(modifier = Modifier.height(16.dp))
-            CategoryHeader(title = stringResource(R.string.label_gym))
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onGymsClick)
-                    .padding(horizontal = 20.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(modifier = Modifier.weight(1F)) {
-                    Text(
-                        text = state.currentGymName ?: stringResource(R.string.label_gym_any),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Text(
-                        text = stringResource(R.string.label_gym_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline,
+            SettingsSection(
+                title = stringResource(R.string.label_gym),
+                icon = KenkoIcons.Home,
+            )
+            SettingsGroup {
+                block {
+                    SettingsRow(
+                        icon = KenkoIcons.Home,
+                        title = state.currentGymName ?: stringResource(R.string.label_gym_any),
+                        subtitle = stringResource(R.string.label_gym_hint),
+                        onClick = onGymsClick,
+                        trailing = { SettingsChevron() },
                     )
                 }
-                Icon(painter = KenkoIcons.KeyboardArrowRight, contentDescription = null)
             }
-            Spacer(modifier = Modifier.height(24.dp))
-            CategoryHeader(title = stringResource(R.string.label_plans_title))
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(modifier = Modifier.weight(1F)) {
-                    Text(
-                        text = stringResource(R.string.label_week_mode),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Text(
-                        text = stringResource(R.string.label_week_mode_desc),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline,
+
+            SettingsSection(
+                title = stringResource(R.string.label_plans_title),
+                icon = KenkoIcons.Plan,
+            )
+            SettingsGroup {
+                block {
+                    SettingsRow(
+                        icon = KenkoIcons.History,
+                        title = stringResource(R.string.label_week_mode),
+                        subtitle = stringResource(R.string.label_week_mode_desc),
+                        onClick = { onWeekModeChange(!state.isWeekMode) },
+                        trailing = {
+                            Switch(checked = state.isWeekMode, onCheckedChange = onWeekModeChange)
+                        },
                     )
                 }
-                Switch(checked = state.isWeekMode, onCheckedChange = onWeekModeChange)
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    modifier = Modifier.weight(1F),
-                    text = stringResource(R.string.label_weight_unit),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                // Kilograms or pounds: the switch changes the reading, never the stored numbers.
-                SingleChoiceSegmentedButtonRow {
-                    WeightUnit.entries.forEachIndexed { index, unit ->
-                        SegmentedButton(
-                            selected = unit == state.weightUnit,
-                            onClick = { onWeightUnitChange(unit) },
-                            shape = segmentShape(index, WeightUnit.entries.size),
-                            colors = kenkoSegmentColors,
-                        ) {
-                            Text(
-                                text = stringResource(
-                                    when (unit) {
-                                        WeightUnit.Kg -> R.string.label_unit_kg
-                                        WeightUnit.Lb -> R.string.label_unit_lb
-                                    },
-                                ),
+                block {
+                    SettingsRow(
+                        icon = KenkoIcons.Performance,
+                        title = stringResource(R.string.label_weight_unit),
+                        subtitle = stringResource(
+                            when (state.weightUnit) {
+                                WeightUnit.Kg -> R.string.label_unit_kg
+                                WeightUnit.Lb -> R.string.label_unit_lb
+                            },
+                        ),
+                        onClick = {
+                            onWeightUnitChange(
+                                if (state.weightUnit == WeightUnit.Kg) {
+                                    WeightUnit.Lb
+                                } else {
+                                    WeightUnit.Kg
+                                },
                             )
-                        }
+                        },
+                        trailing = {
+                            SingleChoiceSegmentedButtonRow {
+                                WeightUnit.entries.forEachIndexed { index, unit ->
+                                    SegmentedButton(
+                                        selected = unit == state.weightUnit,
+                                        onClick = { onWeightUnitChange(unit) },
+                                        shape = segmentShape(index, WeightUnit.entries.size),
+                                        colors = kenkoSegmentColors,
+                                    ) {
+                                        Text(
+                                            text = stringResource(
+                                                when (unit) {
+                                                    WeightUnit.Kg -> R.string.label_unit_kg
+                                                    WeightUnit.Lb -> R.string.label_unit_lb
+                                                },
+                                            ),
+                                        )
+                                    }
+                                }
+                            }
+                        },
+                    )
+                }
+            }
+
+            SettingsSection(
+                title = stringResource(R.string.label_theme),
+                icon = KenkoIcons.Circle,
+            )
+            SettingsGroup {
+                block {
+                    SettingsBlock(title = stringResource(R.string.label_theme)) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        ThemeButton(
+                            modifier = Modifier.align(CenterHorizontally),
+                            selectedTheme = state.selectedTheme,
+                            onClick = onSelectTheme,
+                        )
+                    }
+                }
+                block {
+                    SettingsBlock(title = stringResource(R.string.label_color_palettes)) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        ColorPaletteSelection(
+                            selectedColorPalette = state.selectedColorPalette,
+                            selectedTheme = state.selectedTheme,
+                            onClickPalette = onSelectColorPalette,
+                        )
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(24.dp))
-            CategoryHeader(title = stringResource(R.string.label_theme))
-            Spacer(modifier = Modifier.height(4.dp))
-            ThemeButton(
-                modifier = Modifier.align(CenterHorizontally),
-                selectedTheme = state.selectedTheme,
-                onClick = onSelectTheme,
+
+            SettingsSection(
+                title = stringResource(R.string.label_illustrations),
+                icon = KenkoIcons.Lightbulb,
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            CategoryHeader(title = stringResource(R.string.label_color_palettes))
-            Spacer(modifier = Modifier.height(8.dp))
-            ColorPaletteSelection(
-                selectedColorPalette = state.selectedColorPalette,
-                selectedTheme = state.selectedTheme,
-                onClickPalette = onSelectColorPalette,
+            SettingsGroup {
+                block {
+                    SettingsBlock(title = stringResource(R.string.label_illustrations)) {
+                        IllustrationsSection(
+                            state = illustrations,
+                            onDownload = onDownloadIllustrations,
+                            onClear = onClearIllustrations,
+                        )
+                    }
+                }
+            }
+
+            SettingsSection(
+                title = stringResource(R.string.label_backup),
+                icon = KenkoIcons.Save,
             )
-            Spacer(modifier = Modifier.height(24.dp))
-            CategoryHeader(title = stringResource(R.string.label_illustrations))
-            Spacer(modifier = Modifier.height(8.dp))
-            IllustrationsSection(
-                state = illustrations,
-                onDownload = onDownloadIllustrations,
-                onClear = onClearIllustrations,
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            CategoryHeader(title = stringResource(R.string.label_backup))
-            Spacer(modifier = Modifier.height(8.dp))
-            BackupSection(
-                backupUri = state.backupUri,
-                backupInterval = state.backupInterval,
-                lastBackupTime = state.lastBackupTime,
-                isBackingUp = state.isBackingUp,
-                isRestoring = state.isRestoring,
-                onSelectLocation = onSelectBackupLocation,
-                onSelectInterval = onSelectBackupInterval,
-                onBackupNow = onBackupNow,
-                onRestore = onRestore,
-            )
+            SettingsGroup {
+                block {
+                    SettingsBlock(title = stringResource(R.string.label_backup)) {
+                        BackupSection(
+                            backupUri = state.backupUri,
+                            backupInterval = state.backupInterval,
+                            lastBackupTime = state.lastBackupTime,
+                            isBackingUp = state.isBackingUp,
+                            isRestoring = state.isRestoring,
+                            onSelectLocation = onSelectBackupLocation,
+                            onSelectInterval = onSelectBackupInterval,
+                            onBackupNow = onBackupNow,
+                            onRestore = onRestore,
+                        )
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.weight(1F))
             HealthQuotes(Modifier.align(CenterHorizontally))
         }
@@ -315,7 +347,7 @@ private fun IllustrationsSection(
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.padding(horizontal = 20.dp)) {
+    Column(modifier = modifier) {
         Text(
             text = stringResource(R.string.label_illustrations_hint),
             style = MaterialTheme.typography.bodySmall,
@@ -334,9 +366,22 @@ private fun IllustrationsSection(
             },
             style = MaterialTheme.typography.titleMedium,
         )
-        Spacer(modifier = Modifier.height(4.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TextButton(
+        if (state.isDownloading && state.total > 0) {
+            Spacer(modifier = Modifier.height(8.dp))
+            // Fourteen megabytes take a while: the bar says the app is working, not stuck.
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp),
+                progress = { state.done.toFloat() / state.total },
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            FilledTonalButton(
                 onClick = onDownload,
                 enabled = !state.isDownloading,
             ) {
@@ -349,22 +394,6 @@ private fun IllustrationsSection(
                 Text(text = stringResource(R.string.label_clear_illustrations))
             }
         }
-    }
-}
-
-@Composable
-private fun CategoryHeader(
-    title: String,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(text = title, style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.width(4.dp))
     }
 }
 
@@ -640,13 +669,11 @@ private fun BackupSection(
             text = stringResource(R.string.label_backup_interval),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 16.dp),
         )
         BackupIntervalSelector(
             selectedInterval = backupInterval,
             onSelectInterval = onSelectInterval,
             enabled = backupUri != null,
-            modifier = Modifier.padding(horizontal = 16.dp),
         )
 
         if (lastBackupTime != null) {
@@ -655,15 +682,12 @@ private fun BackupSection(
                 text = stringResource(R.string.label_last_backup, lastBackupTime.toFormat()),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.padding(horizontal = 16.dp),
             )
         }
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             OutlinedButton(
                 onClick = onBackupNow,
@@ -721,7 +745,7 @@ private fun BackupSettingRow(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 8.dp, horizontal = 16.dp),
+            .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {

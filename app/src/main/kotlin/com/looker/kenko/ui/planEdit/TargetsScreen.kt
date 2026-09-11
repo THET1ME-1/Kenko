@@ -33,6 +33,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -110,6 +111,65 @@ fun TargetsScreen(
     modifier: Modifier = Modifier,
     grips: List<Grip> = emptyList(),
 ) {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                navigationIcon = { BackButton(onClick = onBackPress) },
+                title = { Text(text = stringResource(R.string.label_edit_targets)) },
+            )
+        },
+    ) { innerPadding ->
+        TargetsForm(
+            item = item,
+            grips = grips,
+            onSave = onSave,
+            modifier = Modifier.padding(innerPadding),
+        )
+    }
+}
+
+/**
+ * The same goal controls inside a sheet: the session edits the goal of the day without leaving
+ * the list it is writing into.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TargetsSheet(
+    item: PlanItem,
+    onSave: (targets: PlanTargets) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    grips: List<Grip> = emptyList(),
+    title: String? = null,
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss, modifier = modifier) {
+        if (title != null) {
+            Text(
+                modifier = Modifier.padding(horizontal = 24.dp),
+                text = title,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
+        }
+        TargetsForm(
+            item = item,
+            grips = grips,
+            onSave = onSave,
+        )
+    }
+}
+
+/**
+ * Sets, reps, rest, weight and drops of one exercise.
+ */
+@Composable
+private fun TargetsForm(
+    item: PlanItem,
+    onSave: (targets: PlanTargets) -> Unit,
+    modifier: Modifier = Modifier,
+    grips: List<Grip> = emptyList(),
+) {
     var sets by remember(item.id) { mutableIntStateOf(item.targetSets) }
     var repsMin by remember(item.id) { mutableIntStateOf(item.targetReps) }
     var repsMax by remember(item.id) { mutableIntStateOf(maxOf(item.targetRepsMax, item.targetReps)) }
@@ -121,21 +181,11 @@ fun TargetsScreen(
     var right by remember(item.id) { mutableFloatStateOf(item.rightWeight) }
     var gripId by remember(item.id) { mutableStateOf(item.gripId) }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                navigationIcon = { BackButton(onClick = onBackPress) },
-                title = { Text(text = stringResource(R.string.label_edit_targets)) },
-            )
-        },
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
-        ) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
+    ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ExercisePhoto(exercise = item.exercise, size = 72.dp)
                 Spacer(Modifier.size(14.dp))
@@ -291,8 +341,7 @@ fun TargetsScreen(
                 },
             )
 
-            Spacer(Modifier.height(32.dp))
-        }
+        Spacer(Modifier.height(32.dp))
     }
 }
 

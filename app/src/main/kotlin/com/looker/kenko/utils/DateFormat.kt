@@ -20,6 +20,10 @@ value class DateFormat(private val value: String) {
     companion object {
         val SessionLabel = DateFormat("dd-MMM")
         val MonthYear = DateFormat("LLLL yyyy")
+        val MonthShort = DateFormat("LLL")
+        val MonthOnly = DateFormat("LLLL")
+        val DayMonth = DateFormat("d MMMM")
+        val DayMonthYear = DateFormat("d MMMM yyyy")
         val BackupName = DateFormat("dd_MM")
     }
 }

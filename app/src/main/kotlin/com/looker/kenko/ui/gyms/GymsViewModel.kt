@@ -17,6 +17,8 @@ package com.looker.kenko.ui.gyms
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.looker.kenko.R
+import com.looker.kenko.data.StringHandler
 import com.looker.kenko.data.model.Gym
 import com.looker.kenko.data.repository.GymRepo
 import com.looker.kenko.utils.asStateFlow
@@ -29,6 +31,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class GymsViewModel @Inject constructor(
     private val repo: GymRepo,
+    private val stringHandler: StringHandler,
 ) : ViewModel() {
 
     val state: StateFlow<GymsUiState> = combine(repo.gyms, repo.current) { gyms, current ->
@@ -46,6 +49,26 @@ class GymsViewModel @Inject constructor(
     fun selectGym(gymId: Int?) {
         viewModelScope.launch {
             repo.setCurrent(gymId)
+        }
+    }
+
+    /**
+     * A gym gets a new name without going into its equipment list.
+     */
+    fun renameGym(gym: Gym, name: String) {
+        if (name.isBlank()) return
+        viewModelScope.launch {
+            repo.renameGym(gym.copy(name = name))
+        }
+    }
+
+    /**
+     * A second gym usually starts from the one already filled in.
+     */
+    fun copyGym(gym: Gym) {
+        val id = gym.id ?: return
+        viewModelScope.launch {
+            repo.createGym(name = stringHandler.getString(R.string.label_copy_of_FORMAT, gym.name), copyFrom = id)
         }
     }
 

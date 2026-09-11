@@ -28,6 +28,7 @@ import com.looker.kenko.data.local.model.toExternal
 import com.looker.kenko.data.model.MAX_DROP_COUNT
 import com.looker.kenko.data.model.MAX_DROP_PERCENT
 import com.looker.kenko.data.model.MIN_DROP_PERCENT
+import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.Session
@@ -204,28 +205,56 @@ class LocalSessionRepo @Inject constructor(
         setsDao.deleteDrops(parentSetId)
     }
 
+    override suspend fun tieSetsIntoSuperset(
+        sessionId: Int,
+        exerciseIds: List<Int>,
+        supersetId: Int,
+    ) {
+        val written = setsDao.getSetsBySessionId(sessionId)
+            .filter { it.parentSetId == null && it.exerciseId in exerciseIds }
+        exerciseIds.forEach { exerciseId ->
+            written
+                .filter { it.exerciseId == exerciseId }
+                .sortedBy { it.order }
+                .forEachIndexed { index, set ->
+                    setsDao.updateSupersetMembership(set.id, supersetId, index)
+                }
+        }
+    }
+
+    override suspend fun untieSetsFromSuperset(sessionId: Int, supersetId: Int) {
+        setsDao.getSupersetSets(sessionId, supersetId).forEach { set ->
+            setsDao.updateSupersetMembership(set.id, null, null)
+        }
+    }
+
     override suspend fun closeSupersetRound(
         sessionId: Int,
         supersetId: Int,
-        items: List<PlanItem>,
+        exercises: List<Exercise>,
+        plan: List<PlanItem>,
     ) {
-        if (items.isEmpty()) return
+        if (exercises.isEmpty()) return
         val performed = setsDao.getSupersetSets(sessionId, supersetId)
         val round = performed
             .groupBy { it.roundIndex ?: 0 }
             .entries
             .sortedBy { it.key }
-            .lastOrNull { (_, sets) -> sets.size < items.size }
+            .lastOrNull { (_, sets) -> sets.size < exercises.size }
             ?.key
             ?: performed.size.let { if (it == 0) 0 else (performed.maxOf { set -> set.roundIndex ?: 0 } + 1) }
         val alreadyIn = performed.filter { (it.roundIndex ?: 0) == round }.map { it.exerciseId }.toSet()
-        for (item in items) {
-            val exerciseId = item.exercise.id ?: continue
+        for (exercise in exercises) {
+            val exerciseId = exercise.id ?: continue
             if (exerciseId in alreadyIn) continue
-            val weight = setsDao.getLastSetByExerciseId(exerciseId)?.weight ?: 0F
+            val item = plan.firstOrNull { it.exercise.id == exerciseId }
+            val last = setsDao.getLastSetByExerciseId(exerciseId)
+            // Numbers of the round: what the plan asks for, otherwise what was lifted last time.
+            val reps = item?.targetReps ?: last?.repsOrDuration ?: DEFAULT_ROUND_REPS
+            val weight = last?.weight ?: item?.targetWeight ?: 0F
             setsDao.insert(
                 SetEntity(
-                    repsOrDuration = item.targetReps,
+                    repsOrDuration = reps,
                     weight = weight,
                     type = SetType.Standard,
                     order = nextOrder(sessionId),
@@ -336,3 +365,8 @@ class LocalSessionRepo @Inject constructor(
         it.toExternal(exercise.toExternal())
     }
 }
+
+/**
+ * Reps a round falls back to when neither the plan nor the journal has a number.
+ */
+private const val DEFAULT_ROUND_REPS = 10

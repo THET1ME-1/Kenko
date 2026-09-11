@@ -35,6 +35,7 @@ fun SheetAction(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    hint: String? = null,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Surface(
@@ -46,10 +47,10 @@ fun SheetAction(
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         contentColor = contentColor,
     ) {
-        Text(
+        SheetActionRow(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
             text = text,
-            style = MaterialTheme.typography.titleMedium,
+            hint = hint,
         )
     }
 }

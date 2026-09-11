@@ -53,6 +53,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.model.Gym
+import com.looker.kenko.ui.components.ActionsSheet
+import com.looker.kenko.ui.components.RenameDialog
+import com.looker.kenko.ui.components.RowAction
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.DashedAddButton
 import com.looker.kenko.ui.components.KenkoBorderWidth
@@ -76,6 +79,52 @@ fun Gyms(
     var newName by remember { mutableStateOf("") }
     var creating by remember { mutableStateOf(false) }
     var gymToDelete by remember { mutableStateOf<Gym?>(null) }
+    var acting by remember { mutableStateOf<Gym?>(null) }
+    var renaming by remember { mutableStateOf<Gym?>(null) }
+
+    acting?.let { gym ->
+        ActionsSheet(
+            title = gym.name,
+            subtitle = pluralStringResource(
+                R.plurals.plural_exercises,
+                gym.exerciseCount,
+                gym.exerciseCount,
+            ),
+            actions = listOf(
+                RowAction(label = stringResource(R.string.label_gym_equipment)) {
+                    acting = null
+                    gym.id?.let(onGymClick)
+                },
+                RowAction(label = stringResource(R.string.label_rename_plan)) {
+                    renaming = gym
+                    acting = null
+                },
+                RowAction(label = stringResource(R.string.label_duplicate_exercise)) {
+                    acting = null
+                    viewModel.copyGym(gym)
+                },
+                RowAction(
+                    label = stringResource(R.string.label_delete_gym),
+                    isDanger = true,
+                ) {
+                    acting = null
+                    gymToDelete = gym
+                },
+            ),
+            onDismiss = { acting = null },
+        )
+    }
+    renaming?.let { gym ->
+        RenameDialog(
+            title = stringResource(R.string.label_rename_plan),
+            value = gym.name,
+            onDismiss = { renaming = null },
+            onConfirm = { name ->
+                viewModel.renameGym(gym, name)
+                renaming = null
+            },
+        )
+    }
 
     gymToDelete?.let { gym ->
         AlertDialog(
@@ -140,8 +189,7 @@ fun Gyms(
                     ),
                     selected = state.currentId == gym.id,
                     onClick = { viewModel.selectGym(gym.id) },
-                    onEdit = { gym.id?.let(onGymClick) },
-                    onDelete = { gymToDelete = gym },
+                    onMoreClick = { acting = gym },
                 )
             }
             item {
@@ -199,8 +247,7 @@ private fun GymRow(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onEdit: (() -> Unit)? = null,
-    onDelete: (() -> Unit)? = null,
+    onMoreClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
@@ -237,14 +284,12 @@ private fun GymRow(
         if (selected) {
             SetTick(state = TickState.Done, size = 22.dp)
         }
-        if (onEdit != null) {
-            IconButton(onClick = onEdit) {
-                Icon(painter = KenkoIcons.Rename, contentDescription = null)
-            }
-        }
-        if (onDelete != null) {
-            IconButton(onClick = onDelete) {
-                Icon(painter = KenkoIcons.Delete, contentDescription = null)
+        if (onMoreClick != null) {
+            IconButton(onClick = onMoreClick) {
+                Icon(
+                    painter = KenkoIcons.More,
+                    contentDescription = stringResource(R.string.label_exercise_actions),
+                )
             }
         }
     }

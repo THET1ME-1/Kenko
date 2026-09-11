@@ -14,6 +14,7 @@
 
 package com.looker.kenko.ui.gyms
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -63,6 +64,12 @@ fun GymEdit(
     // Имя сохраняется на выходе, а не по букве: иначе каждая буква едет в базу.
     val state by viewModel.state.collectAsStateWithLifecycle()
     var name by remember(state.gym?.id) { mutableStateOf(state.gym?.name.orEmpty()) }
+
+    // Системный «назад» уходит мимо кнопки в шапке, и правка имени пропадала.
+    BackHandler {
+        viewModel.rename(name)
+        onBackPress()
+    }
 
     Scaffold(
         topBar = {

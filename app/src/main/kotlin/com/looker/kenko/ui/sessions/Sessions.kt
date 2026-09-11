@@ -71,6 +71,8 @@ import com.looker.kenko.data.model.SessionGroupKey
 import com.looker.kenko.data.model.SessionGrouping
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.EmptyPage
+import com.looker.kenko.ui.components.ActionsSheet
+import com.looker.kenko.ui.components.RowAction
 import com.looker.kenko.ui.components.SheetAction
 import com.looker.kenko.ui.exercises.displayName
 import com.looker.kenko.ui.extensions.plus
@@ -174,6 +176,7 @@ private fun Sessions(
                                 session = session,
                                 onClick = { onSessionClick(session.date) },
                                 onLongClick = { acting = session },
+                                onMoreClick = { acting = session },
                             )
                         }
                     }
@@ -183,6 +186,7 @@ private fun Sessions(
     }
     acting?.let { session ->
         SessionActions(
+            session = session,
             onMove = {
                 acting = null
                 moving = session
@@ -238,32 +242,30 @@ private fun Sessions(
 /**
  * What can still be done to a session that is already written down.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SessionActions(
+    session: Session,
     onMove: () -> Unit,
     onDelete: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(modifier = Modifier.padding(bottom = 32.dp)) {
-            SheetAction(
-                text = stringResource(R.string.label_move_session),
-                onClick = onMove,
-            )
-            SheetAction(
-                text = stringResource(R.string.label_delete_session),
+    ActionsSheet(
+        title = formatDate(session.date, DateFormat.SessionLabel),
+        subtitle = session.performExercises
+            .map { it.displayName() }
+            .joinToString(separator = ", "),
+        actions = listOf(
+            RowAction(label = stringResource(R.string.label_move_session), onClick = onMove),
+            RowAction(
+                label = stringResource(R.string.label_delete_session),
+                isDanger = true,
                 onClick = onDelete,
-                contentColor = MaterialTheme.colorScheme.error,
-            )
-        }
-    }
+            ),
+        ),
+        onDismiss = onDismiss,
+    )
 }
 
-/**
- * The calendar for a session written on the wrong day.
- */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MoveSessionDialog(
     session: Session,
@@ -413,6 +415,7 @@ fun SessionCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     onLongClick: (() -> Unit)? = null,
+    onMoreClick: (() -> Unit)? = null,
 ) {
     val containerColor = if (session.date.isToday) {
         MaterialTheme.colorScheme.secondaryContainer
@@ -452,7 +455,17 @@ fun SessionCard(
                     }
                 }
             }
-            Text(text = string)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(modifier = Modifier.weight(1F), text = string)
+                if (onMoreClick != null) {
+                    IconButton(onClick = onMoreClick) {
+                        Icon(
+                            painter = KenkoIcons.More,
+                            contentDescription = stringResource(R.string.label_exercise_actions),
+                        )
+                    }
+                }
+            }
 
             val exerciseNames = session.performExercises.map { it.displayName() }.joinToString()
             Text(

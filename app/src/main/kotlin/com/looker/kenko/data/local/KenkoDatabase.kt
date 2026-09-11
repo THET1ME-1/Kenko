@@ -25,6 +25,7 @@ import com.looker.kenko.data.local.dao.PerformanceDao
 import com.looker.kenko.data.local.dao.PlanDao
 import com.looker.kenko.data.local.dao.PlanHistoryDao
 import com.looker.kenko.data.local.dao.SessionDao
+import com.looker.kenko.data.local.dao.SessionOverrideDao
 import com.looker.kenko.data.local.dao.SetsDao
 import com.looker.kenko.data.local.model.ExerciseEntity
 import com.looker.kenko.data.local.model.GripEntity
@@ -34,11 +35,12 @@ import com.looker.kenko.data.local.model.PlanDayEntity
 import com.looker.kenko.data.local.model.PlanEntity
 import com.looker.kenko.data.local.model.PlanHistoryEntity
 import com.looker.kenko.data.local.model.SessionDataEntity
+import com.looker.kenko.data.local.model.SessionOverrideEntity
 import com.looker.kenko.data.local.model.SetEntity
 import com.looker.kenko.data.local.model.SetTypeEntity
 
 @Database(
-    version = 15,
+    version = 16,
     entities = [
         SessionDataEntity::class,
         ExerciseEntity::class,
@@ -50,6 +52,7 @@ import com.looker.kenko.data.local.model.SetTypeEntity
         GymEntity::class,
         GymExerciseEntity::class,
         GripEntity::class,
+        SessionOverrideEntity::class,
     ],
 )
 abstract class KenkoDatabase : RoomDatabase() {
@@ -61,6 +64,7 @@ abstract class KenkoDatabase : RoomDatabase() {
     abstract fun performanceDao(): PerformanceDao
     abstract fun gymDao(): GymDao
     abstract fun gripDao(): GripDao
+    abstract fun sessionOverrideDao(): SessionOverrideDao
 }
 
 fun kenkoDatabase(context: Context) = Room
@@ -85,5 +89,6 @@ fun kenkoDatabase(context: Context) = Room
         MIGRATION_12_13,
         MIGRATION_13_14,
         MIGRATION_14_15,
+        MIGRATION_15_16,
     )
     .build()

@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -59,6 +60,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.MuscleGroups
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.draw.clip
+import com.looker.kenko.ui.components.KenkoBorderWidth
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.ExerciseCard
 import com.looker.kenko.ui.components.LazyTargets
@@ -93,13 +98,19 @@ fun SelectExercise(
         val target by viewModel.targetMuscle.collectAsStateWithLifecycle()
         val searchResult by viewModel.searchResult.collectAsStateWithLifecycle()
 
-        if (onBackPress != null) {
-            BackButton(
-                onClick = onBackPress,
-                modifier = Modifier.padding(start = 4.dp, top = 4.dp),
-            )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 4.dp, top = 4.dp, end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (onBackPress != null) {
+                BackButton(onClick = onBackPress)
+            } else {
+                Spacer(Modifier.width(16.dp))
+            }
+            AddExerciseHeader()
         }
-        AddExerciseHeader(modifier = Modifier.padding(horizontal = 16.dp))
         ExerciseSearchField(
             modifier = Modifier.padding(horizontal = 16.dp),
             name = viewModel.searchQuery,
@@ -112,26 +123,20 @@ fun SelectExercise(
         val showEverything by viewModel.showEverything.collectAsStateWithLifecycle()
         if (gymName != null) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                Text(
-                    modifier = Modifier.weight(1F),
-                    text = gymName.orEmpty(),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outline,
+                ScopeChip(
+                    label = stringResource(R.string.label_gym_only_FORMAT, gymName.orEmpty()),
+                    selected = !showEverything,
+                    onClick = { if (showEverything) viewModel.toggleShowEverything() },
                 )
-                TextButton(onClick = viewModel::toggleShowEverything) {
-                    Text(
-                        text = stringResource(
-                            if (showEverything) {
-                                R.string.label_only_gym
-                            } else {
-                                R.string.label_show_all_exercises
-                            },
-                        ),
-                    )
-                }
+                ScopeChip(
+                    label = stringResource(R.string.label_all_exercises),
+                    selected = showEverything,
+                    onClick = { if (!showEverything) viewModel.toggleShowEverything() },
+                )
             }
         }
         LazyTargets(contentPadding = PaddingValues(horizontal = 8.dp)) {
@@ -259,6 +264,48 @@ private fun ExerciseSearchField(
     }
 }
 
+/**
+ * Where the search looks: inside the gym the lifter stands in, or across the whole library.
+ */
+@Composable
+private fun ScopeChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shape = MaterialTheme.shapes.extraLarge
+    Text(
+        modifier = modifier
+            .clip(shape)
+            .background(
+                if (selected) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else {
+                    MaterialTheme.colorScheme.surfaceContainerLow
+                },
+            )
+            .border(
+                width = KenkoBorderWidth,
+                color = if (selected) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else {
+                    MaterialTheme.colorScheme.outlineVariant
+                },
+                shape = shape,
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        text = label,
+        style = MaterialTheme.typography.labelLarge,
+        color = if (selected) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        },
+    )
+}
+
 @Composable
 private fun AddExerciseHeader(
     modifier: Modifier = Modifier,
@@ -266,8 +313,8 @@ private fun AddExerciseHeader(
     Text(
         modifier = modifier,
         text = stringResource(R.string.label_add_exercise_header),
-        style = MaterialTheme.typography.displayMedium,
-        color = MaterialTheme.colorScheme.tertiary,
+        style = MaterialTheme.typography.titleLarge,
+        color = MaterialTheme.colorScheme.onSurface,
     )
 }
 

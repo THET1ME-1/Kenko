@@ -19,6 +19,11 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -69,14 +74,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -102,6 +104,14 @@ import com.looker.kenko.data.model.SetChain
 import com.looker.kenko.data.model.formatSeconds
 import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.ui.addSet.AddSet
+import com.looker.kenko.ui.components.RowAction
+import com.looker.kenko.ui.components.ActionsSheet
+import com.looker.kenko.ui.planEdit.TargetsSheet
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import com.looker.kenko.ui.components.ReorderState
+import com.looker.kenko.ui.components.rememberReorderState
+import com.looker.kenko.ui.components.reorderHandle
+import com.looker.kenko.ui.components.reorderableItem
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.DashedAddButton
 import com.looker.kenko.ui.components.OnSurfaceVariantBorder
@@ -145,6 +155,9 @@ fun SessionDetails(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val rest by viewModel.rest.collectAsStateWithLifecycle()
+    val folds by viewModel.folds.collectAsStateWithLifecycle()
+    var actionsFor by remember { mutableStateOf<SessionBlock?>(null) }
+    var targetsFor by remember { mutableStateOf<SessionBlock.SingleExercise?>(null) }
     AskForNotifications()
     SessionDetail(
         state = state,
@@ -174,17 +187,77 @@ fun SessionDetails(
         onAddDropClick = viewModel::showAddDropSheet,
         onAddExerciseClick = viewModel::showExercisePicker,
         onHistoryClick = { onHistoryClick(viewModel.previousSessionDate) },
+        onMoreClick = { actionsFor = it },
+        onReorder = viewModel::applyOrder,
+        folds = folds,
+        onFold = viewModel::setFolded,
     )
+    val blocks = (state as? SessionDetailState.Success)?.data?.blocks.orEmpty()
+    actionsFor?.let { block ->
+        ActionsSheet(
+            title = when (block) {
+                is SessionBlock.SingleExercise -> block.exercise.displayName()
+                is SessionBlock.Superset -> stringResource(R.string.label_superset)
+            },
+            subtitle = when (block) {
+                is SessionBlock.SingleExercise -> block.plan?.let { plan ->
+                    stringResource(
+                        R.string.label_plan_goal_FORMAT,
+                        plan.targetSets,
+                        plan.repsLabel,
+                    )
+                }
+
+                is SessionBlock.Superset -> block.exercises
+                    .map { it.displayName() }
+                    .joinToString(separator = ", ")
+            },
+            actions = sessionActions(
+                block = block,
+                blocks = blocks,
+                viewModel = viewModel,
+                onDismiss = { actionsFor = null },
+                onEditTargets = { single ->
+                    actionsFor = null
+                    targetsFor = single
+                },
+            ),
+            onDismiss = { actionsFor = null },
+        )
+    }
+    targetsFor?.let { single ->
+        val plan = single.plan
+        if (plan == null) {
+            targetsFor = null
+        } else {
+            TargetsSheet(
+                item = plan,
+                title = stringResource(R.string.label_goal_today),
+                onSave = { targets ->
+                    viewModel.saveTodayTargets(
+                        block = single,
+                        sets = targets.sets,
+                        repsMin = targets.repsMin,
+                        repsMax = targets.repsMax,
+                        barWeight = targets.barWeight,
+                        leftWeight = targets.leftWeight,
+                        rightWeight = targets.rightWeight,
+                        restSeconds = targets.restSeconds,
+                        dropCount = targets.dropCount,
+                    )
+                    targetsFor = null
+                },
+                onDismiss = { targetsFor = null },
+            )
+        }
+    }
     val pickerVisible by viewModel.exercisePickerVisible.collectAsStateWithLifecycle()
     if (pickerVisible) {
         SelectExercise(
             modifier = Modifier.fillMaxSize(),
             onBackPress = viewModel::hideExercisePicker,
             onRequestNewExercise = { _, _ -> },
-            onDone = { exercise ->
-                viewModel.hideExercisePicker()
-                viewModel.showAddSetSheet(exercise)
-            },
+            onDone = viewModel::onExercisePicked,
         )
     }
     val sheetTarget by viewModel.sheetTarget.collectAsStateWithLifecycle()
@@ -204,6 +277,120 @@ fun SessionDetails(
         }
     }
     record?.let { RecordBanner(record = it, onDismiss = { record = null }) }
+}
+
+/**
+ * What can be done to an exercise of a running session.
+ *
+ * The list matches the plan editor: everything a movement can be told there, it can be told here
+ * too — only for today, and with writing a set on top.
+ */
+@Composable
+private fun sessionActions(
+    block: SessionBlock,
+    blocks: List<SessionBlock>,
+    viewModel: SessionDetailViewModel,
+    onDismiss: () -> Unit,
+    onEditTargets: (SessionBlock.SingleExercise) -> Unit,
+): List<RowAction> = buildList {
+    val index = blocks.indexOf(block)
+    when (block) {
+        is SessionBlock.SingleExercise -> {
+            add(
+                RowAction(label = stringResource(R.string.label_add_set)) {
+                    onDismiss()
+                    viewModel.showAddSetSheet(block.exercise)
+                },
+            )
+            if (block.plan != null) {
+                add(
+                    RowAction(
+                        label = stringResource(R.string.label_goal_today),
+                        hint = stringResource(
+                            R.string.label_plan_goal_FORMAT,
+                            block.plan.targetSets,
+                            block.plan.repsLabel,
+                        ),
+                    ) { onEditTargets(block) },
+                )
+            }
+            add(
+                RowAction(label = stringResource(R.string.label_replace_exercise)) {
+                    onDismiss()
+                    viewModel.startReplacing(block)
+                },
+            )
+            if (viewModel.canMergeWithNext(block)) {
+                add(
+                    RowAction(label = stringResource(R.string.label_merge_with_next)) {
+                        onDismiss()
+                        viewModel.mergeWithNext(block)
+                    },
+                )
+            }
+            if (index > 0) {
+                add(
+                    RowAction(label = stringResource(R.string.label_move_up)) {
+                        onDismiss()
+                        viewModel.moveExercise(block, -1)
+                    },
+                )
+            }
+            if (index >= 0 && index < blocks.lastIndex) {
+                add(
+                    RowAction(label = stringResource(R.string.label_move_down)) {
+                        onDismiss()
+                        viewModel.moveExercise(block, 1)
+                    },
+                )
+            }
+            if (block.plan != null) {
+                add(
+                    RowAction(label = stringResource(R.string.label_reset_to_plan)) {
+                        onDismiss()
+                        viewModel.resetToday(block)
+                    },
+                )
+            }
+            add(
+                RowAction(
+                    label = stringResource(R.string.label_remove_from_session),
+                    isDanger = true,
+                ) {
+                    onDismiss()
+                    viewModel.skipExercise(block)
+                },
+            )
+        }
+
+        is SessionBlock.Superset -> {
+            if (index > 0) {
+                add(
+                    RowAction(label = stringResource(R.string.label_move_up)) {
+                        onDismiss()
+                        viewModel.moveExercise(block, -1)
+                    },
+                )
+            }
+            if (index >= 0 && index < blocks.lastIndex) {
+                add(
+                    RowAction(label = stringResource(R.string.label_move_down)) {
+                        onDismiss()
+                        viewModel.moveExercise(block, 1)
+                    },
+                )
+            }
+            add(
+                RowAction(
+                    label = stringResource(R.string.label_break_superset),
+                    isDanger = true,
+                ) {
+                    onDismiss()
+                    viewModel.splitSuperset(block)
+                },
+            )
+        }
+    }
 }
 
 /**
@@ -301,6 +488,10 @@ private fun SessionDetail(
     onAddDropClick: (SetChain) -> Unit = {},
     onAddExerciseClick: () -> Unit = {},
     onHistoryClick: () -> Unit = {},
+    onMoreClick: (SessionBlock) -> Unit = {},
+    onReorder: (List<Int>) -> Unit = {},
+    folds: Folds = emptyMap(),
+    onFold: (String, Boolean) -> Unit = { _, _ -> },
     groupActions: GroupActions = GroupActions(),
 ) {
     when (state) {
@@ -362,6 +553,10 @@ private fun SessionDetail(
                 onAddDropClick = onAddDropClick,
                 onAddExerciseClick = onAddExerciseClick,
                 onHistoryClick = onHistoryClick,
+                onMoreClick = onMoreClick,
+                onReorder = onReorder,
+                folds = folds,
+                onFold = onFold,
                 groupActions = groupActions,
             )
             if (rest != null) {
@@ -480,10 +675,20 @@ private fun SetsList(
     onAddDropClick: (SetChain) -> Unit,
     onAddExerciseClick: () -> Unit,
     onHistoryClick: () -> Unit,
+    onMoreClick: (SessionBlock) -> Unit,
+    onReorder: (List<Int>) -> Unit,
+    folds: Folds,
+    onFold: (String, Boolean) -> Unit,
     groupActions: GroupActions,
 ) {
-    val expanded = rememberSaveable(saver = expandedSaver) { mutableStateMapOf() }
+    val gridState = rememberLazyGridState()
+    val reorderState = rememberReorderState(gridState) { key ->
+        key is String && (key.startsWith("block-") || key.startsWith("group-"))
+    }
+    // Пока палец держит блок, порядок живёт в экране; в базу он уходит на отпускании.
+    var order by remember(blocks) { mutableStateOf(blocks) }
     LazyVerticalGrid(
+        state = gridState,
         columns = GridCells.Adaptive(360.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
         contentPadding = WindowInsets.navigationBars.asPaddingValues(LocalDensity.current) +
@@ -532,26 +737,49 @@ private fun SetsList(
                 )
             }
         }
-        blocks.forEachIndexed { blockIndex, block ->
+        order.forEachIndexed { blockIndex, block ->
             when (block) {
                 is SessionBlock.SingleExercise -> singleExerciseBlock(
                     block = block,
+                    isCollapsed = folds[block.reorderKey()] == true,
+                    onToggleCollapse = {
+                        onFold(block.reorderKey(), folds[block.reorderKey()] != true)
+                    },
+                    handleModifier = Modifier.reorderHandle(
+                        state = reorderState,
+                        key = block.reorderKey(),
+                        onMove = { from, to -> order = order.movedBetween(from, to) },
+                        onDropped = { onReorder(order.exerciseKeys()) },
+                    ),
+                    reorderState = reorderState,
                     ghost = ghosts[block.exercise.name],
                     isEditable = isEditable,
-                    expanded = expanded,
+                    folds = folds,
+                    onFold = onFold,
                     onRemoveSet = onRemoveSet,
                     onEditSet = onEditSet,
                     onReferenceClick = onReferenceClick,
                     onAddSetClick = onAddSetClick,
+                    onMoreClick = onMoreClick,
                     groupActions = groupActions,
                 )
 
                 is SessionBlock.Superset -> supersetBlock(
                     block = block,
+                    handleModifier = Modifier.reorderHandle(
+                        state = reorderState,
+                        key = block.reorderKey(),
+                        onMove = { from, to -> order = order.movedBetween(from, to) },
+                        onDropped = { onReorder(order.exerciseKeys()) },
+                    ),
+                    reorderState = reorderState,
                     number = blockIndex + 1,
                     isEditable = isEditable,
-                    expanded = expanded,
+                    folds = folds,
+                    onFold = onFold,
                     onAddSetClick = onAddSetClick,
+                    onMoreClick = onMoreClick,
+                    onEditSet = onEditSet,
                     groupActions = groupActions,
                 )
             }
@@ -588,6 +816,57 @@ private fun SetsList(
 }
 
 /**
+ * What a folded exercise says about itself: what was lifted, or what is still waiting.
+ */
+@Composable
+private fun collapsedSummary(block: SessionBlock.SingleExercise): String {
+    if (block.chains.isEmpty()) {
+        val plan = block.plan ?: return stringResource(R.string.label_nothing_written)
+        return stringResource(
+            R.string.label_sets_left_range,
+            pluralStringResource(R.plurals.plural_sets, block.setsLeft, block.setsLeft),
+            plan.repsLabel,
+        )
+    }
+    return stringResource(
+        R.string.label_profile_two_parts_FORMAT,
+        pluralStringResource(R.plurals.plural_sets, block.chains.size, block.chains.size),
+        "${weightText(block.volume)} ${unitLabel()}",
+    )
+}
+
+/**
+ * Key a block is dragged by: the planned exercise it belongs to, or the group as a whole.
+ */
+private fun SessionBlock.reorderKey(): String = when (this) {
+    is SessionBlock.SingleExercise -> "block-${plan?.replacedExerciseId ?: exercise.id}"
+    is SessionBlock.Superset -> "group-$id"
+}
+
+/**
+ * The list as the finger left it.
+ */
+private fun List<SessionBlock>.movedBetween(from: Any, to: Any): List<SessionBlock> {
+    val fromIndex = indexOfFirst { it.reorderKey() == from }
+    val toIndex = indexOfFirst { it.reorderKey() == to }
+    if (fromIndex == -1 || toIndex == -1 || fromIndex == toIndex) return this
+    return toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+}
+
+/**
+ * Exercises of the day in the order their blocks stand in: what the change of the day writes down.
+ */
+private fun List<SessionBlock>.exerciseKeys(): List<Int> = flatMap { block ->
+    when (block) {
+        is SessionBlock.SingleExercise -> listOfNotNull(
+            block.plan?.replacedExerciseId ?: block.exercise.id,
+        )
+
+        is SessionBlock.Superset -> block.exercises.mapNotNull { it.id }
+    }
+}
+
+/**
  * What a group block can do. Kept together so the list does not grow a tail of callbacks.
  */
 @Immutable
@@ -602,42 +881,51 @@ data class GroupActions(
     val onUndoRound: (SessionBlock.Superset) -> Unit = {},
 )
 
-private val expandedSaver = listSaver<SnapshotStateMap<String, Boolean>, String>(
-    save = { map -> map.filterValues { it }.keys.toList() },
-    restore = { keys ->
-        mutableStateMapOf<String, Boolean>().apply {
-            keys.forEach { key -> put(key, true) }
-        }
-    },
-)
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 private fun LazyGridScope.singleExerciseBlock(
     block: SessionBlock.SingleExercise,
+    isCollapsed: Boolean,
+    onToggleCollapse: () -> Unit,
+    handleModifier: Modifier,
+    reorderState: ReorderState,
     ghost: Ghost?,
     isEditable: Boolean,
-    expanded: SnapshotStateMap<String, Boolean>,
+    folds: Folds,
+    onFold: (String, Boolean) -> Unit,
     onRemoveSet: (Int?) -> Unit,
     onEditSet: (com.looker.kenko.data.model.Set, Int) -> Unit,
     onReferenceClick: (String) -> Unit,
     onAddSetClick: (Exercise, Int?) -> Unit,
+    onMoreClick: (SessionBlock) -> Unit,
     groupActions: GroupActions,
 ) {
     val exercise = block.exercise
     item(
         span = { GridItemSpan(maxLineSpan) },
+        key = block.reorderKey(),
     ) {
         StickyHeader(
+            modifier = Modifier.reorderableItem(reorderState, block.reorderKey()),
             name = exercise.displayName(),
-            subtitle = block.plan?.let { plan ->
-                if (block.setsLeft == 0) {
-                    stringResource(R.string.label_plan_done)
-                } else {
-                    stringResource(
-                        R.string.label_sets_left_range,
-                        pluralStringResource(R.plurals.plural_sets, block.setsLeft, block.setsLeft),
-                        plan.repsLabel,
-                    )
+            onClick = onToggleCollapse,
+            subtitle = if (isCollapsed) {
+                collapsedSummary(block)
+            } else {
+                block.plan?.let { plan ->
+                    if (block.setsLeft == 0) {
+                        stringResource(R.string.label_plan_done)
+                    } else {
+                        stringResource(
+                            R.string.label_sets_left_range,
+                            pluralStringResource(
+                                R.plurals.plural_sets,
+                                block.setsLeft,
+                                block.setsLeft,
+                            ),
+                            plan.repsLabel,
+                        )
+                    }
                 }
             },
             note = ghost?.let {
@@ -653,6 +941,12 @@ private fun LazyGridScope.singleExerciseBlock(
                 }
             }
             if (isEditable) {
+                Icon(
+                    modifier = handleModifier,
+                    painter = KenkoIcons.Drag,
+                    contentDescription = stringResource(R.string.label_reorder),
+                    tint = MaterialTheme.colorScheme.outline,
+                )
                 FilledTonalIconButton(
                     shapes = IconButtonShapes(
                         shape = MaterialShapes.Circle.toShape(),
@@ -662,24 +956,40 @@ private fun LazyGridScope.singleExerciseBlock(
                 ) {
                     Icon(painter = KenkoIcons.Add, contentDescription = null)
                 }
+                IconButton(onClick = { onMoreClick(block) }) {
+                    Icon(
+                        painter = KenkoIcons.More,
+                        contentDescription = stringResource(R.string.label_exercise_actions),
+                    )
+                }
             }
         }
     }
+    if (isCollapsed) return
     itemsIndexed(
         items = block.chains,
         span = { _, _ -> GridItemSpan(maxLineSpan) },
+        key = { _, chain -> "set-${chain.set.id}" },
     ) { index, chain ->
         val number = index + 1
         val key = "drop-${chain.set.id}"
         if (chain.isDropSet) {
-            val isOpen = expanded[key] ?: (isEditable && chain.performedSteps <= chain.set.dropCount)
-            if (isOpen) {
+            val isOpen = folds[key]?.not()
+                ?: (isEditable && chain.performedSteps <= chain.set.dropCount)
+            AnimatedContent(
+                targetState = isOpen,
+                label = "drop",
+                transitionSpec = {
+                    fadeIn() togetherWith fadeOut() using SizeTransform(clip = false)
+                },
+                modifier = Modifier.animateItem(),
+            ) { open ->
+            if (open) {
                 DropSetCard(
-                    modifier = Modifier.animateItem(),
                     chain = chain,
                     number = number,
                     isEditable = isEditable,
-                    onCollapse = { expanded[key] = false },
+                    onCollapse = { onFold(key, true) },
                     onDropsChange = { groupActions.onDropsChange(chain, it) },
                     onPercentChange = { groupActions.onPercentChange(chain, it) },
                     onMarkStep = { groupActions.onMarkStep(chain, it) },
@@ -689,11 +999,11 @@ private fun LazyGridScope.singleExerciseBlock(
                 )
             } else {
                 DropSetRow(
-                    modifier = Modifier.animateItem(),
                     chain = chain,
                     number = number,
-                    onExpand = { expanded[key] = true },
+                    onExpand = { onFold(key, false) },
                 )
+            }
             }
         } else {
             ChainItem(
@@ -711,8 +1021,10 @@ private fun LazyGridScope.singleExerciseBlock(
         items(
             count = block.setsLeft,
             span = { GridItemSpan(maxLineSpan) },
+            key = { index -> "planned-${exercise.id}-$index" },
         ) { index ->
             PlannedSetRow(
+                modifier = Modifier.animateItem(),
                 number = block.chains.size + index + 1,
                 reps = plan.repsLabel,
                 weight = plan.targetWeight,
@@ -724,31 +1036,67 @@ private fun LazyGridScope.singleExerciseBlock(
 
 private fun LazyGridScope.supersetBlock(
     block: SessionBlock.Superset,
+    handleModifier: Modifier,
+    reorderState: ReorderState,
     number: Int,
     isEditable: Boolean,
-    expanded: SnapshotStateMap<String, Boolean>,
+    folds: Folds,
+    onFold: (String, Boolean) -> Unit,
     onAddSetClick: (Exercise, Int?) -> Unit,
+    onMoreClick: (SessionBlock) -> Unit,
+    onEditSet: (com.looker.kenko.data.model.Set, Int) -> Unit,
     groupActions: GroupActions,
 ) {
     item(
         span = { GridItemSpan(maxLineSpan) },
+        key = block.reorderKey(),
     ) {
         val key = "superset-${block.id}"
-        val isOpen = expanded[key] ?: (isEditable && block.roundsLeft > 0)
-        if (isOpen) {
+        val isOpen = folds[key]?.not() ?: (isEditable && block.roundsLeft > 0)
+        val actions: (@Composable RowScope.() -> Unit)? = if (isEditable) {
+            {
+                Icon(
+                    modifier = handleModifier,
+                    painter = KenkoIcons.Drag,
+                    contentDescription = stringResource(R.string.label_reorder),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+                IconButton(onClick = { onMoreClick(block) }) {
+                    Icon(
+                        painter = KenkoIcons.More,
+                        contentDescription = stringResource(R.string.label_exercise_actions),
+                    )
+                }
+            }
+        } else {
+            null
+        }
+        AnimatedContent(
+            targetState = isOpen,
+            label = "superset",
+            transitionSpec = {
+                fadeIn() togetherWith fadeOut() using SizeTransform(clip = false)
+            },
+        ) { open ->
+        if (open) {
             SupersetCard(
                 block = block,
                 isEditable = isEditable,
-                onCollapse = { expanded[key] = false },
+                onCollapse = { onFold(key, true) },
                 onCloseRound = { groupActions.onCloseRound(block) },
                 onUndo = { groupActions.onUndoRound(block) },
+                actions = actions,
+                onEditSet = { chain, round -> onEditSet(chain.set, round) },
+                onWriteSet = { exercise -> onAddSetClick(exercise, block.id) },
             )
         } else {
             SupersetRow(
                 block = block,
                 number = number,
-                onExpand = { expanded[key] = true },
+                onExpand = { onFold(key, false) },
+                actions = actions,
             )
+        }
         }
     }
     if (isEditable) {
@@ -1008,11 +1356,16 @@ private fun GhostScore(delta: Float, modifier: Modifier = Modifier) {
 @Composable
 private fun StickyHeader(
     name: String,
+    modifier: Modifier = Modifier,
     subtitle: String? = null,
     note: String? = null,
+    onClick: (() -> Unit)? = null,
     actions: (@Composable RowScope.() -> Unit)? = null,
 ) {
     Surface(
+        modifier = modifier.then(
+            if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier,
+        ),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Row(

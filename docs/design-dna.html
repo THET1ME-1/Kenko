@@ -1,5 +1,5 @@
 <title>ДНК Kenko</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@600;700&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jura:wght@600;700&family=Martian+Mono:wght@400;700&display=swap">
 <style>
   :root {
     --bg: #FDF9F0;
@@ -22,8 +22,8 @@
     --tertiary-container: #E5C4DC;
     --error: #BA1A1A;
     --border: 1.4px;
-    --display: "Darker Grotesque", "Trebuchet MS", sans-serif;
-    --mono: "Space Mono", ui-monospace, "Courier New", monospace;
+    --display: "Jura", "Trebuchet MS", sans-serif;
+    --mono: "Martian Mono", ui-monospace, "Courier New", monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -317,22 +317,22 @@
 
   <section>
     <h2><span class="num">01</span> Шрифт</h2>
-    <p class="sub">Два семейства и ни одного больше. Darker Grotesque — плотный гротеск с высокой строчной, работает на крупных кеглях. Space Mono — моноширинный, держит цифры в столбик и задаёт «журнальный» характер интерфейса. Оба лежат в <code>res/font/</code>, за шрифтом в сеть приложение не ходит.</p>
+    <p class="sub">Два семейства и ни одного больше. Jura — узкий техно-гротеск с открытыми формами, работает на крупных кеглях. Martian Mono — широкая моноширинка, держит цифры в столбик и задаёт приборный характер интерфейса. У обоих есть настоящая кириллица: прежняя пара, Darker Grotesque и Space Mono, русских букв не знала вовсе, и весь русский текст рисовал системный Roboto. Оба лежат в <code>res/font/</code>, за шрифтом в сеть приложение не ходит.</p>
 
     <div class="type-row">
-      <div class="meta">display Large / header()<br>78sp, интерлиньяж 70sp</div>
+      <div class="meta">display Large / header()<br>64sp (44sp по-русски), интерлиньяж 0.9 кегля</div>
       <div><p class="hero-type">Начать тренировку</p></div>
     </div>
     <div class="type-row">
-      <div class="meta">displayLarge · Darker Grotesque Bold</div>
+      <div class="meta">displayLarge · Jura Bold</div>
       <div class="d-large">Push-Pull-Leg</div>
     </div>
     <div class="type-row">
-      <div class="meta">displayMedium · номера подходов<br>numbers() подменяет семью на Space Mono Bold</div>
+      <div class="meta">displayMedium · номера подходов<br>numbers() подменяет семью на Martian Mono Bold</div>
       <div class="d-medium" style="font-family: var(--mono);">01 02 03</div>
     </div>
     <div class="type-row">
-      <div class="meta">headlineLarge · Darker Grotesque Bold</div>
+      <div class="meta">headlineLarge · Jura Bold</div>
       <div class="h-large">Суперсет · круг 2 из 4</div>
     </div>
     <div class="type-row">
@@ -340,15 +340,15 @@
       <div class="t-medium">Жим лёжа</div>
     </div>
     <div class="type-row">
-      <div class="meta">bodyLarge · Space Mono Regular<br>весь читаемый текст</div>
+      <div class="meta">bodyLarge · Martian Mono Regular<br>весь читаемый текст</div>
       <div class="b-large">12 повторов, 20.0 KG, в запасе 2</div>
     </div>
     <div class="type-row">
-      <div class="meta">labelSmall · Space Mono<br>цитаты и сноски внизу экрана</div>
+      <div class="meta">labelSmall · Martian Mono<br>цитаты и сноски внизу экрана</div>
       <div class="l-small">workout is my therapy too</div>
     </div>
 
-    <p class="footnote">Правило деления: заголовки, названия и подписи-ярлыки — Darker Grotesque; всё, что человек читает построчно, и все числа — Space Mono. Числа в карточках всегда прогоняются через <code>TextStyle.numbers()</code>, чтобы разряды не плясали.</p>
+    <p class="footnote">Правило деления: заголовки, названия и подписи-ярлыки — Jura; всё, что человек читает построчно, и все числа — Space Mono. Числа в карточках всегда прогоняются через <code>TextStyle.numbers()</code>, чтобы разряды не плясали.</p>
   </section>
 
   <section>

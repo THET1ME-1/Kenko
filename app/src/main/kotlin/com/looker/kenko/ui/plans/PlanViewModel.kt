@@ -52,6 +52,16 @@ class PlanViewModel @Inject constructor(
         }
     }
 
+    /**
+     * A new name for a plan that already exists: the days and the exercises stay where they are.
+     */
+    fun renamePlan(plan: Plan, name: String) {
+        if (name.isBlank()) return
+        viewModelScope.launch {
+            repo.updatePlan(plan.copy(name = name))
+        }
+    }
+
     fun switchPlan(plan: Plan) {
         viewModelScope.launch {
             if (!plan.isActive) {

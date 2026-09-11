@@ -35,12 +35,16 @@ import com.looker.kenko.data.model.Set
 import com.looker.kenko.data.model.beatsRecord
 import com.looker.kenko.data.model.countsAsWork
 import com.looker.kenko.data.model.SessionBlock
+import com.looker.kenko.data.model.SessionOverride
+import com.looker.kenko.data.model.applyToday
 import com.looker.kenko.data.model.ghostOf
 import com.looker.kenko.data.model.SetChain
 import com.looker.kenko.data.model.localDate
 import com.looker.kenko.data.model.toSessionBlocks
 import com.looker.kenko.data.model.week
+import com.looker.kenko.data.repository.ExerciseRepo
 import com.looker.kenko.data.repository.PlanRepo
+import com.looker.kenko.data.repository.SessionOverrideRepo
 import com.looker.kenko.data.repository.SessionRepo
 import com.looker.kenko.ui.addSet.AddSetTarget
 import com.looker.kenko.ui.addSet.dropTargetOf
@@ -75,6 +79,8 @@ import kotlinx.datetime.minus
 @HiltViewModel(assistedFactory = SessionDetailViewModel.Factory::class)
 class SessionDetailViewModel @AssistedInject constructor(
     private val repo: SessionRepo,
+    private val overrideRepo: SessionOverrideRepo,
+    private val exerciseRepo: ExerciseRepo,
     private val planRepo: PlanRepo,
     @Assisted private val routeData: Routes.SessionDetail,
     private val uriHandler: UriHandler,
@@ -106,6 +112,16 @@ class SessionDetailViewModel @AssistedInject constructor(
         .map { it != null }
 
     private val sessionStream: Flow<Session?> = repo.streamByDate(sessionDate)
+
+    /**
+     * What the lifter changed about today: skipped, swapped, moved, or a goal of its own.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val overridesToday: Flow<List<SessionOverride>> = sessionStream
+        .flatMapLatest { session ->
+            val id = session?.id ?: return@flatMapLatest flowOf(emptyList())
+            overrideRepo.stream(id)
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val plannedToday: Flow<List<PlanItem>> = combine(
@@ -163,6 +179,8 @@ class SessionDetailViewModel @AssistedInject constructor(
     }.asStateFlow(null)
 
     private var plannedItems: List<PlanItem> = emptyList()
+
+    private var todayOverrides: List<SessionOverride> = emptyList()
 
     private fun restSecondsFor(exercise: Exercise?): Int =
         plannedItems.firstOrNull { it.exercise.id == exercise?.id }?.restSeconds
@@ -222,9 +240,13 @@ class SessionDetailViewModel @AssistedInject constructor(
     private fun watchSetsForRest() {
         viewModelScope.launch {
             var knownCount: Int? = null
-            combine(sessionStream, plannedToday) { session, planned -> session to planned }
-                .collect { (session, planned) ->
-                    plannedItems = planned
+            combine(
+                sessionStream,
+                plannedToday,
+                overridesToday,
+            ) { session, planned, overrides -> Triple(session, planned, overrides) }
+                .collect { (session, planned, overrides) ->
+                    plannedItems = planned.applyToday(overrides)
                     val sets = session?.sets.orEmpty()
                     val previous = knownCount
                     knownCount = sets.size
@@ -262,6 +284,19 @@ class SessionDetailViewModel @AssistedInject constructor(
     init {
         watchSetsForRest()
         watchRestForNotification()
+        openSheetForSentExercise()
+    }
+
+    /**
+     * The library can send an exercise straight into today's session: the screen opens with the
+     * set sheet already over it.
+     */
+    private fun openSheetForSentExercise() {
+        val exerciseId = routeData.addExerciseId ?: return
+        viewModelScope.launch {
+            val exercise = exerciseRepo.get(exerciseId) ?: return@launch
+            showAddSetSheet(exercise)
+        }
     }
 
     val state: StateFlow<SessionDetailState> =
@@ -270,14 +305,21 @@ class SessionDetailViewModel @AssistedInject constructor(
             plannedToday,
             previousSessionExists,
             planRepo.current,
-        ) { (session, allSessions), planned, previousSession, activePlan ->
+            overridesToday,
+        ) { (session, allSessions), planned, previousSession, activePlan, overrides ->
             if (session == null && epochDays != null) {
                 return@combine SessionDetailState.Error.InvalidSession
             }
 
             val currentSession = session ?: Session(-1, emptyList())
 
-            val blocks = currentSession.sets.toSessionBlocks(plannedItems = planned)
+            todayOverrides = overrides
+            val blocks = currentSession.sets.toSessionBlocks(
+                plannedItems = planned.applyToday(overrides),
+                todayOrder = overrides.mapNotNull { override ->
+                    override.orderIndex?.let { override.exerciseId to it }
+                }.toMap(),
+            )
 
             val ghosts = blocks
                 .flatMap { it.exercises }
@@ -459,7 +501,7 @@ class SessionDetailViewModel @AssistedInject constructor(
     fun closeSupersetRound(block: SessionBlock.Superset) {
         viewModelScope.launch {
             val sessionId = repo.getSessionIdOrCreate(sessionDate)
-            repo.closeSupersetRound(sessionId, block.id, block.plan)
+            repo.closeSupersetRound(sessionId, block.id, block.exercises, block.plan)
             startRest(
                 exercise = block.exercises.firstOrNull(),
                 seconds = block.plan.maxOfOrNull { it.restSeconds } ?: DEFAULT_REST_SECONDS,
@@ -476,13 +518,208 @@ class SessionDetailViewModel @AssistedInject constructor(
 
     fun showExercisePicker() {
         viewModelScope.launch {
+            _pickerTarget.emit(null)
             _exercisePickerVisible.emit(true)
+        }
+    }
+
+    /**
+     * Which planned exercise the picker is standing in for, when it was opened to swap one.
+     */
+    private val _pickerTarget: MutableStateFlow<Int?> = MutableStateFlow(null)
+    val pickerTarget: StateFlow<Int?> = _pickerTarget
+
+    /**
+     * The planned exercise a block belongs to: after a swap the block shows another movement,
+     * but the change of the day is still written against the one the plan named.
+     */
+    private fun SessionBlock.SingleExercise.planKey(): Int? =
+        plan?.replacedExerciseId ?: exercise.id
+
+    /**
+     * Drops the exercise from today. The plan keeps it for the next time.
+     */
+    fun skipExercise(block: SessionBlock.SingleExercise) {
+        val key = block.planKey() ?: return
+        viewModelScope.launch {
+            val sessionId = repo.getSessionIdOrCreate(sessionDate)
+            overrideRepo.skip(sessionId, key)
+        }
+    }
+
+    /**
+     * Opens the picker to put another movement in the place of this one.
+     */
+    fun startReplacing(block: SessionBlock.SingleExercise) {
+        val key = block.planKey() ?: return
+        viewModelScope.launch {
+            _pickerTarget.emit(key)
+            _exercisePickerVisible.emit(true)
+        }
+    }
+
+    /**
+     * Answer of the picker: a swap when it was opened over an exercise, a new exercise otherwise.
+     */
+    fun onExercisePicked(exercise: Exercise) {
+        val target = _pickerTarget.value
+        viewModelScope.launch {
+            _exercisePickerVisible.emit(false)
+            _pickerTarget.emit(null)
+            if (target == null) {
+                showAddSetSheet(exercise)
+                return@launch
+            }
+            val sessionId = repo.getSessionIdOrCreate(sessionDate)
+            overrideRepo.replace(sessionId, target, exercise)
+        }
+    }
+
+    /**
+     * Moves the exercise one place up or down, for today only.
+     */
+    fun moveExercise(block: SessionBlock, delta: Int) {
+        viewModelScope.launch {
+            val blocks = (state.value as? SessionDetailState.Success)?.data?.blocks ?: return@launch
+            val index = blocks.indexOf(block)
+            val target = index + delta
+            if (index == -1 || target !in blocks.indices) return@launch
+            val ordered = blocks.toMutableList().apply { add(target, removeAt(index)) }
+            val keys = ordered.flatMap { item ->
+                when (item) {
+                    is SessionBlock.SingleExercise -> listOfNotNull(item.planKey())
+                    is SessionBlock.Superset -> item.exercises.mapNotNull { it.id }
+                }
+            }
+            val sessionId = repo.getSessionIdOrCreate(sessionDate)
+            overrideRepo.reorder(sessionId, keys)
+        }
+    }
+
+    private val _folds: MutableStateFlow<Folds> = MutableStateFlow(emptyMap())
+
+    /**
+     * What the lifter folded or unfolded by hand: block, drop set or superset, by key.
+     *
+     * Only the ones they touched are here, so the screen keeps its own sensible default for the
+     * rest — and a written set no longer unfolds the whole day again.
+     */
+    val folds: StateFlow<Folds> = _folds
+
+    fun setFolded(key: String, folded: Boolean) {
+        viewModelScope.launch {
+            _folds.emit(_folds.value + (key to folded))
+        }
+    }
+
+    /**
+     * Writes down the order the list was dragged into, for today only.
+     */
+    fun applyOrder(exerciseIds: List<Int>) {
+        if (exerciseIds.isEmpty()) return
+        viewModelScope.launch {
+            val sessionId = repo.getSessionIdOrCreate(sessionDate)
+            overrideRepo.reorder(sessionId, exerciseIds)
+        }
+    }
+
+    /**
+     * Ties the exercise together with the one below it into a superset for today.
+     *
+     * An exercise of the plan is tied by a change of the day; one added on the spot has no plan
+     * behind it, so its written sets are tied directly.
+     */
+    fun mergeWithNext(block: SessionBlock.SingleExercise) {
+        viewModelScope.launch {
+            val blocks = (state.value as? SessionDetailState.Success)?.data?.blocks ?: return@launch
+            val index = blocks.indexOf(block)
+            val next = blocks.getOrNull(index + 1) as? SessionBlock.SingleExercise ?: return@launch
+            val keys = listOfNotNull(block.planKey(), next.planKey())
+            if (keys.size < 2) return@launch
+            val sessionId = repo.getSessionIdOrCreate(sessionDate)
+            val supersetId = (blocks.filterIsInstance<SessionBlock.Superset>()
+                .maxOfOrNull { it.id } ?: 0) + 1
+            if (block.plan != null && next.plan != null) {
+                overrideRepo.tieSuperset(sessionId, keys, supersetId)
+            } else {
+                repo.tieSetsIntoSuperset(sessionId, keys, supersetId)
+            }
+        }
+    }
+
+    /**
+     * Whether the exercise below can join this one: the plan and the session keep their own
+     * supersets, and a mixed pair would end up drawn twice.
+     */
+    fun canMergeWithNext(block: SessionBlock.SingleExercise): Boolean {
+        val blocks = (state.value as? SessionDetailState.Success)?.data?.blocks.orEmpty()
+        val next = blocks.getOrNull(blocks.indexOf(block) + 1) as? SessionBlock.SingleExercise
+            ?: return false
+        if (block.chains.isEmpty() && block.plan == null) return false
+        return (block.plan != null) == (next.plan != null)
+    }
+
+    /**
+     * Takes the superset apart for today: the exercises stay, the rounds go.
+     */
+    fun splitSuperset(block: SessionBlock.Superset) {
+        viewModelScope.launch {
+            val sessionId = repo.getSessionIdOrCreate(sessionDate)
+            if (block.plan.isNotEmpty()) {
+                overrideRepo.breakSuperset(sessionId, block.exercises.mapNotNull { it.id })
+            } else {
+                repo.untieSetsFromSuperset(sessionId, block.id)
+            }
+        }
+    }
+
+    /**
+     * Gives the exercise back what the plan says about it.
+     */
+    fun resetToday(block: SessionBlock.SingleExercise) {
+        val key = block.planKey() ?: return
+        viewModelScope.launch {
+            val sessionId = repo.getSessionIdOrCreate(sessionDate)
+            overrideRepo.reset(sessionId, key)
+        }
+    }
+
+    /**
+     * A goal for today only: the program keeps the numbers it was written with.
+     */
+    fun saveTodayTargets(
+        block: SessionBlock.SingleExercise,
+        sets: Int,
+        repsMin: Int,
+        repsMax: Int,
+        barWeight: Float,
+        leftWeight: Float,
+        rightWeight: Float,
+        restSeconds: Int,
+        dropCount: Int,
+    ) {
+        val key = block.planKey() ?: return
+        viewModelScope.launch {
+            val sessionId = repo.getSessionIdOrCreate(sessionDate)
+            overrideRepo.setTargets(
+                sessionId = sessionId,
+                exerciseId = key,
+                targetSets = sets,
+                targetReps = repsMin,
+                targetRepsMax = repsMax,
+                barWeight = barWeight,
+                leftWeight = leftWeight,
+                rightWeight = rightWeight,
+                restSeconds = restSeconds,
+                dropCount = dropCount,
+            )
         }
     }
 
     fun hideExercisePicker() {
         viewModelScope.launch {
             _exercisePickerVisible.emit(false)
+            _pickerTarget.emit(null)
         }
     }
 
@@ -502,6 +739,11 @@ class SessionDetailViewModel @AssistedInject constructor(
         }
     }
 }
+
+/**
+ * Which blocks the lifter folded by hand: `true` is folded away.
+ */
+typealias Folds = Map<String, Boolean>
 
 private const val TICK = 250L
 

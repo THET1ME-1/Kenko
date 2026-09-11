@@ -20,21 +20,42 @@ import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.looker.kenko.R
 
+/**
+ * Width of the monospace: the widest instance of Martian Mono, the one the type was chosen by.
+ */
+private const val MONO_WIDTH = 112.5F
+
+private fun monoFont(weight: FontWeight, axis: Float) = Font(
+    resId = R.font.martianmono_variable,
+    weight = weight,
+    variationSettings = FontVariation.Settings(
+        FontVariation.weight(axis.toInt()),
+        FontVariation.width(MONO_WIDTH),
+    ),
+)
+
+private fun displayFont(weight: FontWeight, axis: Float) = Font(
+    resId = R.font.jura_variable,
+    weight = weight,
+    variationSettings = FontVariation.Settings(FontVariation.weight(axis.toInt())),
+)
+
 val FontFamily.Companion.Numbers
-    get() = FontFamily(Font(R.font.spacemono_bold))
+    get() = FontFamily(monoFont(FontWeight.Bold, 700F))
 
 val displayFont = FontFamily(
-    Font(R.font.darkergrotesque_bold, weight = FontWeight.Bold),
-    Font(R.font.darkergrotesque_semibold, weight = FontWeight.SemiBold),
+    displayFont(FontWeight.Bold, 700F),
+    displayFont(FontWeight.SemiBold, 600F),
 )
 
 val bodyFont = FontFamily(
-    Font(R.font.spacemono_bold, weight = FontWeight.Bold),
-    Font(R.font.spacemono_normal, weight = FontWeight.Normal),
+    monoFont(FontWeight.Bold, 700F),
+    monoFont(FontWeight.Normal, 400F),
 )
 
 /**

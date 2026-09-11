@@ -59,6 +59,14 @@ object KenkoIcons {
         @Composable
         get() = painterResource(R.drawable.ic_info)
 
+    val More: Painter
+        @Composable
+        get() = painterResource(R.drawable.ic_more)
+
+    val Drag: Painter
+        @Composable
+        get() = painterResource(R.drawable.ic_drag)
+
     val Done: Painter
         @Composable
         get() = painterResource(R.drawable.ic_check)

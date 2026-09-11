@@ -125,10 +125,17 @@ sealed interface SessionBlock {
     ) : SessionBlock {
 
         /**
-         * How many rounds the plan asks for, never fewer than what was already done.
+         * How many rounds to draw: what the plan asks for, never fewer than what was already done.
+         *
+         * A superset tied together during the session has no plan behind it, so it keeps offering
+         * the next empty round — otherwise the group would end after the first one.
          */
         val plannedRounds: Int
-            get() = maxOf(plan.minOfOrNull { it.targetSets } ?: 0, rounds.size).coerceAtLeast(1)
+            get() {
+                val asked = plan.minOfOrNull { it.targetSets } ?: 0
+                if (asked > 0) return maxOf(asked, rounds.size)
+                return maxOf(rounds.size, closedRounds + 1)
+            }
 
         /**
          * A round counts as closed once every exercise of the group has a set in it.
@@ -159,9 +166,14 @@ sealed interface SessionBlock {
  *
  * Drops are attached to their parent set, exercises tied together in the plan become one superset,
  * and every exercise of [plannedItems] shows up even when nothing was performed yet.
- * Blocks follow the plan order, exercises outside the plan follow the order they were performed in.
+ *
+ * Blocks follow the plan order, exercises outside it come after. [todayOrder] overrides both:
+ * once the lifter drags a block, the whole list stands the way they left it, plan or not.
  */
-fun List<Set>.toSessionBlocks(plannedItems: List<PlanItem> = emptyList()): List<SessionBlock> {
+fun List<Set>.toSessionBlocks(
+    plannedItems: List<PlanItem> = emptyList(),
+    todayOrder: Map<Int, Int> = emptyMap(),
+): List<SessionBlock> {
     val dropsByParent = filter { it.parentSetId != null }
         .groupBy { it.parentSetId }
         .mapValues { (_, drops) -> drops.sortedBy { it.dropIndex } }
@@ -199,11 +211,12 @@ fun List<Set>.toSessionBlocks(plannedItems: List<PlanItem> = emptyList()): List<
     }
 
     val loose = chains.filter { it.set.exercise !in used }
+    val looseBlocks = mutableListOf<SessionBlock>()
     val looseSupersets = loose
         .filter { it.set.supersetId != null }
         .groupBy { it.set.supersetId!! }
     for ((supersetId, supersetChains) in looseSupersets) {
-        blocks += supersetBlock(
+        looseBlocks += supersetBlock(
             id = supersetId,
             exercises = supersetChains.map { it.set.exercise }.distinct(),
             chains = supersetChains,
@@ -214,9 +227,14 @@ fun List<Set>.toSessionBlocks(plannedItems: List<PlanItem> = emptyList()): List<
         .filter { it.set.supersetId == null }
         .groupBy { it.set.exercise }
     for ((exercise, exerciseChains) in looseExercises) {
-        blocks += SessionBlock.SingleExercise(exercise, exerciseChains, plan = null)
+        looseBlocks += SessionBlock.SingleExercise(exercise, exerciseChains, plan = null)
     }
-    return blocks
+    blocks += looseBlocks
+    if (todayOrder.isEmpty()) return blocks
+    // A block the lifter never moved keeps its place: its key is where it already stands.
+    return blocks.withIndex().sortedBy { (index, block) ->
+        block.exercises.mapNotNull { todayOrder[it.id] }.minOrNull() ?: index
+    }.map { it.value }
 }
 
 private fun supersetBlock(

@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -99,6 +100,14 @@ import com.looker.kenko.data.model.formatWeight
 import com.looker.kenko.data.model.toDayGroups
 import com.looker.kenko.data.model.toPreviewBlocks
 import com.looker.kenko.ui.components.BackButton
+import com.looker.kenko.ui.components.RowAction
+import com.looker.kenko.ui.components.ActionsSheet
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import com.looker.kenko.ui.components.KenkoBorderWidth
+import androidx.compose.foundation.lazy.rememberLazyListState
+import com.looker.kenko.ui.components.rememberReorderState
+import com.looker.kenko.ui.components.reorderHandle
+import com.looker.kenko.ui.components.reorderableItem
 import com.looker.kenko.ui.components.DashedAddButton
 import com.looker.kenko.ui.components.DaySelectorChip
 import com.looker.kenko.ui.components.ErrorSnackbar
@@ -138,6 +147,9 @@ fun PlanEdit(
 ) {
     val pageStage by viewModel.pageState.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val folds by viewModel.folds.collectAsStateWithLifecycle()
+    var actionsFor by remember { mutableStateOf<PlanItem?>(null) }
+    var supersetActionsFor by remember { mutableStateOf<Int?>(null) }
     BackHandler {
         viewModel.onBackPress(pageStage, onBackPress)
     }
@@ -153,6 +165,7 @@ fun PlanEdit(
             }
         },
         onBackPress = { viewModel.onBackPress(pageStage, onBackPress) },
+        title = viewModel.planNameState.text.toString(),
         onDebugMockClick = viewModel::debugFillMockData,
     ) { stage ->
         when (stage) {
@@ -168,19 +181,14 @@ fun PlanEdit(
             PlanEditStage.PlanEdit -> {
                 PlanEdit(
                     state = state,
+                    folds = folds,
+                    onFold = viewModel::setFolded,
                     onCopyDay = viewModel::copyCurrentDayTo,
                     onSelectDay = viewModel::setCurrentDay,
-                    onRemoveItemClick = viewModel::removeItem,
-                    onFullDaySelection = viewModel::openFullDaySelection,
-                    onItemClick = viewModel::editTargets,
-                    onItemLongClick = viewModel::toggleSelection,
-                    onMakeSuperset = viewModel::makeSuperset,
-                    onBreakSuperset = viewModel::breakSuperset,
-                    onClearSelection = viewModel::clearSelection,
                     onAddExercise = viewModel::openSheet,
-                    onStartSupersetMode = viewModel::startSupersetMode,
-                    onReplaceItem = viewModel::startReplacing,
-                    onMoveItem = viewModel::moveItem,
+                    onMoreItemClick = { actionsFor = it },
+                    onMoreSupersetClick = { supersetActionsFor = it },
+                    onReorder = viewModel::reorderDay,
                 )
             }
         }
@@ -198,6 +206,45 @@ fun PlanEdit(
         )
     }
 
+    actionsFor?.let { item ->
+        ActionsSheet(
+            title = item.exercise.displayName(),
+            subtitle = stringResource(
+                R.string.label_plan_goal_FORMAT,
+                item.targetSets,
+                item.repsLabel,
+            ),
+            actions = planItemActions(
+                item = item,
+                items = state.items,
+                onDismiss = { actionsFor = null },
+                onEditTargets = viewModel::editTargets,
+                onReplace = viewModel::startReplacing,
+                onMove = viewModel::moveItem,
+                onTieWithNext = viewModel::tieWithNext,
+                onRemove = viewModel::removeItem,
+            ),
+            onDismiss = { actionsFor = null },
+        )
+    }
+    supersetActionsFor?.let { supersetId ->
+        val members = state.items.filter { it.supersetId == supersetId }
+        ActionsSheet(
+            title = stringResource(R.string.label_superset),
+            subtitle = members
+                .map { it.exercise.displayName() }
+                .joinToString(separator = ", "),
+            actions = supersetActions(
+                members = members,
+                onDismiss = { supersetActionsFor = null },
+                onEditTargets = viewModel::editTargets,
+                onBreak = { viewModel.breakSuperset(supersetId) },
+                onRemove = viewModel::removeItem,
+            ),
+            onDismiss = { supersetActionsFor = null },
+        )
+    }
+
     val editedItem by viewModel.editedItem.collectAsStateWithLifecycle()
     val replacedItem by viewModel.replacedItem.collectAsStateWithLifecycle()
     replacedItem?.let { item ->
@@ -210,12 +257,133 @@ fun PlanEdit(
     }
     editedItem?.let { item ->
         val grips by viewModel.gripsOfEdited.collectAsStateWithLifecycle()
-        TargetsScreen(
-            modifier = Modifier.fillMaxSize(),
+        TargetsSheet(
             item = item,
             grips = grips,
-            onBackPress = { viewModel.editTargets(null) },
+            onDismiss = { viewModel.editTargets(null) },
             onSave = { targets -> viewModel.saveTargets(item, targets) },
+        )
+    }
+}
+
+/**
+ * What can be done to an exercise of a day. The running session offers the same list.
+ */
+@Composable
+private fun planItemActions(
+    item: PlanItem,
+    items: List<PlanItem>,
+    onDismiss: () -> Unit,
+    onEditTargets: (PlanItem) -> Unit,
+    onReplace: (PlanItem) -> Unit,
+    onMove: (PlanItem, Int) -> Unit,
+    onTieWithNext: (PlanItem) -> Unit,
+    onRemove: (PlanItem) -> Unit,
+): List<RowAction> = buildList {
+    val ordered = items.sortedBy { it.order }
+    val index = ordered.indexOfFirst { it.id == item.id }
+    add(
+        RowAction(
+            label = stringResource(R.string.label_edit_goal),
+            hint = stringResource(
+                R.string.label_plan_goal_FORMAT,
+                item.targetSets,
+                item.repsLabel,
+            ),
+        ) {
+            onDismiss()
+            onEditTargets(item)
+        },
+    )
+    add(
+        RowAction(label = stringResource(R.string.label_replace_exercise)) {
+            onDismiss()
+            onReplace(item)
+        },
+    )
+    val next = ordered.getOrNull(index + 1)
+    if (item.supersetId == null && next != null && next.supersetId == null) {
+        add(
+            RowAction(label = stringResource(R.string.label_merge_with_next)) {
+                onDismiss()
+                onTieWithNext(item)
+            },
+        )
+    }
+    if (index > 0) {
+        add(
+            RowAction(label = stringResource(R.string.label_move_up)) {
+                onDismiss()
+                onMove(item, -1)
+            },
+        )
+    }
+    if (index >= 0 && index < ordered.lastIndex) {
+        add(
+            RowAction(label = stringResource(R.string.label_move_down)) {
+                onDismiss()
+                onMove(item, 1)
+            },
+        )
+    }
+    add(
+        RowAction(
+            label = stringResource(R.string.label_remove_from_day),
+            isDanger = true,
+        ) {
+            onDismiss()
+            onRemove(item)
+        },
+    )
+}
+
+/**
+ * A superset of the day: the goals of its exercises, and the way out of it.
+ */
+@Composable
+private fun supersetActions(
+    members: List<PlanItem>,
+    onDismiss: () -> Unit,
+    onEditTargets: (PlanItem) -> Unit,
+    onBreak: () -> Unit,
+    onRemove: (PlanItem) -> Unit,
+): List<RowAction> = buildList {
+    members.forEach { member ->
+        add(
+            RowAction(
+                label = stringResource(
+                    R.string.label_goal_of_FORMAT,
+                    member.exercise.displayName(),
+                ),
+                hint = stringResource(
+                    R.string.label_plan_goal_FORMAT,
+                    member.targetSets,
+                    member.repsLabel,
+                ),
+            ) {
+                onDismiss()
+                onEditTargets(member)
+            },
+        )
+    }
+    add(
+        RowAction(label = stringResource(R.string.label_break_superset)) {
+            onDismiss()
+            onBreak()
+        },
+    )
+    members.forEach { member ->
+        add(
+            RowAction(
+                label = stringResource(
+                    R.string.label_remove_of_FORMAT,
+                    member.exercise.displayName(),
+                ),
+                isDanger = true,
+            ) {
+                onDismiss()
+                onRemove(member)
+            },
         )
     }
 }
@@ -227,6 +395,7 @@ private fun FullEdit(
     stage: PlanEditStage,
     fab: @Composable () -> Unit,
     onBackPress: () -> Unit,
+    title: String = "",
     onDebugMockClick: (() -> Unit)? = null,
     ui: @Composable (stage: PlanEditStage) -> Unit,
 ) {
@@ -240,7 +409,11 @@ private fun FullEdit(
         floatingActionButtonPosition = FabPosition.Center,
         topBar = {
             TopAppBar(
-                title = {},
+                title = {
+                    if (stage == PlanEditStage.PlanEdit && title.isNotBlank()) {
+                        Text(text = title)
+                    }
+                },
                 navigationIcon = { BackButton(onBackPress) },
                 actions = {
                     if (BuildConfig.DEBUG && stage == PlanEditStage.PlanEdit) {
@@ -361,23 +534,25 @@ private fun NameEdit(
 @Composable
 private fun PlanEdit(
     state: PlanEditState,
+    folds: Map<String, Boolean>,
+    onFold: (String, Boolean) -> Unit,
     onCopyDay: (Int) -> Unit,
     onSelectDay: (Int) -> Unit,
-    onRemoveItemClick: (PlanItem) -> Unit,
-    onFullDaySelection: () -> Unit,
-    onItemClick: (PlanItem) -> Unit,
-    onItemLongClick: (PlanItem) -> Unit,
-    onMakeSuperset: () -> Unit,
-    onBreakSuperset: (Int) -> Unit,
-    onClearSelection: () -> Unit,
     onAddExercise: () -> Unit,
-    onStartSupersetMode: () -> Unit,
-    onReplaceItem: (PlanItem) -> Unit,
-    onMoveItem: (PlanItem, Int) -> Unit,
+    onMoreItemClick: (PlanItem) -> Unit,
+    onMoreSupersetClick: (Int) -> Unit,
+    onReorder: (List<Long>) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
     val isCurrentDayBlank by remember(state.items) { derivedStateOf { state.items.isEmpty() } }
-    val expandedBlocks = remember { mutableStateMapOf<Long, Boolean>() }
+    val listState = rememberLazyListState()
+    val reorderState = rememberReorderState(listState) { key ->
+        key is String && (key.startsWith("item-") || key.startsWith("superset-"))
+    }
+    // While a finger holds a row the screen keeps its own order; the plan hears about it once.
+    var order by remember(state.items) {
+        mutableStateOf(state.items.toPreviewBlocks())
+    }
     var copyingDay by remember { mutableStateOf(false) }
     if (copyingDay) {
         CopyDaySheet(
@@ -392,6 +567,7 @@ private fun PlanEdit(
     }
     PlanExercise(
         modifier = Modifier.fillMaxSize(),
+        state = listState,
         header = {
             DayHeader(
                 day = state.currentDay,
@@ -403,15 +579,6 @@ private fun PlanEdit(
         items = {
             item {
                 DaySummaryRow(items = state.items, onCopyDay = { copyingDay = true })
-            }
-            if (state.selectedItems.isNotEmpty() || state.supersetMode) {
-                item {
-                    SelectionBar(
-                        count = state.selectedItems.size,
-                        onMakeSuperset = onMakeSuperset,
-                        onClearSelection = onClearSelection,
-                    )
-                }
             }
             if (isCurrentDayBlank) {
                 item {
@@ -427,80 +594,100 @@ private fun PlanEdit(
                     }
                 }
             } else {
-                val blocks = state.items.toPreviewBlocks()
-                blocks.forEachIndexed { index, block ->
+                order.forEachIndexed { index, block ->
                     when (block) {
                         is SessionBlock.SingleExercise -> {
                             val item = block.plan ?: return@forEachIndexed
-                            item(key = "item-${item.id}") {
+                            val key = "item-${item.id}"
+                            item(key = key) {
                                 PlanExerciseBlock(
-                                    modifier = Modifier.animateItem(),
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .reorderableItem(reorderState, key),
                                     item = item,
                                     number = index + 1,
                                     chains = block.chains,
-                                    selected = item.id in state.selectedItems,
-                                    expanded = expandedBlocks[item.id ?: 0L] != false,
-                                    onToggleExpand = {
-                                        if (state.supersetMode) {
-                                            onItemLongClick(item)
-                                        } else {
-                                            val key = item.id ?: 0L
-                                            expandedBlocks[key] = expandedBlocks[key] == false
-                                        }
-                                    },
-                                    onClick = { onItemClick(item) },
-                                    onLongClick = { onItemLongClick(item) },
-                                    onReplace = { onReplaceItem(item) },
-                                    onMoveUp = { onMoveItem(item, -1) },
-                                    onMoveDown = { onMoveItem(item, 1) },
-                                    onRemove = {
+                                    expanded = folds[key] != true,
+                                    onToggleExpand = { onFold(key, folds[key] != true) },
+                                    onMoreClick = {
                                         focusManager.clearFocus()
-                                        onRemoveItemClick(item)
+                                        onMoreItemClick(item)
                                     },
+                                    handleModifier = Modifier.reorderHandle(
+                                        state = reorderState,
+                                        key = key,
+                                        onMove = { from, to ->
+                                            order = order.movedBetween(from, to)
+                                        },
+                                        onDropped = { onReorder(order.itemIds()) },
+                                    ),
                                 )
                             }
                         }
 
                         is SessionBlock.Superset -> {
-                            item(key = "superset-${block.id}") {
-                                val open = expandedBlocks[-block.id.toLong()] != false
-                                Column(modifier = Modifier.animateItem()) {
-                                    if (open) {
+                            val key = "superset-${block.id}"
+                            item(key = key) {
+                                val open = folds[key] != true
+                                val supersetActions: @Composable RowScope.() -> Unit = {
+                                    Icon(
+                                        modifier = Modifier
+                                            .padding(start = 4.dp)
+                                            .reorderHandle(
+                                                state = reorderState,
+                                                key = key,
+                                                onMove = { from, to ->
+                                                    order = order.movedBetween(from, to)
+                                                },
+                                                onDropped = { onReorder(order.itemIds()) },
+                                            ),
+                                        painter = KenkoIcons.Drag,
+                                        contentDescription = stringResource(
+                                            R.string.label_reorder,
+                                        ),
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    )
+                                    IconButton(onClick = { onMoreSupersetClick(block.id) }) {
+                                        Icon(
+                                            painter = KenkoIcons.More,
+                                            contentDescription = stringResource(
+                                                R.string.label_exercise_actions,
+                                            ),
+                                        )
+                                    }
+                                }
+                                Column(
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .reorderableItem(reorderState, key),
+                                ) {
+                                    AnimatedContent(
+                                        targetState = open,
+                                        label = "superset",
+                                        transitionSpec = {
+                                            fadeIn() togetherWith fadeOut() using
+                                                SizeTransform(clip = false)
+                                        },
+                                    ) { isOpen ->
+                                    if (isOpen) {
                                         SupersetCard(
                                             block = block,
                                             isEditable = true,
                                             isPlan = true,
-                                            onCollapse = {
-                                                expandedBlocks[-block.id.toLong()] = false
-                                            },
+                                            onCollapse = { onFold(key, true) },
                                             onCloseRound = {},
                                             onUndo = {},
+                                            actions = supersetActions,
                                         )
                                     } else {
                                         SupersetRow(
                                             block = block,
                                             number = index + 1,
                                             isPlan = true,
-                                            onExpand = {
-                                                expandedBlocks[-block.id.toLong()] = true
-                                            },
+                                            onExpand = { onFold(key, false) },
+                                            actions = supersetActions,
                                         )
                                     }
-                                    Row(
-                                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                    ) {
-                                        block.plan.forEach { planItem ->
-                                            TextButton(onClick = { onItemClick(planItem) }) {
-                                                Text(
-                                                    text = "${planItem.exercise.displayName()} ${planItem.targetSets}×${planItem.repsLabel}",
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                )
-                                            }
-                                        }
-                                        TextButton(onClick = { onBreakSuperset(block.id) }) {
-                                            Text(text = stringResource(R.string.label_break_superset))
-                                        }
                                     }
                                 }
                             }
@@ -509,22 +696,11 @@ private fun PlanEdit(
                 }
             }
             item {
-                Row(
+                DashedAddButton(
                     modifier = Modifier.padding(top = 12.dp, bottom = 24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    DashedAddButton(
-                        modifier = Modifier.weight(1F),
-                        label = stringResource(R.string.label_add_exercise_short),
-                        onClick = onAddExercise,
-                    )
-                    DashedAddButton(
-                        modifier = Modifier.weight(1F),
-                        label = stringResource(R.string.label_add_superset),
-                        accent = true,
-                        onClick = onStartSupersetMode,
-                    )
-                }
+                    label = stringResource(R.string.label_add_exercise_short),
+                    onClick = onAddExercise,
+                )
             }
         },
     )
@@ -540,16 +716,11 @@ private fun PlanExerciseBlock(
     item: PlanItem,
     number: Int,
     chains: List<SetChain>,
-    selected: Boolean,
     expanded: Boolean,
     onToggleExpand: () -> Unit,
-    onClick: () -> Unit,
-    onLongClick: () -> Unit,
-    onReplace: () -> Unit,
-    onMoveUp: () -> Unit,
-    onMoveDown: () -> Unit,
-    onRemove: () -> Unit,
+    onMoreClick: () -> Unit,
     modifier: Modifier = Modifier,
+    handleModifier: Modifier = Modifier,
 ) {
     val chain = chains.firstOrNull()
     Column(
@@ -557,18 +728,12 @@ private fun PlanExerciseBlock(
             .fillMaxWidth()
             .padding(vertical = 6.dp)
             .clip(MaterialTheme.shapes.extraLarge)
-            .background(
-                if (selected) {
-                    MaterialTheme.colorScheme.secondaryContainer
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainerLow
-                },
-            ),
+            .background(MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .combinedClickable(onClick = onToggleExpand, onLongClick = onLongClick)
+                .clickable(onClick = onToggleExpand)
                 .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -589,6 +754,18 @@ private fun PlanExerciseBlock(
                         stringResource(R.string.label_rest_short, formatRest(item.restSeconds)),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline,
+                )
+            }
+            Icon(
+                modifier = handleModifier.padding(end = 4.dp),
+                painter = KenkoIcons.Drag,
+                contentDescription = stringResource(R.string.label_reorder),
+                tint = MaterialTheme.colorScheme.outline,
+            )
+            IconButton(onClick = onMoreClick) {
+                Icon(
+                    painter = KenkoIcons.More,
+                    contentDescription = stringResource(R.string.label_exercise_actions),
                 )
             }
         }
@@ -615,30 +792,6 @@ private fun PlanExerciseBlock(
                     )
                 }
             }
-            FlowRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-                itemVerticalAlignment = Alignment.CenterVertically,
-            ) {
-                TextButton(onClick = onClick) {
-                    Text(text = stringResource(R.string.label_edit_targets))
-                }
-                TextButton(onClick = onReplace) {
-                    Text(text = stringResource(R.string.label_replace_exercise))
-                }
-                TextButton(onClick = onMoveUp) {
-                    Text(text = stringResource(R.string.label_move_up))
-                }
-                TextButton(onClick = onMoveDown) {
-                    Text(text = stringResource(R.string.label_move_down))
-                }
-                IconButton(onClick = onRemove) {
-                    Icon(painter = KenkoIcons.Delete, contentDescription = null)
-                }
-            }
         }
     }
 }
@@ -646,7 +799,11 @@ private fun PlanExerciseBlock(
 /**
  * Days of a plan are just numbers: one, two, three, and a new one whenever it is needed.
  * In week mode the same number reads as a day of the week.
+ *
+ * They stand in a row, so the whole plan is visible at once and any day is one tap away —
+ * the two arrows they replaced showed one day and hid the rest.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun DayHeader(
     day: Int,
@@ -655,56 +812,75 @@ private fun DayHeader(
     onSelectDay: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    val lastDay = if (isWeekMode) 7 else maxOf(dayCount, day)
+    FlowRow(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface),
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(bottom = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Text(
-            text = stringResource(R.string.heading_select_plan_items),
-            style = MaterialTheme.typography.displayMedium,
-            color = MaterialTheme.colorScheme.secondary,
-        )
-        Spacer(Modifier.height(8.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            FilledTonalIconButton(
-                onClick = { onSelectDay(day - 1) },
-                enabled = day > 1,
-            ) {
-                Icon(painter = KenkoIcons.KeyboardArrowLeft, contentDescription = null)
-            }
-            Text(
-                modifier = Modifier
-                    .weight(1F)
-                    .padding(horizontal = 8.dp),
-                text = if (isWeekMode) {
-                    kenkoDayName(DayOfWeek(day.coerceIn(1, 7)))
+        for (number in 1..lastDay) {
+            DayPill(
+                label = if (isWeekMode) {
+                    kenkoDayName(DayOfWeek(number))
                 } else {
-                    stringResource(R.string.label_day_number, day)
+                    number.toString()
                 },
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center,
-            )
-            FilledTonalIconButton(
-                onClick = { onSelectDay(day + 1) },
-                enabled = !isWeekMode || day < 7,
-            ) {
-                Icon(painter = KenkoIcons.KeyboardArrowRight, contentDescription = null)
-            }
-        }
-        if (!isWeekMode && dayCount > 0) {
-            Text(
-                text = stringResource(
-                    R.string.label_days_in_plan,
-                    pluralStringResource(R.plurals.plural_days, dayCount, dayCount),
-                ),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline,
+                selected = number == day,
+                onClick = { onSelectDay(number) },
             )
         }
-        Spacer(Modifier.height(8.dp))
+        if (!isWeekMode) {
+            DayPill(
+                label = stringResource(R.string.label_add_day),
+                selected = false,
+                dashed = true,
+                onClick = { onSelectDay(lastDay + 1) },
+            )
+        }
     }
+}
+
+@Composable
+private fun DayPill(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    dashed: Boolean = false,
+) {
+    val shape = MaterialTheme.shapes.extraLarge
+    Text(
+        modifier = modifier
+            .clip(shape)
+            .background(
+                if (selected) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.surfaceContainerLow
+                },
+            )
+            .border(
+                width = KenkoBorderWidth,
+                color = when {
+                    selected -> MaterialTheme.colorScheme.primary
+                    dashed -> MaterialTheme.colorScheme.outlineVariant
+                    else -> MaterialTheme.colorScheme.outlineVariant
+                },
+                shape = shape,
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        text = label,
+        style = MaterialTheme.typography.titleMedium.numbers(),
+        color = if (selected) {
+            MaterialTheme.colorScheme.onPrimary
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        },
+    )
 }
 
 /**
@@ -771,32 +947,28 @@ private fun CopyDaySheet(
     }
 }
 
-@Composable
-private fun SelectionBar(
-    count: Int,
-    onMakeSuperset: () -> Unit,
-    onClearSelection: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = normalizeInt(count),
-            style = MaterialTheme.typography.titleMedium.numbers(),
-            color = MaterialTheme.colorScheme.primary,
-        )
-        Spacer(Modifier.weight(1F))
-        TextButton(onClick = onClearSelection) {
-            Text(text = stringResource(R.string.label_cancel))
-        }
-        Spacer(Modifier.width(8.dp))
-        Button(onClick = onMakeSuperset) {
-            Text(text = stringResource(R.string.label_make_superset))
-        }
+/**
+ * The day as the finger left it: the row that was held moves in front of the one it landed on.
+ */
+private fun List<SessionBlock>.movedBetween(from: Any, to: Any): List<SessionBlock> {
+    val fromIndex = indexOfFirst { it.reorderKey() == from }
+    val toIndex = indexOfFirst { it.reorderKey() == to }
+    if (fromIndex == -1 || toIndex == -1 || fromIndex == toIndex) return this
+    return toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+}
+
+private fun SessionBlock.reorderKey(): String = when (this) {
+    is SessionBlock.SingleExercise -> "item-${plan?.id}"
+    is SessionBlock.Superset -> "superset-$id"
+}
+
+/**
+ * Plan items of the day in the order the blocks stand in.
+ */
+private fun List<SessionBlock>.itemIds(): List<Long> = flatMap { block ->
+    when (block) {
+        is SessionBlock.SingleExercise -> listOfNotNull(block.plan?.id)
+        is SessionBlock.Superset -> block.plan.mapNotNull { it.id }
     }
 }
 

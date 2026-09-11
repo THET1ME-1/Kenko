@@ -239,4 +239,67 @@ class SessionBlockTest {
         assertEquals(2, block.chains.size)
         assertEquals(0, block.setsLeft)
     }
+
+    @Test
+    fun `exercises outside the plan follow the order of the day`() {
+        val sets = listOf(
+            set(1, bench),
+            set(2, dips),
+            set(3, pullUp),
+        )
+
+        val blocks = sets.toSessionBlocks(todayOrder = mapOf(2 to 0, 3 to 1, 1 to 2))
+
+        assertEquals(listOf(pullUp, dips, bench), blocks.map { it.exercises.first() })
+    }
+
+    @Test
+    fun `an exercise added today can stand above the planned ones`() {
+        val plan = listOf(planItem(bench), planItem(pullUp))
+        val sets = listOf(
+            set(1, bench),
+            set(2, dips),
+        )
+
+        val blocks = sets.toSessionBlocks(
+            plannedItems = plan,
+            todayOrder = mapOf(3 to 0, 1 to 1, 2 to 2),
+        )
+
+        assertEquals(listOf(dips, bench, pullUp), blocks.map { it.exercises.first() })
+    }
+
+    @Test
+    fun `a superset built during a session always offers the next round`() {
+        val sets = listOf(
+            set(1, pullUp, supersetId = 3, roundIndex = 0),
+            set(2, dips, supersetId = 3, roundIndex = 0),
+        )
+
+        val block = sets.toSessionBlocks().filterIsInstance<SessionBlock.Superset>().single()
+
+        assertEquals(1, block.closedRounds)
+        assertEquals(2, block.plannedRounds)
+        assertEquals(1, block.roundsLeft)
+    }
+
+    @Test
+    fun `a planned superset stops at the rounds the plan asks for`() {
+        val plan = listOf(
+            planItem(pullUp, supersetId = 3, targetSets = 2),
+            planItem(dips, supersetId = 3, targetSets = 2),
+        )
+        val sets = listOf(
+            set(1, pullUp, supersetId = 3, roundIndex = 0),
+            set(2, dips, supersetId = 3, roundIndex = 0),
+            set(3, pullUp, supersetId = 3, roundIndex = 1),
+            set(4, dips, supersetId = 3, roundIndex = 1),
+        )
+
+        val block = sets.toSessionBlocks(plan).filterIsInstance<SessionBlock.Superset>().single()
+
+        assertEquals(2, block.closedRounds)
+        assertEquals(2, block.plannedRounds)
+        assertEquals(0, block.roundsLeft)
+    }
 }

@@ -51,6 +51,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.looker.kenko.ui.components.RowAction
+import com.looker.kenko.ui.components.ActionsSheet
 import com.looker.kenko.R
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.ExercisesPreviewParameter
@@ -76,9 +80,13 @@ fun Exercises(
     viewModel: ExercisesViewModel,
     onExerciseClick: (id: Int?) -> Unit,
     onCreateClick: (target: MuscleGroups?) -> Unit,
+    onAddToSessionClick: (Exercise) -> Unit,
     onBackPress: () -> Unit,
 ) {
     val state by viewModel.exercises.collectAsStateWithLifecycle()
+    val plan by viewModel.currentPlan.collectAsStateWithLifecycle()
+    var actionsFor by remember { mutableStateOf<Exercise?>(null) }
+    var planDayFor by remember { mutableStateOf<Exercise?>(null) }
     Exercises(
         state = state,
         query = viewModel.searchQuery,
@@ -90,7 +98,91 @@ fun Exercises(
         onSelectTarget = viewModel::setTarget,
         onReferenceClick = viewModel::onReferenceClick,
         onRemove = viewModel::removeExercise,
+        onMoreClick = { actionsFor = it },
     )
+    actionsFor?.let { exercise ->
+        val inGym = exercise.id in state.gymExerciseIds
+        ActionsSheet(
+            title = exercise.displayName(),
+            subtitle = stringResource(exercise.target.stringRes),
+            actions = buildList {
+                add(
+                    RowAction(label = stringResource(R.string.label_open_exercise)) {
+                        actionsFor = null
+                        onExerciseClick(exercise.id)
+                    },
+                )
+                val gymName = state.gymName
+                if (gymName != null) {
+                    add(
+                        RowAction(
+                            label = if (inGym) {
+                                stringResource(R.string.label_remove_from_gym_FORMAT, gymName)
+                            } else {
+                                stringResource(R.string.label_add_to_gym_FORMAT, gymName)
+                            },
+                        ) {
+                            actionsFor = null
+                            viewModel.toggleInGym(exercise)
+                        },
+                    )
+                }
+                add(
+                    RowAction(label = stringResource(R.string.label_add_to_session)) {
+                        actionsFor = null
+                        onAddToSessionClick(exercise)
+                    },
+                )
+                plan?.let { target ->
+                    add(
+                        RowAction(
+                            label = stringResource(R.string.label_add_to_plan),
+                            hint = target.name,
+                        ) {
+                            actionsFor = null
+                            planDayFor = exercise
+                        },
+                    )
+                }
+                add(
+                    RowAction(label = stringResource(R.string.label_duplicate_exercise)) {
+                        actionsFor = null
+                        viewModel.duplicate(exercise)
+                    },
+                )
+                add(
+                    RowAction(
+                        label = stringResource(R.string.label_remove),
+                        isDanger = true,
+                    ) {
+                        actionsFor = null
+                        viewModel.removeExercise(exercise.id)
+                    },
+                )
+            },
+            onDismiss = { actionsFor = null },
+        )
+    }
+    planDayFor?.let { exercise ->
+        val target = plan
+        if (target == null) {
+            planDayFor = null
+        } else {
+            ActionsSheet(
+                title = exercise.displayName(),
+                subtitle = target.name,
+                actions = (1..maxOf(target.dayCount, 1) + 1).map { day ->
+                    RowAction(
+                        label = stringResource(R.string.label_add_to_plan_day_FORMAT, day),
+                    ) {
+                        planDayFor = null
+                        viewModel.addToPlanDay(exercise, day)
+                    }
+                },
+                onDismiss = { planDayFor = null },
+            )
+        }
+    }
 }
 
 @Composable
@@ -105,6 +197,7 @@ private fun Exercises(
     onRemove: (Int?) -> Unit,
     onBackPress: () -> Unit,
     onReferenceClick: (String) -> Unit,
+    onMoreClick: (Exercise) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -113,14 +206,14 @@ private fun Exercises(
             SecondaryKenkoButton(
                 onClick = { onCreateClick(state.selected) },
                 label = {
+                    Text(stringResource(R.string.label_create_exercise))
+                },
+                icon = {
                     Icon(
                         painter = KenkoIcons.Add,
                         contentDescription = null,
                     )
                 },
-                icon = {
-                    Text(stringResource(R.string.label_create_exercise))
-                }
             )
         },
         floatingActionButtonPosition = FabPosition.Center,
@@ -152,6 +245,7 @@ private fun Exercises(
                 onExerciseClick = onExerciseClick,
                 onReferenceClick = onReferenceClick,
                 onRemove = onRemove,
+                onMoreClick = onMoreClick,
             )
         }
     }
@@ -164,6 +258,7 @@ private fun ExercisesList(
     onExerciseClick: (id: Int?) -> Unit,
     onRemove: (Int?) -> Unit,
     onReferenceClick: (String) -> Unit,
+    onMoreClick: (Exercise) -> Unit,
 ) {
     LazyColumn(
         contentPadding = contentPadding,
@@ -186,6 +281,14 @@ private fun ExercisesList(
                             ) {
                                 Icon(painter = KenkoIcons.Lightbulb, contentDescription = null)
                             }
+                        }
+                        IconButton(onClick = { onMoreClick(exercise) }) {
+                            Icon(
+                                painter = KenkoIcons.More,
+                                contentDescription = stringResource(
+                                    R.string.label_exercise_actions,
+                                ),
+                            )
                         }
                     }
                 )
@@ -260,6 +363,7 @@ private fun ExercisesPreview(
             onCreateClick = {},
             onSelectTarget = {},
             onBackPress = {},
+            onMoreClick = {},
             onReferenceClick = {},
             onRemove = {}
         )

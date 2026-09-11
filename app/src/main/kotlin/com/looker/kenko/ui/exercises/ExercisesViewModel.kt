@@ -30,20 +30,27 @@ import com.looker.kenko.R
 import com.looker.kenko.data.StringHandler
 import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.MuscleGroups
+import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.matchesSearch
 import com.looker.kenko.data.repository.ExerciseRepo
+import com.looker.kenko.data.repository.GymRepo
+import com.looker.kenko.data.repository.PlanRepo
 import com.looker.kenko.utils.asStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ExercisesViewModel @Inject constructor(
     private val repo: ExerciseRepo,
+    private val gymRepo: GymRepo,
+    private val planRepo: PlanRepo,
     private val uriHandler: UriHandler,
     private val stringHandler: StringHandler,
 ) : ViewModel() {
@@ -67,14 +74,82 @@ class ExercisesViewModel @Inject constructor(
         exercisesStream,
         selectedTarget,
         searchQueryFlow,
-    ) { exercises, target, query ->
+        gymRepo.current,
+        gymRepo.availableExercises,
+    ) { exercises, target, query, gym, available ->
         ExercisesUiState(
             exercises = exercises
                 .filter { target == null || it.target == target }
                 .filter { it.matchesSearch(query) },
             selected = target,
+            gymName = gym?.name,
+            gymExerciseIds = if (gym == null) {
+                emptySet()
+            } else {
+                available.mapNotNull { it.id }.toSet()
+            },
         )
     }.asStateFlow(ExercisesUiState())
+
+    /**
+     * The plan the exercise can be sent to, and how many days it holds.
+     */
+    val currentPlan: StateFlow<PlanTarget?> = planRepo.current
+        .map { plan ->
+            val id = plan?.id ?: return@map null
+            PlanTarget(
+                planId = id,
+                name = plan.name,
+                dayCount = planRepo.dayCount(id),
+            )
+        }
+        .asStateFlow(null)
+
+    /**
+     * Sends the exercise into a day of the current plan, at the end of it.
+     */
+    fun addToPlanDay(exercise: Exercise, day: Int) {
+        val plan = currentPlan.value ?: return
+        viewModelScope.launch {
+            planRepo.addItem(
+                PlanItem(
+                    dayIndex = day,
+                    exercise = exercise,
+                    planId = plan.planId,
+                ),
+            )
+            snackbarState.showSnackbar(
+                stringHandler.getString(R.string.label_added_to_day_FORMAT, day),
+            )
+        }
+    }
+
+    /**
+     * Puts the exercise into the gym the lifter trains at, or takes it back out.
+     */
+    fun toggleInGym(exercise: Exercise) {
+        val exerciseId = exercise.id ?: return
+        viewModelScope.launch {
+            val gym = gymRepo.current.first()
+            if (gym?.id == null) {
+                snackbarState.showSnackbar(stringHandler.getString(R.string.label_profile_gym_none))
+                return@launch
+            }
+            val present = gymRepo.isAvailable(exerciseId)
+            gymRepo.setExercisePresent(gym.id, exerciseId, !present)
+        }
+    }
+
+    /**
+     * A copy to change without touching the original: the same movement with another handle,
+     * another machine, another name.
+     */
+    fun duplicate(exercise: Exercise) {
+        viewModelScope.launch {
+            val name = stringHandler.getString(R.string.label_copy_of_FORMAT, exercise.displayableName)
+            repo.upsert(exercise.copy(id = null, name = name, nameRu = null))
+        }
+    }
 
     /**
      * Deleting is a swipe away, so it comes back the same way: the row is kept aside until
@@ -127,8 +202,25 @@ val MuscleGroups?.string: Int
     @StringRes
     get() = this?.stringRes ?: R.string.label_all_muscle_groups
 
+/**
+ * Plan an exercise can be sent into.
+ */
+@Stable
+data class PlanTarget(
+    val planId: Int,
+    val name: String,
+    val dayCount: Int,
+)
+
 @Stable
 class ExercisesUiState(
     val exercises: List<Exercise> = emptyList(),
     val selected: MuscleGroups? = null,
+    val gymName: String? = null,
+    val gymExerciseIds: Set<Int> = emptySet(),
 )
+
+/**
+ * Name a copy should carry: the Russian one when the library knows it.
+ */
+private val Exercise.displayableName: String get() = nameRu ?: name

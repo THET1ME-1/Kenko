@@ -17,6 +17,7 @@ package com.looker.kenko.ui.plans.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.Surface
@@ -57,7 +59,7 @@ fun PlanItem(
     onActiveChange: (Boolean) -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onLongClick: (() -> Unit)? = null,
+    onMoreClick: (() -> Unit)? = null,
 ) {
     val transition = updateTransition(targetState = plan.isActive, label = null)
     val background by transition.animateColor(label = "background") {
@@ -76,7 +78,7 @@ fun PlanItem(
     }
 
     Surface(
-        modifier = modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick),
+        modifier = modifier.clickable(onClick = onClick),
         color = background,
         contentColor = contentColor,
     ) {
@@ -100,10 +102,18 @@ fun PlanItem(
                 ) {
                     Icon(painter = KenkoIcons.Done, contentDescription = null)
                 }
+                if (onMoreClick != null) {
+                    IconButton(onClick = onMoreClick) {
+                        Icon(
+                            painter = KenkoIcons.More,
+                            contentDescription = stringResource(R.string.label_exercise_actions),
+                        )
+                    }
+                }
             }
             AnimatedVisibility(visible = plan.isActive) {
                 Text(
-                    text = ".selected",
+                    text = stringResource(R.string.label_plan_active),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.outline,
                 )

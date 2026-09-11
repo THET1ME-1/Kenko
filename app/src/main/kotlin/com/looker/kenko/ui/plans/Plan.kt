@@ -48,6 +48,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.looker.kenko.R
 import com.looker.kenko.data.model.Plan
 import com.looker.kenko.data.model.PlanPreviewParameters
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.res.pluralStringResource
+import com.looker.kenko.ui.components.ActionsSheet
+import com.looker.kenko.ui.components.RenameDialog
+import com.looker.kenko.ui.components.RowAction
+import com.looker.kenko.ui.components.kenkoTextFieldColor
 import com.looker.kenko.ui.components.BackButton
 import com.looker.kenko.ui.components.EmptyPage
 import com.looker.kenko.ui.components.SheetAction
@@ -78,6 +86,7 @@ fun Plan(
         onRemove = viewModel::removePlan,
         onPlanClick = onPlanClick,
         onDuplicate = viewModel::duplicatePlan,
+        onRename = viewModel::renamePlan,
     )
 
     if (showHelpDialog) {
@@ -113,9 +122,11 @@ private fun Plan(
     onRemove: (Int) -> Unit,
     onPlanClick: (Int) -> Unit,
     onDuplicate: (Plan) -> Unit = {},
+    onRename: (Plan, String) -> Unit = { _, _ -> },
 ) {
-    // A long press on a plan: the only thing it can do besides opening is to become a copy.
+    // Everything a plan can be told, behind its own button.
     var acting by remember { mutableStateOf<Plan?>(null) }
+    var renaming by remember { mutableStateOf<Plan?>(null) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -125,7 +136,7 @@ private fun Plan(
                     IconButton(onClick = onInfoClick) {
                         Icon(
                             painter = KenkoIcons.Info,
-                            contentDescription = "Info"
+                            contentDescription = stringResource(R.string.label_clean_up)
                         )
                     }
                 }
@@ -169,7 +180,7 @@ private fun Plan(
                         plan = plan,
                         onClick = { onPlanClick(plan.id!!) },
                         onActiveChange = { onSelectPlan(plan) },
-                        onLongClick = { acting = plan },
+                        onMoreClick = { acting = plan },
                     )
                 }
                 if (!isLast) HorizontalDivider(thickness = KenkoBorderWidth)
@@ -178,17 +189,65 @@ private fun Plan(
         }
     }
     acting?.let { plan ->
-        ModalBottomSheet(onDismissRequest = { acting = null }) {
-            Column(modifier = Modifier.padding(bottom = 32.dp)) {
-                SheetAction(
-                    text = stringResource(R.string.label_duplicate_plan),
-                    onClick = {
+        ActionsSheet(
+            title = plan.name,
+            subtitle = stringResource(
+                R.string.label_plan_description,
+                pluralStringResource(
+                    R.plurals.plural_exercises,
+                    plan.stat.exercises,
+                    plan.stat.exercises,
+                ),
+                pluralStringResource(
+                    R.plurals.plural_days,
+                    plan.stat.workDays,
+                    plan.stat.workDays,
+                ),
+            ),
+            actions = buildList {
+                if (!plan.isActive) {
+                    add(
+                        RowAction(label = stringResource(R.string.label_make_active)) {
+                            acting = null
+                            onSelectPlan(plan)
+                        },
+                    )
+                }
+                add(
+                    RowAction(label = stringResource(R.string.label_rename_plan)) {
+                        renaming = plan
+                        acting = null
+                    },
+                )
+                add(
+                    RowAction(label = stringResource(R.string.label_duplicate_plan)) {
                         acting = null
                         onDuplicate(plan)
                     },
                 )
-            }
-        }
+                add(
+                    RowAction(
+                        label = stringResource(R.string.label_delete_plan),
+                        isDanger = true,
+                    ) {
+                        acting = null
+                        onRemove(plan.id!!)
+                    },
+                )
+            },
+            onDismiss = { acting = null },
+        )
+    }
+    renaming?.let { plan ->
+        RenameDialog(
+            title = stringResource(R.string.label_rename_plan),
+            value = plan.name,
+            onDismiss = { renaming = null },
+            onConfirm = { name ->
+                onRename(plan, name)
+                renaming = null
+            },
+        )
     }
 }
 

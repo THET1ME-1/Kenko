@@ -42,7 +42,7 @@ import androidx.navigationevent.NavigationEvent
 import com.looker.kenko.ui.addEditExercise.AddEditExercise
 import com.looker.kenko.ui.addEditExercise.AddEditExerciseViewModel
 import com.looker.kenko.ui.exercises.Exercises
-import com.looker.kenko.ui.getStarted.GetStartedOld
+import com.looker.kenko.ui.getStarted.GetStarted
 import com.looker.kenko.ui.gyms.GymEdit
 import com.looker.kenko.ui.gyms.GymEditViewModel
 import com.looker.kenko.ui.gyms.Gyms
@@ -102,7 +102,7 @@ fun KenkoNavHost(
         entryProvider = { key ->
             NavEntry(key) {
                 when (key) {
-                    is Routes.GetStarted -> GetStartedOld(
+                    is Routes.GetStarted -> GetStarted(
                         isOnboardingDone = key.isOnboardingDone,
                         onNext = {
                             backStack.removeAll { it is Routes.GetStarted }
@@ -225,8 +225,9 @@ fun KenkoNavHost(
                     is Routes.Profile -> Profile(
                         onStatsClick = { backStack.add(Routes.Stats) },
                         onRecordsClick = { backStack.add(Routes.Records) },
-                        onAddExerciseClick = { backStack.add(Routes.AddEditExercise()) },
                         onExercisesClick = { backStack.add(Routes.Exercises) },
+                        onGymsClick = { backStack.add(Routes.Gyms) },
+                        onHistoryClick = { backStack.add(Routes.Session) },
                         onPlanClick = { backStack.add(Routes.Plan) },
                         onPlanEdit = { backStack.add(Routes.PlanEdit(it)) },
                         onSettingsClick = { backStack.add(Routes.Settings) },
@@ -238,6 +239,14 @@ fun KenkoNavHost(
                         onExerciseClick = { id -> backStack.add(Routes.AddEditExercise(id = id)) },
                         onCreateClick = { target ->
                             backStack.add(Routes.AddEditExercise(target = target?.name))
+                        },
+                        onAddToSessionClick = { exercise ->
+                            backStack.add(
+                                Routes.SessionDetail(
+                                    epochDays = -1,
+                                    addExerciseId = exercise.id,
+                                ),
+                            )
                         },
                         onBackPress = { backStack.removeAt(backStack.lastIndex) },
                         viewModel = hiltViewModel(),

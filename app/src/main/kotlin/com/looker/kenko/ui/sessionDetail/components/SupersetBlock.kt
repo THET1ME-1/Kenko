@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -76,6 +77,18 @@ fun SupersetCard(
      * A plan shows the rounds ahead: nothing to close, nothing to tick.
      */
     isPlan: Boolean = false,
+    /**
+     * What can be done to the group, drawn in its own header instead of a strip below it.
+     */
+    actions: (@Composable RowScope.() -> Unit)? = null,
+    /**
+     * A written set of a round, tapped to be corrected — the same as outside a superset.
+     */
+    onEditSet: (SetChain, Int) -> Unit = { _, _ -> },
+    /**
+     * An empty place in the round, tapped to write the set of that exercise.
+     */
+    onWriteSet: (Exercise) -> Unit = {},
 ) {
     val plannedRounds = block.plannedRounds
     val closed = block.closedRounds
@@ -115,10 +128,28 @@ fun SupersetCard(
                 )
             }
             Badge(text = stringResource(R.string.label_round_of, closed, plannedRounds))
+            if (actions != null) {
+                actions()
+            }
+        }
+        if (isEditable && !isPlan && block.rounds.isEmpty()) {
+            // Первый круг: иначе непонятно, чем строка отличается от кнопки внизу.
+            Text(
+                modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 10.dp),
+                text = stringResource(R.string.label_superset_tap_hint),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
         }
         Column(modifier = Modifier.padding(horizontal = 13.dp, vertical = 12.dp)) {
             repeat(plannedRounds) { index ->
-                RoundCard(block = block, roundIndex = index, isPlan = isPlan)
+                RoundCard(
+                    block = block,
+                    roundIndex = index,
+                    isPlan = isPlan,
+                    onEditSet = onEditSet,
+                    onWriteSet = onWriteSet,
+                )
             }
         }
         if (isEditable && !isPlan) {
@@ -132,15 +163,8 @@ fun SupersetCard(
                 Button(
                     modifier = Modifier.weight(1F),
                     onClick = onCloseRound,
-                    enabled = closed < plannedRounds,
                 ) {
-                    Text(
-                        text = if (closed >= plannedRounds) {
-                            stringResource(R.string.label_superset_closed)
-                        } else {
-                            stringResource(R.string.label_close_round, closed + 1)
-                        },
-                    )
+                    Text(text = stringResource(R.string.label_close_round, closed + 1))
                 }
                 TextButton(onClick = onUndo) {
                     Text(text = stringResource(R.string.label_undo))
@@ -165,6 +189,8 @@ private fun RoundCard(
     roundIndex: Int,
     modifier: Modifier = Modifier,
     isPlan: Boolean = false,
+    onEditSet: (SetChain, Int) -> Unit = { _, _ -> },
+    onWriteSet: (Exercise) -> Unit = {},
 ) {
     val round = block.rounds.firstOrNull { it.index == roundIndex }
     val performed = round?.chains.orEmpty()
@@ -224,6 +250,16 @@ private fun RoundCard(
                 isNext = !isPlan && chain == null &&
                     (isRunning || isClosed.not() && roundIndex == block.closedRounds),
                 showTick = !isPlan,
+                onEdit = when {
+                    isPlan -> null
+                    chain != null -> {
+                        { onEditSet(chain, roundIndex + 1) }
+                    }
+                    // An empty place is not a dead line: tapping it writes the set.
+                    else -> {
+                        { onWriteSet(exercise) }
+                    }
+                },
             )
         }
     }
@@ -238,10 +274,13 @@ private fun SupersetLegRow(
     isNext: Boolean,
     modifier: Modifier = Modifier,
     showTick: Boolean = true,
+    onEdit: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .then(if (onEdit != null) Modifier.clickable(onClick = onEdit) else Modifier)
             .padding(bottom = 7.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -312,6 +351,7 @@ fun SupersetRow(
     onExpand: () -> Unit,
     modifier: Modifier = Modifier,
     isPlan: Boolean = false,
+    actions: (@Composable RowScope.() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
@@ -369,6 +409,9 @@ fun SupersetRow(
                 state = if (block.roundsLeft == 0) TickState.Done else TickState.Ahead,
                 size = 22.dp,
             )
+        }
+        if (actions != null) {
+            actions()
         }
     }
 }

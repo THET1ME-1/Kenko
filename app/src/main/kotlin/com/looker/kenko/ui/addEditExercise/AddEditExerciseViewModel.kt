@@ -82,7 +82,7 @@ class AddEditExerciseViewModel @AssistedInject constructor(
      */
     private val original = MutableStateFlow<Exercise?>(null)
 
-    private val isReadOnly: Boolean = exerciseId != null
+    private val isExisting: Boolean = exerciseId != null
 
     val snackbarState = SnackbarHostState()
 
@@ -104,12 +104,12 @@ class AddEditExerciseViewModel @AssistedInject constructor(
 
     private val exerciseAlreadyExistError = snapshotFlow { exerciseName }
         .debounce(200.milliseconds)
-        .mapLatest { repo.isExerciseAvailable(it) && !isReadOnly }
+        .mapLatest { repo.isExerciseAvailable(it) && !isExisting }
 
     val state = combine(
         combine(targetMuscle, secondaryMuscles, photoUri, original, ::Basics),
         isIsometric,
-        flowOf(isReadOnly),
+        flowOf(isExisting),
         exerciseAlreadyExistError,
         isReferenceInvalid,
     ) { basics, isometric, readOnly, alreadyExist, referenceInvalid ->
@@ -122,7 +122,7 @@ class AddEditExerciseViewModel @AssistedInject constructor(
             originalName = basics.exercise?.name,
             originalNameRu = basics.exercise?.nameRu,
             isIsometric = isometric,
-            isReadOnly = readOnly,
+            isExisting = readOnly,
             isError = alreadyExist,
             isReferenceInvalid = referenceInvalid,
         )
@@ -137,7 +137,7 @@ class AddEditExerciseViewModel @AssistedInject constructor(
             originalNameRu = null,
             isIsometric = false,
             isError = false,
-            isReadOnly = false,
+            isExisting = false,
             isReferenceInvalid = false,
         ),
     )
@@ -331,6 +331,6 @@ data class AddEditExerciseUiState(
     val originalNameRu: String?,
     val isIsometric: Boolean,
     val isError: Boolean,
-    val isReadOnly: Boolean,
+    val isExisting: Boolean,
     val isReferenceInvalid: Boolean,
 )

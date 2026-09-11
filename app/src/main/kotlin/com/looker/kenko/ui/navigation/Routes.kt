@@ -57,6 +57,11 @@ sealed interface Routes : NavKey {
         val epochDays: Int,
         val planId: Int? = null,
         val dayIndex: Int? = null,
+        /**
+         * Exercise to write a set into right away: how the library sends a movement
+         * into today's session.
+         */
+        val addExerciseId: Int? = null,
     ) : Routes
 
     @Serializable

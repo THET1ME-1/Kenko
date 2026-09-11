@@ -17,6 +17,7 @@ package com.looker.kenko.data.repository
 import com.looker.kenko.data.local.model.SetType
 import com.looker.kenko.data.local.model.WeightNote
 import com.looker.kenko.data.model.DEFAULT_DROP_PERCENT
+import com.looker.kenko.data.model.Exercise
 import com.looker.kenko.data.model.PlanItem
 import com.looker.kenko.data.model.RepsInReserve
 import com.looker.kenko.data.model.Session
@@ -82,11 +83,34 @@ interface SessionRepo {
     /**
      * Writes a set for every exercise of the superset that the current round is missing.
      */
-    suspend fun closeSupersetRound(sessionId: Int, supersetId: Int, items: List<PlanItem>)
+    /**
+     * Writes one set of every exercise of the group, so a round is closed with one tap.
+     *
+     * [exercises] is what the group actually holds today; [plan] only suggests the numbers and
+     * can be empty for a superset tied together mid-session.
+     */
+    suspend fun closeSupersetRound(
+        sessionId: Int,
+        supersetId: Int,
+        exercises: List<Exercise>,
+        plan: List<PlanItem> = emptyList(),
+    )
 
     /**
      * Takes back the last round of a superset.
      */
+    /**
+     * Ties exercises written into the session into a superset, without touching the program.
+     *
+     * The n-th set of every exercise becomes the n-th round.
+     */
+    suspend fun tieSetsIntoSuperset(sessionId: Int, exerciseIds: List<Int>, supersetId: Int)
+
+    /**
+     * Lets the sets out of the group: the work stays, the rounds go.
+     */
+    suspend fun untieSetsFromSuperset(sessionId: Int, supersetId: Int)
+
     suspend fun clearLastSupersetRound(sessionId: Int, supersetId: Int)
 
     /**

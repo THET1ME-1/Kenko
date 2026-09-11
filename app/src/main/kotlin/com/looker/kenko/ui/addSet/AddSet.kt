@@ -131,7 +131,6 @@ fun AddSet(
         weightNote = viewModel.weightNote,
         onSelectWeightNote = viewModel::toggleWeightNote,
         onCycleReserve = viewModel::cycleReserve,
-        onFailure = { viewModel.setReserve(0) },
         gymHint = viewModel.gymHint,
         onApplyGymHint = viewModel::applyGymHint,
         onDismissGymHint = viewModel::dismissGymHint,
@@ -200,7 +199,6 @@ private fun AddSetContent(
     onRepsChanged: (Int) -> Unit,
     onSelectType: (SetType) -> Unit,
     onCycleReserve: () -> Unit,
-    onFailure: () -> Unit,
     onOpenPlates: () -> Unit,
     onDoneClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -241,13 +239,17 @@ private fun AddSetContent(
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.primary,
         )
-        Text(
-            text = lastSet?.let {
-                stringResource(R.string.label_last_time, formatWeight(it.weight), it.repsOrDuration)
-            } ?: " ",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.outline,
-        )
+        if (lastSet != null) {
+            Text(
+                text = stringResource(
+                    R.string.label_last_time,
+                    formatWeight(lastSet.weight),
+                    lastSet.repsOrDuration,
+                ),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
+        }
 
         if (gymHint != null) {
             Spacer(Modifier.height(10.dp))
@@ -340,32 +342,37 @@ private fun AddSetContent(
         Spacer(Modifier.height(18.dp))
 
         Text(
+            modifier = Modifier.align(CenterHorizontally),
             text = stringResource(R.string.label_reps_caption).uppercase(),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.outline,
         )
-        Spacer(Modifier.height(6.dp))
+        Row(
+            modifier = Modifier
+                .align(CenterHorizontally)
+                .clip(MaterialTheme.shapes.large)
+                .clickable { typingReps = true }
+                .padding(horizontal = 12.dp, vertical = 2.dp),
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            Text(
+                text = reps.toString(),
+                style = MaterialTheme.typography.displayMedium.numbers(),
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+        Spacer(Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             StepKey(
                 modifier = Modifier.weight(1F),
                 label = "−1",
                 onClick = { onRepsChanged((reps - 1).coerceAtLeast(1)) },
             )
-            DisplayKey(
-                modifier = Modifier.weight(1F),
-                label = reps.toString(),
-                onClick = { typingReps = true },
-            )
             StepKey(
                 modifier = Modifier.weight(1F),
                 label = "+1",
+                accent = true,
                 onClick = { onRepsChanged(reps + 1) },
-            )
-            StepKey(
-                modifier = Modifier.weight(1.8F),
-                label = stringResource(R.string.label_to_failure),
-                accent = reserve == 0,
-                onClick = onFailure,
             )
         }
 
@@ -383,26 +390,6 @@ private fun AddSetContent(
         }
 
         Spacer(Modifier.height(18.dp))
-
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            onClick = onDoneClick,
-            shape = MaterialTheme.shapes.extraLarge,
-        ) {
-            Text(
-                text = stringResource(
-                    when {
-                        isEditing -> R.string.label_save
-                        isDrop -> R.string.label_write_drop
-                        else -> R.string.label_write_set
-                    },
-                ),
-            )
-        }
-
-        Spacer(Modifier.height(10.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlineKey(
@@ -437,6 +424,27 @@ private fun AddSetContent(
                 note = weightNote,
                 onSelectType = onSelectType,
                 onSelectNote = onSelectWeightNote,
+            )
+        }
+
+        Spacer(Modifier.height(18.dp))
+
+        // The one thing the sheet is open for stands last: the thumb reaches the bottom.
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            onClick = onDoneClick,
+            shape = MaterialTheme.shapes.extraLarge,
+        ) {
+            Text(
+                text = stringResource(
+                    when {
+                        isEditing -> R.string.label_save
+                        isDrop -> R.string.label_write_drop
+                        else -> R.string.label_write_set
+                    },
+                ),
             )
         }
 
@@ -819,7 +827,6 @@ private fun AddSetPreview(
                 onRepsChanged = { reps = it },
                 onSelectType = {},
                 onCycleReserve = {},
-                onFailure = {},
                 onOpenPlates = {},
                 onDoneClick = {},
             )
