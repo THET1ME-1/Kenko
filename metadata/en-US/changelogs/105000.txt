@@ -1,0 +1,5 @@
+One list of actions for an exercise everywhere: goals, swap, superset, move, remove.
+A running session can swap, drop and reorder exercises and set a goal for today.
+Order changes by dragging; any exercise folds away.
+Supersets tied during a session finally work, and a set inside a round can be written and fixed.
+New type: Jura and Martian Mono, both with real Cyrillic.

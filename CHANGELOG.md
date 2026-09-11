@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-09-11
+
+### Added
+- Every exercise answers one list of actions: goals, swap, tie into a superset, move, remove
+- A running session can now do what the plan editor could: swap an exercise, drop it, reorder it,
+  tie a superset on the spot and set a goal for today without touching the program
+- Order is changed by dragging, in the day editor and in the session alike
+- Any exercise folds away, with the state kept while the session goes on
+- Profile shows how long the training has been going, the tonnage, the streak and the last record
+- Library sends an exercise straight into a day of the plan or into today's session
+- Plans and gyms can be renamed, gyms can be copied with their equipment
+
+### Changed
+- Jura and Martian Mono replace Darker Grotesque and Space Mono: the old pair had no Cyrillic at
+  all, so every Russian word was drawn by the system font
+- Settings are laid out in sections of blocks, with an icon chip on every row
+- Days of a plan stand in a row of pills instead of two arrows
+- The set sheet puts its main button last, and reps are as large as the weight
+
+### Fixed
+- A superset tied during a session could not be performed: closing a round wrote nothing
+- A set inside a superset round could not be written with its own weight, or corrected at all
+- The gym name was lost when leaving the equipment screen by the system back gesture
+- The library button had its label and icon in each other's slots
+
 ## [1.4.0] - 2026-09-10
 
 ### Added
