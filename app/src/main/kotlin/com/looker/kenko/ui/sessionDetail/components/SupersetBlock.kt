@@ -251,7 +251,11 @@ private fun RoundCard(
                     (isRunning || isClosed.not() && roundIndex == block.closedRounds),
                 showTick = !isPlan,
                 onEdit = when {
-                    isPlan -> null
+                    // In a plan a row is a promise, and tapping it opens the goals behind it.
+                    isPlan -> {
+                        { onWriteSet(exercise) }
+                    }
+
                     chain != null -> {
                         { onEditSet(chain, roundIndex + 1) }
                     }

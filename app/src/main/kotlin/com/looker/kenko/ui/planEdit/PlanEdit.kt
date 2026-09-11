@@ -188,6 +188,7 @@ fun PlanEdit(
                     onAddExercise = viewModel::openSheet,
                     onMoreItemClick = { actionsFor = it },
                     onMoreSupersetClick = { supersetActionsFor = it },
+                    onEditTargets = viewModel::editTargets,
                     onReorder = viewModel::reorderDay,
                 )
             }
@@ -541,6 +542,7 @@ private fun PlanEdit(
     onAddExercise: () -> Unit,
     onMoreItemClick: (PlanItem) -> Unit,
     onMoreSupersetClick: (Int) -> Unit,
+    onEditTargets: (PlanItem) -> Unit,
     onReorder: (List<Long>) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -613,6 +615,10 @@ private fun PlanEdit(
                                         focusManager.clearFocus()
                                         onMoreItemClick(item)
                                     },
+                                    onEditTargets = {
+                                        focusManager.clearFocus()
+                                        onEditTargets(item)
+                                    },
                                     handleModifier = Modifier.reorderHandle(
                                         state = reorderState,
                                         key = key,
@@ -678,6 +684,11 @@ private fun PlanEdit(
                                             onCloseRound = {},
                                             onUndo = {},
                                             actions = supersetActions,
+                                            onWriteSet = { exercise ->
+                                                block.plan
+                                                    .firstOrNull { it.exercise == exercise }
+                                                    ?.let(onEditTargets)
+                                            },
                                         )
                                     } else {
                                         SupersetRow(
@@ -719,6 +730,7 @@ private fun PlanExerciseBlock(
     expanded: Boolean,
     onToggleExpand: () -> Unit,
     onMoreClick: () -> Unit,
+    onEditTargets: () -> Unit,
     modifier: Modifier = Modifier,
     handleModifier: Modifier = Modifier,
 ) {
@@ -771,6 +783,7 @@ private fun PlanExerciseBlock(
         }
         if (expanded) {
             if (item.dropCount > 0 && chain != null) {
+                Box(modifier = Modifier.clickable(onClick = onEditTargets)) {
                 DropSetCard(
                     chain = chain,
                     number = number,
@@ -783,10 +796,14 @@ private fun PlanExerciseBlock(
                     onMarkGroup = {},
                     onUndo = {},
                 )
+                }
             } else {
                 chains.forEachIndexed { index, setChain ->
+                    // Тап по строке ведёт в цели: человек жмёт на «0 КГ», а не ищет три точки.
                     SetItem(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp),
+                        modifier = Modifier
+                            .clickable(onClick = onEditTargets)
+                            .padding(horizontal = 16.dp, vertical = 5.dp),
                         set = setChain.set,
                         title = { Text(text = normalizeInt(index + 1)) },
                     )
