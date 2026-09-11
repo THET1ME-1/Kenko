@@ -48,7 +48,7 @@ jobs:
           EOF
 
       - name: Прогнать тесты
-        run: ./gradlew :app:testReleaseUnitTest --no-daemon
+        run: ./gradlew :app:testDebugUnitTest --no-daemon
 
       - name: Собрать релизные APK
         run: ./gradlew :app:assembleRelease --no-daemon
